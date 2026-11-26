@@ -91,6 +91,8 @@ SCENARIOS = {
 CALLER_SYS = """You are role-playing a caller talking to a CRM voice assistant on the phone.
 Persona: {persona}
 Lead facts (use exactly these): {facts}
+Make sure you give the name, company, phone AND email at some point (unless your persona says otherwise). Never invent
+other details; if asked for a job title or anything else, say you don't have it.
 Speak like a person on the phone: short, natural sentences. Say phone numbers digit by digit and emails as
 "x dot y at z dot com". Reply with ONLY what you say out loud. When the agent has confirmed the lead is saved (or
 you declined) and asks if there's anything else, say a short goodbye and then output the single token <END> on

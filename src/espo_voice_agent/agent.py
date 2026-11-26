@@ -143,10 +143,18 @@ class CrmHandle:
         self.streamer: BrowserStreamer | None = None
 
     async def start(self) -> None:
+        t = time.perf_counter()
         try:
-            t = time.perf_counter()
             self._pw = await async_playwright().start()
-            await self.browser.start(self._pw)
+            for attempt in (1, 2):  # the shared demo occasionally times out on login
+                try:
+                    await self.browser.start(self._pw)
+                    break
+                except Exception:
+                    log.warning("browser start attempt %d failed", attempt, exc_info=True)
+                    await self.browser.close()
+                    if attempt == 2:
+                        raise
             await self.browser._goto_hash("#Lead", ".list-container")
             self.streamer = BrowserStreamer(self.browser.page, self.room, fps=config.SCREEN_FPS)
             await self.streamer.start()
@@ -154,6 +162,8 @@ class CrmHandle:
         except Exception as e:  # surfaced to the caller by the tools
             log.exception("browser start failed")
             self.start_error = e
+            self.slog.write("browser_failed", error=repr(e))
+            await self.emit(type="tool", name="browser", state="error", detail="Could not open EspoCRM")
         finally:
             self.ready.set()
 
@@ -245,6 +255,12 @@ def build_llm() -> openai.LLM:
     )
 
 
+def build_tts():
+    if config.TTS_PROVIDER == "deepgram":
+        return deepgram.TTS(model="aura-2-andromeda-en")
+    return elevenlabs.TTS(voice_id=config.TTS_VOICE_ID, model=config.TTS_MODEL)
+
+
 server = AgentServer(num_idle_processes=1)
 
 
@@ -266,7 +282,7 @@ async def entrypoint(ctx: JobContext) -> None:
         vad=ctx.proc.userdata["vad"],
         stt=deepgram.STT(model=config.STT_MODEL, keyterm=["EspoCRM", "lead"], smart_format=True),
         llm=build_llm(),
-        tts=elevenlabs.TTS(voice_id=config.TTS_VOICE_ID, model=config.TTS_MODEL),
+        tts=build_tts(),
         turn_handling={
             "turn_detection": MultilingualModel(),
             "endpointing": {"min_delay": 0.4, "max_delay": 2.0},
@@ -298,7 +314,10 @@ async def entrypoint(ctx: JobContext) -> None:
     ctx.add_shutdown_callback(_shutdown)
 
     await session.start(agent=IntakeAgent(crm), room=ctx.room)
-    slog.write("session_started", room=ctx.room.name, llm=config.LLM_MODEL, stt=config.STT_MODEL, tts=config.TTS_MODEL)
+    slog.write(
+        "session_started", room=ctx.room.name, llm=config.LLM_MODEL, stt=config.STT_MODEL,
+        tts=f"{config.TTS_PROVIDER}:{config.TTS_MODEL if config.TTS_PROVIDER == 'elevenlabs' else 'aura-2'}",
+    )
     session.say(GREETING)
 
     async def _time_limit() -> None:

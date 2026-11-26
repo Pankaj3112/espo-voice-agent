@@ -19,6 +19,7 @@ LLM_PROVIDER = os.environ.get("LLM_PROVIDER", "openai")  # OpenRouter upstream, 
 LLM_REASONING = os.environ.get("LLM_REASONING", "none")
 
 STT_MODEL = os.environ.get("STT_MODEL", "nova-3")
+TTS_PROVIDER = os.environ.get("TTS_PROVIDER", "elevenlabs")  # "deepgram" for eval runs (saves ElevenLabs free credits)
 TTS_MODEL = os.environ.get("TTS_MODEL", "eleven_flash_v2_5")
 TTS_VOICE_ID = os.environ.get("TTS_VOICE_ID", "hpp4J3VqNfWAUOO0d1Us")  # "Bella", premade
 
