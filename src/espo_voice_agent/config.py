@@ -14,9 +14,10 @@ load_dotenv()  # optional local .env for non-secret overrides
 ESPO_BASE_URL = os.environ.get("ESPO_BASE_URL", "https://demo.us.espocrm.com/")
 AGENT_NAME = os.environ.get("AGENT_NAME", "espo-intake")
 
-LLM_MODEL = os.environ.get("LLM_MODEL", "openai/gpt-6-luna")
-LLM_PROVIDER = os.environ.get("LLM_PROVIDER", "openai")  # OpenRouter upstream, pinned
-LLM_REASONING = os.environ.get("LLM_REASONING", "none")
+# Chosen by evals/llm_eval.py + Pipecat's public voice benchmark (see docs/technical-notes).
+LLM_MODEL = os.environ.get("LLM_MODEL", "google/gemini-3.6-flash")
+LLM_PROVIDER = os.environ.get("LLM_PROVIDER", "google-ai-studio")  # OpenRouter upstream, pinned
+LLM_REASONING = os.environ.get("LLM_REASONING", "minimal")  # no hidden thinking before the first token
 
 STT_MODEL = os.environ.get("STT_MODEL", "nova-3")
 TTS_PROVIDER = os.environ.get("TTS_PROVIDER", "elevenlabs")  # "deepgram" for eval runs (saves ElevenLabs free credits)

@@ -37,9 +37,12 @@ PROVIDERS = {"openai/": "openai", "anthropic/": "anthropic", "google/": "google-
 
 def make_llm(model: str) -> lkopenai.LLM:
     prov = next((p for k, p in PROVIDERS.items() if model.startswith(k)), None)
+    # Lowest-latency reasoning setting per family (as in Pipecat's voice-readiness runs).
     kwargs = {}
     if model.startswith("openai/gpt-6"):
         kwargs["reasoning_effort"] = "none"
+    elif model.startswith("google/"):
+        kwargs["reasoning_effort"] = "minimal"
     return lkopenai.LLM.with_openrouter(
         model=model,
         provider={"order": [prov], "allow_fallbacks": True} if prov else None,
@@ -103,8 +106,11 @@ async def run_one(model_llm, case: dict, tools) -> dict:
     ttft = None
     text = ""
     calls: list[dict] = []
+    reasoning_tokens = 0
     async with model_llm.chat(chat_ctx=ctx, tools=tools) as stream:
         async for chunk in stream:
+            if chunk.usage:
+                reasoning_tokens = chunk.usage.reasoning_tokens or 0
             d = chunk.delta
             if d is None:
                 continue
@@ -117,7 +123,7 @@ async def run_one(model_llm, case: dict, tools) -> dict:
                 except json.JSONDecodeError:
                     calls.append({"name": tc.name, "args": {}, "bad_json": tc.arguments})
     ok, why = score(case, calls)
-    return {"id": case["id"], "ok": ok, "why": why, "repeated_sentence": has_repeat(text), "ttft": ttft, "total": time.perf_counter() - t0, "calls": calls, "text": text[:300]}
+    return {"id": case["id"], "ok": ok, "why": why, "repeated_sentence": has_repeat(text), "reasoning_tokens": reasoning_tokens, "ttft": ttft, "total": time.perf_counter() - t0, "calls": calls, "text": text[:300]}
 
 
 async def main() -> None:
@@ -148,6 +154,7 @@ async def main() -> None:
             "n": len(rows),
             "ttft_p50": round(statistics.median(ttfts), 3) if ttfts else None,
             "ttft_p90": round(ttfts[int(0.9 * (len(ttfts) - 1))], 3) if ttfts else None,
+            "reasoning_tokens_max": max((r.get("reasoning_tokens") or 0) for r in rows),
             "repeated_sentence": sum(bool(r.get("repeated_sentence")) for r in rows),
             "failures": sorted({f"{r['id']}: {r['why']}" for r in rows if not r["ok"]}),
         }

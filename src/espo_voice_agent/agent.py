@@ -248,7 +248,7 @@ class CrmHandle:
 def build_llm() -> openai.LLM:
     return openai.LLM.with_openrouter(
         model=config.LLM_MODEL,
-        provider={"order": [config.LLM_PROVIDER], "allow_fallbacks": False},
+        provider={"order": [config.LLM_PROVIDER], "allow_fallbacks": True},
         reasoning_effort=config.LLM_REASONING,
         temperature=0.2,
         app_name="espo-voice-agent",
