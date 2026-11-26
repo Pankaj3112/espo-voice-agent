@@ -221,6 +221,53 @@ class EspoBrowser:
             msg = f"{len(matches)} matching lead(s)" if matches else "no matching leads"
             return ActionResult(ok=True, message=msg, matches=matches, timings_ms=t.marks)
 
+    async def find_duplicates(self, lead: LeadInput) -> ActionResult:
+        """Fast duplicate check through the logged-in app's own AJAX layer (~0.4s).
+
+        Same session and permissions as the UI; used before every create so the
+        caller hears about an existing record before anything is written.
+        """
+        async with self._lock:
+            t = _Timer()
+            conds = [
+                {
+                    "type": "and",
+                    "value": [
+                        {"type": "equals", "attribute": "firstName", "value": lead.first_name},
+                        {"type": "equals", "attribute": "lastName", "value": lead.last_name},
+                    ],
+                }
+            ]
+            if lead.email:
+                conds.append({"type": "equals", "attribute": "emailAddress", "value": lead.email})
+            rows = await self._p.evaluate(
+                """async (where) => {
+                    const res = await Espo.Ajax.getRequest('Lead', {
+                        maxSize: 5, orderBy: 'createdAt', order: 'desc',
+                        select: 'name,accountName,emailAddress,phoneNumber,status,createdAt',
+                        where: [{type: 'or', value: where}],
+                    });
+                    return res.list;
+                }""",
+                conds,
+            )
+            t.mark("query")
+            matches = [
+                {
+                    "id": r.get("id", ""),
+                    "name": r.get("name") or "",
+                    "accountName": r.get("accountName") or "",
+                    "emailAddress": r.get("emailAddress") or "",
+                    "phoneNumber": r.get("phoneNumber") or "",
+                    "status": r.get("status") or "",
+                    "createdAt": r.get("createdAt") or "",
+                    "url": f"{self.base_url}#Lead/view/{r.get('id', '')}",
+                }
+                for r in rows
+            ]
+            msg = f"{len(matches)} possible duplicate(s)" if matches else "no duplicates"
+            return ActionResult(ok=True, message=msg, matches=matches, timings_ms=t.marks)
+
     async def create_lead(self, lead: LeadInput) -> ActionResult:
         async with self._lock:
             t = _Timer()

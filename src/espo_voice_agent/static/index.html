@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Voice CRM Agent</title>
+<meta name="description" content="Talk to a voice agent that adds leads to the EspoCRM demo by driving a real browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f6f6f4; --panel: #ffffff; --ink: #1b1b1f; --muted: #6b6b73; --line: #e4e4e0;
+  --accent: #6d28d9; --accent-ink: #ffffff; --ok: #15803d; --warn: #b45309; --err: #b91c1c;
+  --bubble-user: #f0eefc; --bubble-agent: #f3f3f1; --stage: #111114;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111113; --panel: #18181b; --ink: #ececef; --muted: #9a9aa3; --line: #2a2a2f;
+    --accent: #a78bfa; --accent-ink: #15121f; --ok: #4ade80; --warn: #fbbf24; --err: #f87171;
+    --bubble-user: #241f3a; --bubble-agent: #222226; --stage: #000000;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111113; --panel: #18181b; --ink: #ececef; --muted: #9a9aa3; --line: #2a2a2f;
+  --accent: #a78bfa; --accent-ink: #15121f; --ok: #4ade80; --warn: #fbbf24; --err: #f87171;
+  --bubble-user: #241f3a; --bubble-agent: #222226; --stage: #000000;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 Inter, system-ui, sans-serif; }
+header { max-width: 1240px; margin: 0 auto; padding: 24px 16px 8px; }
+h1 { font-size: 20px; font-weight: 600; margin: 0 0 4px; }
+.sub { color: var(--muted); margin: 0; max-width: 760px; }
+main { max-width: 1240px; margin: 0 auto; padding: 16px; display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 16px; }
+@media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
+.stage { overflow: hidden; }
+.stage-head { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+.live { display: inline-flex; align-items: center; gap: 6px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+.live.on .dot { background: #ef4444; }
+.screen { position: relative; aspect-ratio: 16 / 10; background: var(--stage); }
+.screen video { width: 100%; height: 100%; object-fit: contain; display: block; }
+.screen .placeholder { position: absolute; inset: 0; display: grid; place-items: center; color: #a1a1aa; text-align: center; padding: 24px; font-size: 14px; }
+.side { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.call { padding: 16px; }
+.btn { width: 100%; border: 0; border-radius: 10px; padding: 12px 16px; font: inherit; font-weight: 600; cursor: pointer; background: var(--accent); color: var(--accent-ink); }
+.btn.end { background: var(--err); color: #fff; }
+.btn:disabled { opacity: .55; cursor: default; }
+.status { display: flex; justify-content: space-between; margin-top: 10px; font-size: 13px; color: var(--muted); }
+.state { font-weight: 500; color: var(--ink); }
+.hint { margin-top: 12px; font-size: 13px; color: var(--muted); background: var(--bg); border-radius: 8px; padding: 10px 12px; }
+.hint q { color: var(--ink); }
+.section-title { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); padding: 12px 14px 0; }
+.transcript { padding: 8px 14px 14px; max-height: 320px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+.msg { padding: 8px 10px; border-radius: 10px; font-size: 14px; max-width: 92%; overflow-wrap: anywhere; }
+.msg.user { background: var(--bubble-user); align-self: flex-end; }
+.msg.agent { background: var(--bubble-agent); align-self: flex-start; }
+.empty { color: var(--muted); font-size: 13px; }
+.steps { list-style: none; margin: 0; padding: 8px 14px 14px; display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+.steps li { display: flex; gap: 8px; align-items: baseline; }
+.steps .tag { font-family: "JetBrains Mono", monospace; font-size: 12px; }
+.steps .start .tag { color: var(--warn); }
+.steps .done .tag { color: var(--ok); }
+.steps .error .tag { color: var(--err); }
+.result { margin: 0 14px 14px; padding: 12px; border: 1px solid var(--ok); border-radius: 10px; font-size: 13px; display: none; }
+.result a { color: var(--accent); font-weight: 600; }
+.result dl { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; margin: 8px 0; }
+.result dt { color: var(--muted); }
+.result dd { margin: 0; overflow-wrap: anywhere; }
+footer { max-width: 1240px; margin: 0 auto; padding: 8px 16px 32px; color: var(--muted); font-size: 12px; }
+footer a { color: inherit; }
+.error-msg { color: var(--err); font-size: 13px; margin-top: 8px; display: none; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Voice CRM Agent</h1>
+  <p class="sub">Talk to Ava and she adds the lead to the public <a href="https://demo.us.espocrm.com/" target="_blank" rel="noopener">EspoCRM demo</a> by driving a real browser. You watch that browser live on the left.</p>
+</header>
+<main>
+  <section class="card stage">
+    <div class="stage-head">
+      <span>Agent's browser · demo.us.espocrm.com</span>
+      <span class="live" id="live"><span class="dot"></span><span id="liveText">offline</span></span>
+    </div>
+    <div class="screen">
+      <video id="screen" autoplay playsinline muted></video>
+      <div class="placeholder" id="placeholder">The agent's browser appears here once the call starts.</div>
+    </div>
+  </section>
+  <aside class="side">
+    <div class="card call">
+      <button class="btn" id="callBtn">Start call</button>
+      <div class="status"><span>Agent: <span class="state" id="agentState">idle</span></span><span id="timer"></span></div>
+      <div class="error-msg" id="err"></div>
+      <div class="hint">Try: <q>Add Jane Doe from Acme Robotics, phone 415 555 0142, email jane dot doe at acme dot com.</q> Use headphones if you can. Calls are capped at a few minutes.</div>
+    </div>
+    <div class="card">
+      <div class="section-title">Conversation</div>
+      <div class="transcript" id="transcript"><div class="empty">Nothing yet.</div></div>
+    </div>
+    <div class="card">
+      <div class="section-title">Browser actions</div>
+      <ul class="steps" id="steps"><li class="empty">No actions yet.</li></ul>
+      <div class="result" id="result"></div>
+    </div>
+  </aside>
+</main>
+<footer>The EspoCRM demo is shared and reset periodically by its owners, so records may disappear. Source and technical notes: see the GitHub repo linked in the submission.</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/livekit-client@2.23.0/dist/livekit-client.umd.js"></script>
+<script>
+const { Room, RoomEvent, Track } = LivekitClient;
+const $ = (id) => document.getElementById(id);
+let room = null, timerInt = null;
+
+const STATE_LABEL = { initializing: 'joining…', listening: 'listening', thinking: 'thinking', speaking: 'speaking', idle: 'idle' };
+
+function setError(msg) { const e = $('err'); e.textContent = msg || ''; e.style.display = msg ? 'block' : 'none'; }
+
+function upsertMessage(segId, who, text) {
+  const box = $('transcript');
+  box.querySelector('.empty')?.remove();
+  let el = box.querySelector(`[data-seg="${CSS.escape(segId)}"]`);
+  if (!el) { el = document.createElement('div'); el.className = 'msg ' + who; el.dataset.seg = segId; box.appendChild(el); }
+  el.textContent = text;
+  box.scrollTop = box.scrollHeight;
+}
+
+function addStep(ev) {
+  const list = $('steps');
+  list.querySelector('.empty')?.remove();
+  const names = { duplicate_check: 'Check for duplicates', create_lead: 'Fill & save Lead form', find_lead: 'Search Leads' };
+  const li = document.createElement('li');
+  li.className = ev.state;
+  const tag = ev.state === 'start' ? '…' : ev.state === 'done' ? '✓' : '✕';
+  li.innerHTML = `<span class="tag">${tag}</span><span></span>`;
+  li.lastChild.textContent = (names[ev.name] || ev.name) + (ev.detail ? ' — ' + ev.detail : '');
+  list.appendChild(li);
+  if (ev.name === 'create_lead' && ev.state === 'done' && ev.record) showResult(ev.record);
+}
+
+function showResult(r) {
+  const box = $('result');
+  const rows = [['Name', r.name], ['Company', r.account_name], ['Phone', r.phone], ['Email', r.email], ['Status', r.status], ['Source', r.source]]
+    .filter(([, v]) => v).map(([k, v]) => `<dt>${k}</dt><dd>${escapeHtml(v)}</dd>`).join('');
+  box.innerHTML = `<strong>Lead saved and verified</strong><dl>${rows}</dl><a href="${encodeURI(r.url)}" target="_blank" rel="noopener">Open in EspoCRM ↗</a>`;
+  box.style.display = 'block';
+}
+function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+
+async function start() {
+  setError('');
+  $('callBtn').disabled = true; $('callBtn').textContent = 'Connecting…';
+  try {
+    const res = await fetch('/api/session', { method: 'POST' });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.detail || 'Could not start a call.');
+
+    room = new Room({ adaptiveStream: true, dynacast: true });
+    room.on(RoomEvent.TrackSubscribed, (track) => {
+      if (track.kind === Track.Kind.Audio) { const a = track.attach(); a.style.display = 'none'; document.body.appendChild(a); }
+      if (track.kind === Track.Kind.Video) { track.attach($('screen')); $('placeholder').style.display = 'none'; $('live').classList.add('on'); $('liveText').textContent = 'live'; }
+    });
+    room.on(RoomEvent.ParticipantAttributesChanged, (_changed, p) => {
+      const s = p.attributes?.['lk.agent.state']; if (s) $('agentState').textContent = STATE_LABEL[s] || s;
+    });
+    room.on(RoomEvent.Disconnected, () => stop(true));
+
+    room.registerTextStreamHandler('lk.transcription', async (reader, info) => {
+      const who = info.identity === room.localParticipant.identity ? 'user' : 'agent';
+      const seg = reader.info.attributes?.['lk.segment_id'] || reader.info.id;
+      let text = '';
+      for await (const chunk of reader) { text += chunk; upsertMessage(seg, who, text); }
+    });
+    room.registerTextStreamHandler('agent-events', async (reader) => {
+      try { addStep(JSON.parse(await reader.readAll())); } catch (e) { console.warn(e); }
+    });
+
+    await room.connect(data.url, data.token);
+    await room.localParticipant.setMicrophoneEnabled(true);
+    $('agentState').textContent = 'joining…';
+    $('callBtn').disabled = false; $('callBtn').textContent = 'End call'; $('callBtn').classList.add('end');
+    const t0 = Date.now();
+    timerInt = setInterval(() => {
+      const s = Math.floor((Date.now() - t0) / 1000), left = Math.max(0, data.max_call_seconds - s);
+      $('timer').textContent = `${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')} left`;
+    }, 500);
+  } catch (e) {
+    setError(e.message || String(e));
+    await stop(false);
+  }
+}
+
+async function stop(remote) {
+  clearInterval(timerInt); timerInt = null; $('timer').textContent = '';
+  const r = room; room = null;
+  if (r && !remote) await r.disconnect();
+  $('agentState').textContent = 'idle';
+  $('live').classList.remove('on'); $('liveText').textContent = 'offline';
+  $('callBtn').disabled = false; $('callBtn').textContent = 'Start call'; $('callBtn').classList.remove('end');
+}
+
+$('callBtn').addEventListener('click', () => (room ? stop(false) : start()));
+</script>
+</body>
+</html>
