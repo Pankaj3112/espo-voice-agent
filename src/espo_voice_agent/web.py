@@ -48,8 +48,17 @@ def _client_ip(req: Request) -> str:
 
 
 async def _active_calls(lk: api.LiveKitAPI) -> int:
+    """Rooms with a real caller in them. The agent can linger in a room for a few seconds after the
+    caller hangs up, so rooms are counted by their non-agent participants, not by size."""
     rooms = await lk.room.list_rooms(api.ListRoomsRequest())
-    return sum(1 for r in rooms.rooms if r.name.startswith(ROOM_PREFIX) and r.num_participants > 0)
+    n = 0
+    for r in rooms.rooms:
+        if not r.name.startswith(ROOM_PREFIX) or r.num_participants == 0:
+            continue
+        parts = await lk.room.list_participants(api.ListParticipantsRequest(room=r.name))
+        if any(pp.kind != api.ParticipantInfo.Kind.AGENT for pp in parts.participants):
+            n += 1
+    return n
 
 
 @app.post("/api/session")

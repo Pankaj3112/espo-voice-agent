@@ -545,6 +545,13 @@ async def entrypoint(ctx: JobContext) -> None:
         ctx.shutdown(reason="time limit")
 
     asyncio.create_task(_time_limit())
+
+    @ctx.room.on("participant_disconnected")
+    def _caller_left(p: rtc.RemoteParticipant) -> None:
+        # End the job (browser, session, room seat) as soon as the caller hangs up.
+        if p.kind != rtc.ParticipantKind.PARTICIPANT_KIND_AGENT:
+            slog.write("caller_left")
+            ctx.shutdown(reason="caller left")
     await browser_task
 
 
