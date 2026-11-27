@@ -27,7 +27,7 @@ from livekit.agents import llm as lkllm  # noqa: E402
 from livekit.plugins import openai as lkopenai  # noqa: E402
 
 from espo_voice_agent import config  # noqa: E402
-from espo_voice_agent.agent import IntakeAgent  # noqa: E402
+from espo_voice_agent.agent import IntakeAgent, today_line  # noqa: E402
 from espo_voice_agent.prompt import GREETING, INSTRUCTIONS  # noqa: E402
 
 CASES = json.loads((Path(__file__).parent / "llm_cases.json").read_text())
@@ -57,7 +57,7 @@ def make_llm(model: str):
             location=config.GCP_LOCATION,
             temperature=0.2,
             # Gemini 3.x on Vertex takes a thinking *level*; "low" is the least that 3.8 Flash accepts.
-            thinking_config={"thinking_level": os.environ.get("VERTEX_THINKING", "low")},
+            thinking_config={"thinking_level": os.environ.get("VERTEX_THINKING", config.LLM_REASONING)},  # = production
         )
     prov = next((p for k, p in PROVIDERS.items() if model.startswith(k)), None)
     # Lowest-latency reasoning setting per family (as in Pipecat's voice-readiness runs).
@@ -76,7 +76,7 @@ def make_llm(model: str):
 
 def build_ctx(case: dict) -> lkllm.ChatContext:
     ctx = lkllm.ChatContext()
-    ctx.add_message(role="system", content=INSTRUCTIONS)
+    ctx.add_message(role="system", content=INSTRUCTIONS + "\n" + today_line())  # exactly as IntakeAgent builds it
     ctx.add_message(role="assistant", content=GREETING)
     for i, (role, body) in enumerate(case["turns"]):
         if role == "tool":  # a previous tool call + its result
@@ -110,6 +110,8 @@ def score(case: dict, calls: list[dict]) -> tuple[bool, str]:
         match = [c for c in _writes(calls)]
         if not match:
             return False, f"no browser_task write (got {[c['name'] for c in calls]})"
+        if len(match) > 1:
+            return False, f"{len(match)} writes in one turn; expected exactly one"
         instr = (match[0]["args"].get("instructions") or "")
         for k, want in exp.get("args", {}).items():
             if k == "duplicate_confirmed":

@@ -185,7 +185,7 @@ body[data-phase="ended"] #endBtn, body[data-phase="ended"] #muteBtn { display: n
 @media (max-width: 960px) {
   .grid { grid-template-columns: 1fr; }
   .leftcol { display: contents; }
-  .stage { order: 1; } .side { order: 2; } .results { order: 3; }
+  .stage { order: 1; } .results { order: 2; } .side { order: 3; }
   .pane { height: auto; min-height: 160px; max-height: 360px; }
   .ahead .tm { display: none; }
   .call { padding-bottom: calc(84px + env(safe-area-inset-bottom)); }
@@ -247,7 +247,7 @@ footer .wrap { padding-top: 18px; padding-bottom: 28px; display: flex; justify-c
         <div class="ph" id="ph"><div><div class="spin"></div>Opening EspoCRM…</div></div>
       </div>
       <div class="doing" id="doing" aria-live="polite"><span class="d"></span><span class="k">agent</span><span id="doingTxt"></span></div>
-      <div class="caption" aria-live="polite"><span class="who" id="capWho"></span><span class="txt" id="capTxt">Ava will greet you in a moment.</span></div>
+      <div class="caption" aria-live="off"><span class="who" id="capWho"></span><span class="txt" id="capTxt">Ava will greet you in a moment.</span></div>
     </section>
     <div class="results" id="results"></div>
   </div>
@@ -270,6 +270,7 @@ footer .wrap { padding-top: 18px; padding-bottom: 28px; display: flex; justify-c
       <button class="btn" id="muteBtn" aria-pressed="false">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><path d="M12 17v4"/></svg><span id="muteTxt">Mute</span>
       </button>
+      <button class="btn" id="audioBtn" hidden>Tap to enable audio</button>
       <button class="btn danger" id="endBtn">End call</button>
       <button class="btn primary again" id="againBtn">New call</button>
     </div>
@@ -346,6 +347,9 @@ function onEvent(ev) {
     else if (k === 'failed') { addAct('error', '✕', 'Did not complete', ev.text); doing(''); if (ev.writes) resultCard(false, 'Not completed', `<p>${esc(ev.text)}</p>`); }
     return;
   }
+  if (ev.type === 'tool' && ev.name === 'browser' && ev.state === 'error') {
+    $('ph').innerHTML = '<div>Couldn’t open EspoCRM (the shared demo may be resetting).<br>Ava can still talk; try the call again in a minute.</div>';
+  }
   const names = { duplicate_check: 'Checked for duplicates', create_lead: 'Lead form', find_lead: 'Searched leads', browser: 'Browser' };
   const name = names[ev.name] || ev.name;
   if (ev.state === 'start') {
@@ -373,10 +377,16 @@ function levels() {
   levelRaf = requestAnimationFrame(levels);
 }
 
+let starting = false;
 async function start() {
+  if (starting || room) return;  // no double starts (double-tap, two buttons)
+  starting = true;
   showErr('');
-  $('startBtn').disabled = true; $('startLabel').textContent = 'Connecting…';
+  $('startBtn').disabled = true; $('againBtn').disabled = true; $('startLabel').textContent = 'Connecting…';
+  let mic = null;
   try {
+    // Ask for the microphone first: if it's blocked, no call slot is used and Ava isn't summoned for nothing.
+    mic = await LivekitClient.createLocalAudioTrack({ echoCancellation: true, noiseSuppression: true, autoGainControl: true, channelCount: 1 });
     const res = await fetch('/api/session', { method: 'POST' });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.detail || 'Could not start a call. Please try again in a minute.');
@@ -389,48 +399,62 @@ async function start() {
     $('ph').style.display = ''; $('badge').classList.remove('on'); $('badgeTxt').textContent = 'Connecting';
     doing(''); selectTab('chat'); setState('initializing'); phase('connecting');
 
-    room = new Room({ adaptiveStream: true, dynacast: true });
-    room.on(RoomEvent.TrackSubscribed, (track) => {
+    const r = new Room({ adaptiveStream: true, dynacast: true });
+    room = r;  // every handler below is bound to this call, so a late event can't end a newer one
+    r.on(RoomEvent.TrackSubscribed, (track) => {
       if (track.kind === Track.Kind.Audio) { const a = track.attach(); a.style.display = 'none'; document.body.appendChild(a); }
       if (track.kind === Track.Kind.Video) { track.attach($('screen')); $('ph').style.display = 'none'; $('badge').classList.add('on'); $('badgeTxt').textContent = 'Live'; }
     });
-    room.on(RoomEvent.ParticipantAttributesChanged, (_c, p) => { const s = p.attributes?.['lk.agent.state']; if (s) setState(s); });
-    room.on(RoomEvent.Disconnected, () => stop(true));
+    r.on(RoomEvent.ParticipantAttributesChanged, (_c, p) => { const s = p.attributes?.['lk.agent.state']; if (s) setState(s); });
+    r.on(RoomEvent.Disconnected, () => { if (room === r) stop(true, endReason || 'Connection closed'); });
+    r.on(RoomEvent.AudioPlaybackStatusChanged, () => { $('audioBtn').hidden = r.canPlaybackAudio; });
+    endReason = '';
+    // If Ava hasn't joined within 20 s (worker down or overloaded), say so instead of spinning forever.
+    const joinTimer = setTimeout(() => { if (room === r && ![...r.remoteParticipants.values()].length) { stop(false, 'Ava couldn’t join. Please try again in a minute.'); } }, 20000);
+    r.on(RoomEvent.ParticipantConnected, () => clearTimeout(joinTimer));
     // If Ava leaves (time limit, error), end the call here too instead of sitting in a silent room.
-    room.on(RoomEvent.ParticipantDisconnected, (p) => { if (p.isAgent || /^agent/.test(p.identity)) setTimeout(() => room && stop(false), 1500); });
-    room.registerTextStreamHandler('lk.transcription', async (reader, info) => {
-      const who = info.identity === room.localParticipant.identity ? 'user' : 'agent';
+    r.on(RoomEvent.ParticipantDisconnected, (p) => { if (p.isAgent || /^agent/.test(p.identity)) setTimeout(() => { if (room === r) stop(false, 'Ava ended the call (time limit or error)'); }, 1500); });
+    r.registerTextStreamHandler('lk.transcription', async (reader, info) => {
+      const who = info.identity === r.localParticipant.identity ? 'user' : 'agent';
       const seg = reader.info.attributes?.['lk.segment_id'] || reader.info.id;
       let text = ''; for await (const chunk of reader) { text += chunk; upsertMsg(seg, who, text); }
     });
-    room.registerTextStreamHandler('agent-events', async (reader) => { try { onEvent(JSON.parse(await reader.readAll())); } catch (e) { console.warn(e); } });
+    r.registerTextStreamHandler('agent-events', async (reader) => { try { onEvent(JSON.parse(await reader.readAll())); } catch (e) { console.warn(e); } });
 
-    await room.connect(data.url, data.token);
-    await room.startAudio();  // iOS/Safari: unlock audio inside the click gesture
-    await room.localParticipant.setMicrophoneEnabled(true, { echoCancellation: true, noiseSuppression: true, autoGainControl: true, channelCount: 1 });
+    await r.connect(data.url, data.token);
+    await r.startAudio();  // iOS/Safari: unlock audio inside the click gesture
+    await r.localParticipant.publishTrack(mic);
+    mic = null;  // owned by the room now
     phase('live');
     t0 = Date.now();
     timerInt = setInterval(() => {
       const left = Math.max(0, maxSecs - Math.floor((Date.now() - t0) / 1000));
-      if (Math.floor((Date.now() - t0) / 1000) > maxSecs + 15 && room) { stop(false); return; }  // safety net
+      if (Math.floor((Date.now() - t0) / 1000) > maxSecs + 15 && room === r) { stop(false, 'Time limit reached'); return; }  // safety net
       const txt = `${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')} left`;
       $('timer').textContent = txt; $('timerM').textContent = txt;
     }, 500);
     levels();
   } catch (e) {
-    const msg = /Permission|NotAllowed/i.test(e.name + e.message) ? 'Microphone access was blocked. Allow the microphone for this site and try again.' : (e.message || String(e));
+    const msg = /Permission|NotAllowed/i.test(e.name + e.message) ? 'Microphone access was blocked. Allow the microphone for this site and try again.'
+      : /NotFound|device not found/i.test(e.name + e.message) ? 'No microphone was found. Plug one in (or use a phone) and try again.'
+      : (e.message || String(e));
     await stop(false); phase('idle'); showErr(msg);
   } finally {
-    $('startBtn').disabled = false; $('startLabel').textContent = 'Start a call';
+    if (mic) mic.stop();  // failed before publishing: release the microphone
+    starting = false;
+    $('startBtn').disabled = false; $('againBtn').disabled = false; $('startLabel').textContent = 'Start a call';
   }
 }
 
-async function stop(remote) {
+let endReason = '';
+async function stop(remote, reason) {
   clearInterval(timerInt); timerInt = null; cancelAnimationFrame(levelRaf);
   const r = room; room = null;
   if (r && !remote) await r.disconnect();
   if (document.body.dataset.phase !== 'idle') phase('ended');
-  setState('idle'); $('state').textContent = 'Call ended'; $('stateM').textContent = 'Call ended';
+  const why = reason || 'You ended the call';
+  setState('idle'); $('state').textContent = 'Call ended · ' + why; $('stateM').textContent = 'Call ended';
+  if (reason && /couldn’t join/.test(reason)) { phase('idle'); showErr(reason); }  // back to the start screen with the reason
   $('timer').textContent = ''; $('timerM').textContent = '';
   $('badge').classList.remove('on'); $('badgeTxt').textContent = 'Ended'; doing('');
   $('orb').style.setProperty('--lvl', 0);
@@ -445,7 +469,8 @@ $('fsBtn').onclick = () => {
 };
 $('startBtn').onclick = start;
 $('againBtn').onclick = start;
-$('endBtn').onclick = () => stop(false);
+$('endBtn').onclick = () => stop(false, 'You ended the call');
+$('audioBtn').onclick = async () => { try { await room?.startAudio(); $('audioBtn').hidden = true; } catch (e) {} };
 $('muteBtn').onclick = async () => {
   if (!room) return;
   const muted = $('muteBtn').getAttribute('aria-pressed') === 'true';

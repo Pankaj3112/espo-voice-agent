@@ -30,7 +30,7 @@ GCP_LOCATION = os.environ.get("GCP_LOCATION", "global")
 # evals/browser_tasks.py: 3.1 Flash-Lite 6/6 at 9.0 s median vs 3.8 Flash 6/6 at 16.5 s.
 BROWSER_LLM_MODEL = os.environ.get("BROWSER_LLM_MODEL", "gemini-3.1-flash-lite")
 BROWSER_LLM_THINKING = os.environ.get("BROWSER_LLM_THINKING", "minimal")
-BROWSER_TASK_TIMEOUT_S = float(os.environ.get("BROWSER_TASK_TIMEOUT_S", "150"))
+BROWSER_TASK_TIMEOUT_S = float(os.environ.get("BROWSER_TASK_TIMEOUT_S", "240"))  # includes waiting on the caller
 BROWSER_TASK_MAX_STEPS = int(os.environ.get("BROWSER_TASK_MAX_STEPS", "30"))
 
 STT_MODE = os.environ.get("STT_MODE", "flux")

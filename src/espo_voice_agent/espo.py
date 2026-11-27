@@ -350,8 +350,10 @@ class EspoBrowser:
             # Outcomes: navigates to the detail view, a duplicate-check modal, or a validation error.
             view = page.wait_for_url(re.compile(r"#Lead/view/"), timeout=15000)
             dup = page.wait_for_selector(".modal-dialog .modal-body", timeout=15000)
+            # an inline validation error (e.g. a malformed email) shows next to the field and nothing else happens
+            invalid = page.wait_for_selector(".record .has-error, .record .field .text-danger", timeout=15000)
             done, pending = await asyncio.wait(
-                [asyncio.ensure_future(view), asyncio.ensure_future(dup)],
+                [asyncio.ensure_future(view), asyncio.ensure_future(dup), asyncio.ensure_future(invalid)],
                 return_when=asyncio.FIRST_COMPLETED,
             )
             for p in pending:
@@ -359,7 +361,12 @@ class EspoBrowser:
             if "#Lead/view/" not in page.url and allow_duplicate and await self._confirm_duplicate_modal():
                 pass  # caller already agreed to add it despite the existing record
             if "#Lead/view/" not in page.url:
-                modal_text = " ".join((await page.locator(".modal-dialog").first.inner_text()).split())
+                if await page.locator(".modal-dialog").count():
+                    modal_text = " ".join((await page.locator(".modal-dialog").first.inner_text()).split())
+                else:
+                    errs = page.locator(".record .has-error, .record .field .text-danger")
+                    modal_text = "the form rejected a field: " + " ".join(
+                        (await errs.first.inner_text()).split()) if await errs.count() else "no response after Save"
                 cancel = page.locator('.modal-dialog button[data-name="cancel"]')
                 if await cancel.count():
                     await cancel.first.click()
@@ -444,14 +451,22 @@ def _digits(s: str | None) -> str:
 
 
 def _compare(want: LeadInput, got: LeadRecord) -> list[str]:
+    """Every requested field must match the saved record exactly (after normalising case/spacing; phones by
+    digits, allowing only a country-code prefix the CRM may add)."""
+    norm = lambda v: " ".join((v or "").split()).lower()  # noqa: E731
     problems = []
-    if want.first_name.lower() not in got.name.lower() or want.last_name.lower() not in got.name.lower():
+    if norm(got.name) != norm(f"{want.first_name} {want.last_name}"):
         problems.append(f"name is '{got.name}'")
-    if want.account_name and want.account_name.lower() != got.account_name.lower():
+    if want.account_name and norm(want.account_name) != norm(got.account_name):
         problems.append(f"company is '{got.account_name}'")
-    if want.email and want.email.lower() not in got.email.lower():
+    if want.email and norm(want.email) != norm(got.email):
         problems.append(f"email is '{got.email}'")
-    # EspoCRM may reformat phone numbers; compare digits only.
-    if want.phone and _digits(want.phone)[-7:] not in _digits(got.phone):
-        problems.append(f"phone is '{got.phone}'")
+    if want.phone:
+        w, g = _digits(want.phone), _digits(got.phone)
+        if not (w == g or (len(w) >= 10 and g.endswith(w)) or (len(g) >= 10 and w.endswith(g) and len(w) - len(g) <= 3)):
+            problems.append(f"phone is '{got.phone}'")
+    if want.title and norm(want.title) != norm(got.title):
+        problems.append(f"title is '{got.title}'")
+    if want.description and norm(want.description) != norm(got.description):
+        problems.append(f"description is '{got.description}'")
     return problems

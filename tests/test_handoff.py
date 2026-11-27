@@ -46,6 +46,7 @@ def _crm(tmp_path, monkeypatch):
 def test_done_and_question_reach_voice_llm(tmp_path, monkeypatch):
     crm = _crm(tmp_path, monkeypatch)
     t = BrowserTask(id="t1", goal="set title")
+    crm.task = t
     asyncio.run(crm.on_task_event(t, "progress", "opening Jane Doe"))
     asyncio.run(crm.on_task_event(t, "question", "Two Jane Does, which one?"))
     asyncio.run(crm.on_task_event(t, "done", "Set Jane Doe's title to Head of Sales."))
@@ -79,3 +80,11 @@ def test_interrupted_result_is_repeated_next_turn(tmp_path, monkeypatch):
     crm.session = FakeSession(interrupted=False)
     asyncio.run(crm.on_task_event(crm.task, "done", crm.task.summary))
     assert "may have missed" not in (crm.job_context() or "")
+
+
+def test_stale_task_events_do_not_reach_voice(tmp_path, monkeypatch):
+    crm = _crm(tmp_path, monkeypatch)
+    old, new = BrowserTask(id="t1", goal="old"), BrowserTask(id="t2", goal="new")
+    crm.task = new
+    asyncio.run(crm.on_task_event(old, "done", "old job finished late"))
+    assert crm.session.replies == []

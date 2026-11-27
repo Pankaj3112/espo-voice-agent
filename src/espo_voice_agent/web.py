@@ -8,6 +8,8 @@ Run: uv run uvicorn espo_voice_agent.web:app --port 8790
 
 from __future__ import annotations
 
+import asyncio
+
 import os
 import secrets
 import time
@@ -61,28 +63,39 @@ async def _active_calls(lk: api.LiveKitAPI) -> int:
     return n
 
 
+_admit_lock = asyncio.Lock()
+_recent_tokens: deque[float] = deque()  # issued tokens whose caller may not have joined yet
+_RESERVE_S = 45
+
+
 @app.post("/api/session")
 async def create_session(req: Request) -> dict:
     ip = _client_ip(req)
-    hits = _ip_hits[ip]
-    now = time.time()
-    while hits and now - hits[0] > 3600:
-        hits.popleft()
-    if len(hits) >= PER_IP_LIMIT:
-        raise HTTPException(429, "You've hit the demo's hourly call limit. Please try again a bit later.")
-
-    async with api.LiveKitAPI() as lk:  # reads LIVEKIT_URL / _API_KEY / _API_SECRET
-        if await _active_calls(lk) >= config.MAX_CONCURRENT_CALLS:
+    # One admission at a time: both quotas are checked and reserved atomically, so concurrent or rapid
+    # requests can't all see the same free slot.
+    async with _admit_lock:
+        hits = _ip_hits[ip]
+        now = time.time()
+        while hits and now - hits[0] > 3600:
+            hits.popleft()
+        if len(hits) >= PER_IP_LIMIT:
+            raise HTTPException(429, "You've hit the demo's hourly call limit. Please try again a bit later.")
+        while _recent_tokens and now - _recent_tokens[0] > _RESERVE_S:
+            _recent_tokens.popleft()
+        async with api.LiveKitAPI() as lk:  # reads LIVEKIT_URL / _API_KEY / _API_SECRET
+            in_rooms = await _active_calls(lk)
+        # Rooms only show a caller once they join; tokens issued in the last ~45 s count as reserved meanwhile.
+        if max(in_rooms, len(_recent_tokens)) >= config.MAX_CONCURRENT_CALLS:
             raise HTTPException(503, "The demo is busy with other calls right now. Please try again in a few minutes.")
-
-    hits.append(now)
+        hits.append(now)
+        _recent_tokens.append(now)
     room = ROOM_PREFIX + secrets.token_hex(4)
     identity = "caller-" + secrets.token_hex(3)
     token = (
         api.AccessToken()
         .with_identity(identity)
         .with_name("Caller")
-        .with_ttl(timedelta(minutes=10))
+        .with_ttl(timedelta(seconds=60))  # join right away; an old token can't start another call
         .with_grants(api.VideoGrants(room_join=True, room=room, can_publish=True, can_subscribe=True, can_publish_data=True))
         .with_room_config(
             api.RoomConfiguration(

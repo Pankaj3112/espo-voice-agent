@@ -166,7 +166,8 @@ async def _verify_meeting(c, f, lid, summary):
     want = dt.date.fromisoformat(f["meet_date"])
     full = (await c.get(f"{API}/Meeting/{m['id']}")).json()
     linked = m.get("parentId") == lid or lid in (full.get("leadsIds") or [])  # parent or attendee both count
-    return linked and abs((s0.date() - want).days) <= 1 and (s1 - s0) == dt.timedelta(minutes=30)
+    # The CRM runs in UTC and the task says 3 PM, so the start must be exactly 15:00 UTC on that date.
+    return linked and s0 == dt.datetime.combine(want, dt.time(15, 0)) and (s1 - s0) == dt.timedelta(minutes=30)
 
 
 async def _verify_opp(c, f, lid, summary):
@@ -187,12 +188,16 @@ async def _verify_convert(c, f, lid, summary):
         f["_cleanup"].append(("Account", lead["createdAccountId"]))
     if lead.get("createdOpportunityId"):
         f["_cleanup"].append(("Opportunity", lead["createdOpportunityId"]))
-    return lead.get("status") == "Converted" and len(rows) >= 1
+    # Asked for a contact only: no account or opportunity may be created along the way.
+    return (lead.get("status") == "Converted" and len(rows) == 1
+            and not lead.get("createdAccountId") and not lead.get("createdOpportunityId"))
 
 
 async def _verify_count(c, f, lid, summary):
     n = await _total(c, "Opportunity", "stage", "Negotiation")
-    return str(n) in summary
+    import re as _re
+    nums = [int(x) for x in _re.findall(r"\b\d+\b", summary)]
+    return nums == [n]  # exactly one number in the answer, and it is the real total
 
 
 CRM_TASKS = [
