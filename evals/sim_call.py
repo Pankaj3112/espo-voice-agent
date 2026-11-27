@@ -131,6 +131,9 @@ class Caller:
                 if len(chunk) < FRAME:
                     chunk = np.pad(chunk, (0, FRAME - len(chunk)))
                 await self.source.capture_frame(rtc.AudioFrame(chunk.tobytes(), SR, 1, FRAME))
+            # capture_frame returns once audio is queued (up to 1 s ahead), so wait until it has
+            # actually been sent before stamping the caller's end of speech.
+            await self.source.wait_for_playout()
             self.speech_end_t = time.perf_counter()
             self.speaking_done.set()
 
@@ -144,7 +147,12 @@ class Caller:
         )
         r.raise_for_status()
         self.speaking_done.clear()
-        await self.queue.put(np.frombuffer(r.content, dtype=np.int16))
+        pcm = np.frombuffer(r.content, dtype=np.int16)
+        # Drop the TTS clip's trailing silence so latency is measured from the last spoken word.
+        loud = np.flatnonzero(np.abs(pcm) > 300)
+        if loud.size:
+            pcm = pcm[: loud[-1] + 1]
+        await self.queue.put(pcm)
         await self.speaking_done.wait()
 
 
