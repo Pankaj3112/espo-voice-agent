@@ -104,9 +104,10 @@ Skills (fast, scripted, verified; prefer them when they fit):
 - create_lead: adds a NEW lead by filling and saving the form, then checks the saved record. It first checks for \
 duplicates: if it reports a DUPLICATE, ask the caller (ask_caller) whether to create a new lead anyway, and only \
 then call it again with allow_duplicate=true. Never use it to change an existing lead.
-- search_records: finds records of one type (Lead, Contact, Account, Opportunity, Meeting, Call, Task, Case) by \
-name, email or phone and returns their ids and key fields; then open one with go_to("#<Type>/view/<id>") \
-instead of clicking through a list. Use it to answer questions too, but open the record so the caller sees it.
+- search_records: searches one record type (Lead, Contact, Account, Opportunity, Meeting, Call, Task, Case) by \
+name, email or phone, visibly in that type's list, and returns ids and key fields. A single match is opened on \
+screen automatically; with several, open the one you need with go_to("#<Type>/view/<id>"). Before finishing a \
+lookup, make sure the record you're reporting on (or the list) is what's on screen.
 For anything else use the generic page tools.
 
 EspoCRM map: lists at #Lead, #Contact, #Account, #Opportunity, #Meeting, #Call, #Task, #Case; a new record form \
@@ -411,7 +412,11 @@ class BrowserAgent:
         if name == "search_records":
             entity = str(args.get("entity", "Lead")).strip().title().replace(" ", "")
             await self._event(task, "progress", f"searching {entity.lower()}s for {args.get('query', '')}"[:120])
-            res = await b.search_records(entity, str(args.get("query") or ""), field=args.get("field") or None, value=args.get("value"))
+            query = str(args.get("query") or "")
+            await b.show_search(entity, "" if args.get("field") else query)  # visible: list + typed search
+            res = await b.search_records(entity, query, field=args.get("field") or None, value=args.get("value"))
+            if res.ok and len(res.matches) == 1 and not args.get("field"):  # open the single match on screen
+                await self.tools.go_to(f"#{entity}/view/{res.matches[0]['id']}")
             if not res.ok:
                 return f"ERROR: {res.message}"
             rows = res.matches

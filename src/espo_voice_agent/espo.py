@@ -298,6 +298,29 @@ class EspoBrowser:
                 matches.append(row)
             return ActionResult(ok=True, message=f"{res.get('total', len(matches))} total", matches=matches, timings_ms=t.marks)
 
+    async def show_search(self, entity: str, query: str) -> None:
+        """Make a search visible to the caller: open the entity's list and type the query into EspoCRM's own
+        search box, like a person would. Best effort; the data itself comes from search_records."""
+        if entity not in self.SEARCHABLE:
+            return
+        async with self._lock:
+            page = self._p
+            box = '.search-container input[data-name="textFilter"]'
+            try:
+                await self._goto_hash(f"#{entity}", box)
+                if not query:
+                    return
+                await self._type(box, query)
+
+                def _is_search(r) -> bool:
+                    return f"/api/v1/{entity}" in r.url and "textFilter" in r.url and r.request.method == "GET"
+
+                async with page.expect_response(_is_search, timeout=8000):
+                    await page.press(box, "Enter")
+                await page.wait_for_timeout(300)
+            except Exception:
+                log.warning("visible search failed for %s %r", entity, query, exc_info=True)
+
     async def create_lead(self, lead: LeadInput, allow_duplicate: bool = False) -> ActionResult:
         async with self._lock:
             t = _Timer()
