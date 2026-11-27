@@ -11,23 +11,36 @@ watch live: adding leads, updating records, scheduling meetings, converting lead
 
 ## How it works
 
-```
- caller's browser ⇄ LiveKit Cloud (WebRTC) ⇄ voice agent  "Ava"            (Python, LiveKit Agents)
-   mic, captions,                             ├ Krisp noise cancellation + adaptive interruptions
-   live view of the                           ├ Deepgram Flux: speech-to-text + end-of-turn
-   agent's browser                            ├ Gemini 3.1 Flash-Lite (Vertex AI): conversation only
-                                              ├ Fish Audio S2.1 Pro voice (fallback: Deepgram Aura-2)
-                                              │
-                                              │ browser_task("Set Jane Doe's title at ACME to …")
-                                              │      ▲ progress · questions · verified result
-                                              ▼      │
-                                         browser agent (Gemini 3.1 Flash-Lite, own tool loop)
-                                              ├ skills: create_lead (scripted, verified), search_records
-                                              └ generic tools: look, click, type_text, select_option,
-                                                go_to, press_key, scroll, ask_caller, finish
-                                                    │
-                                              Playwright Chromium ── demo.us.espocrm.com
-                                                    └ CDP screencast → video track back to the caller
+```mermaid
+flowchart LR
+    caller["Caller's browser<br/>mic · captions · live view"]
+    lk(("LiveKit Cloud<br/>WebRTC"))
+    subgraph ava["Voice agent: Ava"]
+        direction TB
+        nc["Krisp noise cancellation<br/>+ adaptive interruptions"]
+        stt["Deepgram Flux<br/>speech-to-text + end-of-turn"]
+        llm["Gemini 3.1 Flash-Lite<br/>(Vertex AI) · conversation only"]
+        tts["Fish Audio S2.1 Pro voice<br/>(fallback: Deepgram Aura-2)"]
+        nc --> stt --> llm --> tts
+    end
+    subgraph ba["Browser agent"]
+        direction TB
+        bllm["Gemini 3.1 Flash-Lite<br/>own tool loop"]
+        skills["Skills: create_lead · search_records"]
+        tools["Generic tools: look · click · type_text ·<br/>select_option · go_to · ask_caller · finish"]
+        bllm --> skills
+        bllm --> tools
+    end
+    chrome["Playwright Chromium<br/>logged in to EspoCRM"]
+    crm[("demo.us.espocrm.com")]
+
+    caller <--> lk <--> ava
+    llm -- "browser_task: plain-language job" --> bllm
+    bllm -. "progress · questions · verified result" .-> llm
+    skills --> chrome
+    tools --> chrome
+    chrome --> crm
+    chrome -. "CDP screencast: live video" .-> lk
 ```
 
 - **Two agents, two jobs.** Ava only talks. Every CRM job goes to the browser agent in plain language and runs
