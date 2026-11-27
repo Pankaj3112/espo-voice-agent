@@ -8,12 +8,22 @@ from espo_voice_agent.agent import CrmHandle, SessionLog
 from espo_voice_agent.browser_agent import BrowserTask
 
 
+class FakeHandle:
+    def __init__(self, interrupted=False):
+        self.interrupted = interrupted
+
+    def add_done_callback(self, cb):
+        cb(self)
+
+
 class FakeSession:
-    def __init__(self):
+    def __init__(self, interrupted=False):
         self.replies = []
+        self.interrupted = interrupted
 
     def generate_reply(self, instructions=None, **_):
         self.replies.append(instructions)
+        return FakeHandle(self.interrupted)
 
 
 def _crm(tmp_path, monkeypatch):
@@ -23,6 +33,7 @@ def _crm(tmp_path, monkeypatch):
     crm.session = FakeSession()
     crm.task = None
     crm._last_progress = ""
+    crm._unannounced = None
 
     async def emit(**_):
         return None
@@ -51,3 +62,15 @@ def test_job_context_reports_state(tmp_path, monkeypatch):
     assert "Still in progress" in crm.job_context()
     crm.task.status, crm.task.summary = "done", "Updated the email of Jane Doe."
     assert "Finished and verified" in crm.job_context()
+
+
+def test_interrupted_result_is_repeated_next_turn(tmp_path, monkeypatch):
+    crm = _crm(tmp_path, monkeypatch)
+    crm.session = FakeSession(interrupted=True)
+    crm.task = BrowserTask(id="t1", goal="update phone")
+    crm.task.status, crm.task.summary = "done", "Updated Jane Doe's phone."
+    asyncio.run(crm.on_task_event(crm.task, "done", crm.task.summary))
+    assert "has NOT heard" in crm.job_context()
+    crm.session = FakeSession(interrupted=False)
+    asyncio.run(crm.on_task_event(crm.task, "done", crm.task.summary))
+    assert "has NOT heard" not in crm.job_context()

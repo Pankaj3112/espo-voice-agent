@@ -364,7 +364,15 @@ class BrowserAgent:
             await self._event(task, "progress", f"searching leads for {args.get('query', '')}"[:120])
             res = await b.search_leads(str(args.get("query", "")))
             rows = [{k: m.get(k) for k in ("id", "name", "accountName", "emailAddress", "phoneNumber", "status")} for m in res.matches]
-            return f"{len(rows)} match(es): {json.dumps(rows)}" if rows else "No leads match."
+            if not rows:
+                return "No leads match."
+            if len(rows) > 1:
+                return (
+                    f"{len(rows)} MATCHES: {json.dumps(rows)}. If the task will change a record and the details you were "
+                    "given don't single out exactly one of these, call ask_caller first (mention what tells them apart, "
+                    "e.g. email or phone). Never pick one yourself."
+                )
+            return f"1 match: {json.dumps(rows)}"
         clean = lambda v: (str(v).strip() or None) if v is not None else None  # noqa: E731
         lead = LeadInput(
             first_name=str(args.get("first_name", "")).strip(), last_name=str(args.get("last_name", "")).strip(),

@@ -146,6 +146,7 @@ class CrmHandle:
         self.agent: BrowserAgent | None = None
         self.task: BrowserTask | None = None
         self._last_progress = ""
+        self._unannounced: str | None = None
         self._heartbeat: asyncio.Task | None = None
 
     async def start(self) -> None:
@@ -237,9 +238,11 @@ class CrmHandle:
         if t.status in ("running", "waiting_for_caller"):
             q = f" It is waiting for the caller to answer: {t.pending_question!r}." if t.pending_question else ""
             return f"[CRM job status] Still in progress: {t.goal!r}.{q} Nothing about it is confirmed yet."
+        tell = (" The caller has NOT heard this result yet: mention it first in your reply, in one short sentence."
+                if self._unannounced else "")
         if t.status == "done":
-            return f"[CRM job status] Finished and verified: {t.summary}"
-        return f"[CRM job status] Did not complete ({t.status}): {t.summary}"
+            return f"[CRM job status] Finished and verified: {t.summary}{tell}"
+        return f"[CRM job status] Did not complete ({t.status}): {t.summary}{tell}"
 
     def task_status(self) -> str:
         t = self.task
@@ -283,7 +286,17 @@ class CrmHandle:
                 f"Browser task did NOT complete: {text} Tell the caller honestly and briefly; don't claim anything was saved "
                 "unless this says so."
             )
-        self.session.generate_reply(instructions=instr)
+        handle = self.session.generate_reply(instructions=instr)
+        if kind in ("done", "failed"):
+            # If the caller talks over the announcement, it never reaches them; keep it pending so the next
+            # reply leads with it (see job_context).
+            self._unannounced = text
+
+            def _spoken(h) -> None:
+                if not h.interrupted:
+                    self._unannounced = None
+
+            handle.add_done_callback(_spoken)
 
     async def _heartbeat_loop(self, task: BrowserTask) -> None:
         """If a task runs long and the line is quiet, let the voice LLM give a short natural update."""
