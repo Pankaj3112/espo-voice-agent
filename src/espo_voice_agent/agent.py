@@ -23,8 +23,9 @@ from livekit.agents import (
     RunContext,
     cli,
     function_tool,
+    room_io,
 )
-from livekit.plugins import deepgram, elevenlabs, openai, silero
+from livekit.plugins import deepgram, elevenlabs, noise_cancellation, openai, silero
 from playwright.async_api import async_playwright
 
 from . import config
@@ -270,6 +271,12 @@ def prewarm(proc: JobProcess) -> None:
 server.setup_fnc = prewarm
 
 
+# LiveKit's adaptive (model-based) barge-in detection tells real interruptions from noise, echo and
+# "mm-hm". It is on by default only in dev mode, so production must ask for it explicitly; otherwise
+# any VAD blip pauses the agent's reply until the 2 s false-interruption timeout.
+INTERRUPTION = {"mode": "adaptive", "min_duration": 0.5, "resume_false_interruption": True, "false_interruption_timeout": 1.0}
+
+
 def build_stt_and_turns():
     keyterms = ["EspoCRM", "lead"]
     if config.STT_MODE == "flux":
@@ -281,11 +288,11 @@ def build_stt_and_turns():
             eot_timeout_ms=config.FLUX_EOT_TIMEOUT_MS,
             keyterm=keyterms,
         )
-        return stt, {"turn_detection": "stt", "endpointing": {"min_delay": 0.0, "max_delay": 2.0}}
+        return stt, {"turn_detection": "stt", "endpointing": {"min_delay": 0.0, "max_delay": 2.0}, "interruption": INTERRUPTION}
     from livekit.plugins.turn_detector.multilingual import MultilingualModel
 
     stt = deepgram.STT(model=config.STT_MODEL, keyterm=keyterms, smart_format=True)
-    return stt, {"turn_detection": MultilingualModel(), "endpointing": {"min_delay": 0.4, "max_delay": 2.0}}
+    return stt, {"turn_detection": MultilingualModel(), "endpointing": {"min_delay": 0.4, "max_delay": 2.0}, "interruption": INTERRUPTION}
 
 
 @server.rtc_session(agent_name=config.AGENT_NAME)
@@ -349,7 +356,15 @@ async def entrypoint(ctx: JobContext) -> None:
 
     ctx.add_shutdown_callback(_shutdown)
 
-    await session.start(agent=IntakeAgent(crm), room=ctx.room)
+    await session.start(
+        agent=IntakeAgent(crm),
+        room=ctx.room,
+        # Krisp-based background voice cancellation (LiveKit Cloud): strips room noise and other
+        # voices before VAD/STT, so they don't count as the caller speaking.
+        room_options=room_io.RoomOptions(
+            audio_input=room_io.AudioInputOptions(noise_cancellation=noise_cancellation.BVC()),
+        ),
+    )
     slog.write(
         "session_started", room=ctx.room.name, llm=config.LLM_MODEL, stt=config.STT_MODEL, stt_mode=config.STT_MODE,
         tts=f"{config.TTS_PROVIDER}:{config.TTS_MODEL if config.TTS_PROVIDER == 'elevenlabs' else 'aura-2'}",

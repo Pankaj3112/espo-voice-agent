@@ -179,7 +179,8 @@ async function start() {
     });
 
     await room.connect(data.url, data.token);
-    await room.localParticipant.setMicrophoneEnabled(true);
+    // Browser-side echo cancellation + noise suppression so the agent never hears its own voice.
+    await room.localParticipant.setMicrophoneEnabled(true, { echoCancellation: true, noiseSuppression: true, autoGainControl: true, channelCount: 1 });
     $('agentState').textContent = 'joining…';
     $('callBtn').disabled = false; $('callBtn').textContent = 'End call'; $('callBtn').classList.add('end');
     const t0 = Date.now();

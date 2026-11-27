@@ -99,11 +99,35 @@ you declined) and asks if there's anything else, say a short goodbye and then ou
 the next turn."""
 
 
+NOISE = {"std": 0.0, "babble": 0.0}
+BABBLE_TEXT = (
+    "So anyway I told him the meeting was moved to Thursday, and he said that was fine. "
+    "Did you see the game last night? It went to overtime again. I think we should order lunch soon, "
+    "maybe the Thai place downstairs. The printer on the third floor is jammed again, someone should call facilities."
+)
+
+
+async def tts_pcm(text: str) -> np.ndarray:
+    async with httpx.AsyncClient() as http:
+        r = await http.post(
+            "https://api.deepgram.com/v1/speak",
+            params={"model": "aura-2-orion-en", "encoding": "linear16", "sample_rate": SR, "container": "none"},
+            headers={"Authorization": f"Token {os.environ['DEEPGRAM_API_KEY']}"},
+            json={"text": text},
+            timeout=30,
+        )
+        r.raise_for_status()
+        return np.frombuffer(r.content, dtype=np.int16)
+
+
 class Caller:
     """Publishes TTS audio as a mic track; pads with silence so VAD sees real pauses."""
 
-    def __init__(self, room: rtc.Room) -> None:
+    def __init__(self, room: rtc.Room, noise_std: float = 0.0) -> None:
         self.room = room
+        self.noise_std = noise_std  # >0 adds white noise (int16 std)
+        self.babble: np.ndarray | None = None  # optional background talker, looped under everything
+        self.babble_gain = 0.0
         self.source = rtc.AudioSource(SR, 1)
         self.queue: asyncio.Queue[np.ndarray] = asyncio.Queue()
         self.speaking_done = asyncio.Event()
@@ -117,6 +141,23 @@ class Caller:
         asyncio.create_task(self._pump())
 
     async def _pump(self) -> None:
+        rng = np.random.default_rng(0)
+
+        pos = {"b": 0}
+
+        def noisy(x: np.ndarray) -> np.ndarray:
+            if not self.noise_std and self.babble is None:
+                return x
+            y = x.astype(np.float32)
+            if self.noise_std:
+                y += rng.normal(0, self.noise_std, x.size)
+            if self.babble is not None:
+                i = pos["b"]
+                idx = (np.arange(x.size) + i) % self.babble.size
+                y += self.babble[idx].astype(np.float32) * self.babble_gain
+                pos["b"] = (i + x.size) % self.babble.size
+            return np.clip(y, -32768, 32767).astype(np.int16)
+
         silence = np.zeros(FRAME, dtype=np.int16)
         while True:
             try:
@@ -124,13 +165,13 @@ class Caller:
             except asyncio.QueueEmpty:
                 pcm = None
             if pcm is None:
-                await self.source.capture_frame(rtc.AudioFrame(silence.tobytes(), SR, 1, FRAME))
+                await self.source.capture_frame(rtc.AudioFrame(noisy(silence).tobytes(), SR, 1, FRAME))
                 continue
             for i in range(0, len(pcm), FRAME):
                 chunk = pcm[i : i + FRAME]
                 if len(chunk) < FRAME:
                     chunk = np.pad(chunk, (0, FRAME - len(chunk)))
-                await self.source.capture_frame(rtc.AudioFrame(chunk.tobytes(), SR, 1, FRAME))
+                await self.source.capture_frame(rtc.AudioFrame(noisy(chunk).tobytes(), SR, 1, FRAME))
             # capture_frame returns once audio is queued (up to 1 s ahead), so wait until it has
             # actually been sent before stamping the caller's end of speech.
             await self.source.wait_for_playout()
@@ -184,7 +225,10 @@ async def run_scenario(sc: Scenario, seed: int, verbose: bool = True) -> dict:
     events: list[dict] = []
     agent_state = {"v": "initializing", "changed": asyncio.Event()}
     first_audio_after: list[float] = []
-    caller = Caller(room)
+    caller = Caller(room, noise_std=NOISE["std"])
+    if NOISE["babble"]:
+        caller.babble = await tts_pcm(BABBLE_TEXT)
+        caller.babble_gain = NOISE["babble"]
     await_first_audio = {"armed": False, "t_end": 0.0}
 
     def on_attrs(changed, participant):
@@ -317,8 +361,11 @@ async def main() -> None:
     ap.add_argument("--all", action="store_true")
     ap.add_argument("--repeat", type=int, default=1)
     ap.add_argument("--seed", type=int, default=1)
+    ap.add_argument("--noise-std", type=float, default=0.0, help="white noise level (int16 std), e.g. 200")
+    ap.add_argument("--babble", type=float, default=0.0, help="background talker gain, e.g. 0.15 (about -16 dB)")
     ap.add_argument("--out", type=Path)
     args = ap.parse_args()
+    NOISE.update(std=args.noise_std, babble=args.babble)
     names = list(SCENARIOS) if args.all else [args.scenario]
     results = []
     for i in range(args.repeat):
