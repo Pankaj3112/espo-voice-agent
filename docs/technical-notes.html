@@ -41,7 +41,7 @@ a { color: #0068d6; text-decoration: none; }
 <div class="kpi">
   <div><b>~1.5 s</b><span>median reply time on real calls (caller quiet → Ava speaking)</span></div>
   <div><b>16 / 16</b><span>real CRM jobs by the browser agent, checked via the REST API</span></div>
-  <div><b>70 / 70</b><span>conversation eval: right tool, right values, right moment</span></div>
+  <div><b>74 / 74</b><span>conversation eval: right tool, right values, right moment</span></div>
   <div><b>Yes-gated</b><span>every write needs a clear spoken yes (enforced in code) and is verified on screen</span></div>
 </div>
 
@@ -125,7 +125,7 @@ state was missing (lead conversion looped until 30 steps; 7 steps once the outli
   <tr><td>Transport</td><td>LiveKit Cloud + Agents</td><td>WebRTC, turn handling, interruptions, text streams for captions and agent events, screen-share track for the browser view.</td></tr>
   <tr><td>STT + end-of-turn</td><td>Deepgram Flux</td><td>End-of-turn 0.3–1.1 s vs 1.2–2.0 s with Nova-3 + LiveKit's text turn detector on the same calls; one model instead of two.</td></tr>
   <tr><td>Room noise</td><td>Krisp BVC + adaptive interruptions</td><td>Background speech was being heard as the caller and cancelled replies. Adaptive interruption is on by default only in dev mode; production must enable it explicitly (found from call logs).</td></tr>
-  <tr><td>Voice LLM</td><td>Gemini 3.1 Flash-Lite, Vertex AI</td><td>70/70 on the conversation eval, 0.6–0.85 s median first token, no hidden reasoning. See table below.</td></tr>
+  <tr><td>Voice LLM</td><td>Gemini 3.1 Flash-Lite, Vertex AI</td><td>74/74 on the conversation eval, 0.58 s median first token (0.85 s in a run under Vertex load), no hidden reasoning.</td></tr>
   <tr><td>Browser LLM</td><td>Gemini 3.1 Flash-Lite, Vertex AI</td><td>6/6 tasks at 9.0 s median vs Gemini 3.8 Flash 6/6 at 16.5 s; now 16/16 at 7.5 s.</td></tr>
   <tr><td>Voice</td><td>Fish Audio S2.1 Pro</td><td>Chosen by ear from 14 samples across 7 providers; 0.25 s median first audio in calls; supports emotion cues. Deepgram Aura-2 fallback so a quota or outage never makes Ava silent.</td></tr>
   <tr><td>Hosting</td><td>GCP c3-standard-4, us-east4</td><td>Co-located with LiveKit US East, Deepgram and the CRM. A 2-vCPU e2-medium starved under two concurrent calls (load 12, VAD 34 s behind real time).</td></tr>
@@ -133,7 +133,8 @@ state was missing (lead conversion looped until 30 steps; 7 steps once the outli
 <h3>Model selection (conversation eval, each case run twice)</h3>
 <table>
   <tr><th>Model · route</th><th class="n">Pass</th><th class="n">First token p50</th><th class="n">p90</th><th>Note</th></tr>
-  <tr><td><b>Gemini 3.1 Flash-Lite · Vertex (chosen)</b></td><td class="n">70/70</td><td class="n">0.85 s</td><td class="n">1.51 s</td><td>latest: 35 cases, longer CRM-wide prompt</td></tr>
+  <tr><td><b>Gemini 3.1 Flash-Lite · Vertex (chosen)</b></td><td class="n">74/74</td><td class="n">0.58 s</td><td class="n">0.69 s</td><td>latest: 37 cases, CRM-wide prompt</td></tr>
+  <tr><td>same, earlier run of 35 cases</td><td class="n">70/70</td><td class="n">0.85 s</td><td class="n">1.51 s</td><td>Vertex retrying under load</td></tr>
   <tr><td>same, before the CRM-wide prompt</td><td class="n">62/62</td><td class="n">0.64 s</td><td class="n">0.78 s</td><td>31 cases</td></tr>
   <tr><td>Gemini 3.6 Flash · OpenRouter</td><td class="n">50/50</td><td class="n">1.07–1.30 s</td><td class="n">1.45 s</td><td>previous choice; retired on Vertex 19 Nov 2026</td></tr>
   <tr><td>Gemini 3.8 Flash · Vertex</td><td class="n">50/50</td><td class="n">2.09 s</td><td class="n">11.6 s</td><td>cannot turn thinking below "low"</td></tr>
@@ -147,8 +148,8 @@ state was missing (lead conversion looped until 30 steps; 7 steps once the outli
 <h2>5 · Latency</h2>
 <p>Measured from the agent's own timeline (user stopped speaking → first agent audio sent), per turn, on real calls
 through the public page from India to the US East server. The network leg back to the caller (~0.2–0.3 s from India)
-is not included. These calls predate the final, longer CRM-wide prompt, which raised the eval's median first token
-from 0.64 s to 0.85 s, so expect roughly 0.2 s more until the prompt is trimmed.</p>
+is not included. These calls predate the final, longer CRM-wide prompt, whose eval first token was 0.58–0.85 s median across
+runs (0.64 s before), so expect the same to slightly slower.</p>
 <table>
   <tr><th>Stage (typical turn)</th><th class="n">Median</th><th class="n">Range</th></tr>
   <tr><td>End of turn (Flux)</td><td class="n">0.4 s</td><td class="n">0.1–1.1 s</td></tr>
@@ -175,7 +176,7 @@ are in §8.</p>
 <table>
   <tr><th>Eval</th><th>What it checks</th><th class="n">Result</th></tr>
   <tr><td>Unit tests (<code>tests/</code>)</td><td>confirmation guard, read-back compare, emotion-tag stripping (incl. tags split across tokens), result hand-off to Ava, re-announcing a talked-over result</td><td class="n">23/23</td></tr>
-  <tr><td>Conversation eval (<code>evals/llm_eval.py</code>)</td><td>35 ASR-style dialogues on the exact production prompt and tools: spelled names, "at the rate", corrections, "yes but…", duplicates, edits needing read-back, meetings, delete refusal, counts, off-topic. Scores tool, values inside the hand-off instructions, and timing (no write before a clear yes).</td><td class="n">70/70</td></tr>
+  <tr><td>Conversation eval (<code>evals/llm_eval.py</code>)</td><td>37 ASR-style dialogues on the exact production prompt and tools: spelled names, "at the rate", corrections, "yes but…", duplicates, edits needing read-back, meetings, delete refusal, counts, off-topic, a new request while a result is being read out. Scores tool, values inside the hand-off instructions, and timing (no write before a clear yes).</td><td class="n">74/74</td></tr>
   <tr><td>Browser tasks (<code>evals/browser_tasks.py</code>)</td><td>16 real jobs on the demo CRM, each with fresh test data created over REST, verified over REST, then deleted: create, duplicate (must ask first), 5 edits, lookup, ambiguous edit (two identical leads: must ask), new account, contact linked to an account, task on a lead, 30-min meeting on a date, opportunity, lead conversion, count question checked against the real total.</td><td class="n">16/16</td></tr>
   <tr><td>Simulated calls (<code>evals/sim_call.py</code>)</td><td>Full voice loop: an LLM caller with a persona speaks (TTS) into the LiveKit room; outcome checked in the CRM; caller-side latency recorded; optional background-talker noise.</td><td class="n" id="simres">2/4</td></tr>
 </table>
@@ -207,7 +208,7 @@ never run on the live server while it serves calls (that is how the CPU-starvati
 <ul>
   <li><b>Read-backs of long numbers</b> can be garbled by the LLM even when the saved value is right; a deterministic
   formatter for phone numbers and emails in the read-back would remove that.</li>
-  <li><b>Breadth vs depth of testing.</b> 35 dialogues and 16 CRM jobs, not thousands of real calls. Speech-to-text is
+  <li><b>Breadth vs depth of testing.</b> 37 dialogues and 16 CRM jobs, not thousands of real calls. Speech-to-text is
   weak on some Indian names and emails ("Pankaj" → "Bonkers"); spelling recovers it, at the cost of turns. Next:
   keyterm boosting from CRM names, and replaying real call audio in CI.</li>
   <li><b>Browser automation beyond EspoCRM is unproven.</b> The tools are generic, but logins, expiring sessions,
@@ -230,6 +231,7 @@ never run on the live server while it serves calls (that is how the CPU-starvati
   <tr><td>"Updated" lead was actually a duplicate</td><td>Voice LLM used create for an edit and paraphrased the result</td><td>All CRM work behind one hand-off; result wording; eval cases</td></tr>
   <tr><td>Results never reached Ava</td><td>A logging call crashed before the hand-off</td><td>Fix + per-turn job status + regression tests</td></tr>
   <tr><td>Gemini 3.6 Flash "not found" on Vertex</td><td>Retired on Vertex 19 Nov 2026; new projects blocked</td><td>Re-ran the eval; moved to 3.1 Flash-Lite</td></tr>
+  <tr><td>Ava repeated the same result every turn</td><td>"Caller missed the result" reminder stayed set after the caller talked over it</td><td>One-shot reminder; finished-job status attached once; eval cases</td></tr>
   <tr><td>Simulated-call latency 1 s too high</td><td>Harness stamped end-of-speech before audio was sent</td><td>Stamp after playout, trim TTS silence</td></tr>
 </table>
 

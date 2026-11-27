@@ -46,7 +46,7 @@ watch live: adding leads, updating records, scheduling meetings, converting lead
 | Eval | What it checks | Latest |
 |---|---|---|
 | Unit tests | confirmation guard, read-back compare, tag stripping, agent hand-offs | 23/23 |
-| Conversation eval | Ava's tool choice and arguments on 35 ASR-style dialogues, run twice | 70/70, first token 0.85 s median (latest run) |
+| Conversation eval | Ava's tool choice and arguments on 37 ASR-style dialogues, run twice | 74/74, first token 0.58 s median |
 | Browser tasks | 16 real jobs on EspoCRM (create, duplicate, edits, ambiguity, account, contact, task, meeting, opportunity, convert, count), checked via the REST API | 16/16, 7.5 s median |
 | Simulated calls | full voice loop with an LLM caller speaking into the room | 2/4 latest (one real ASR/read-back miss, one lost-audio harness failure; see notes) |
 

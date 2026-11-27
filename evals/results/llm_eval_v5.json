@@ -1,0 +1,1334 @@
+{
+ "summary": {
+  "vertex/gemini-3.1-flash-lite": {
+   "pass": 74,
+   "n": 74,
+   "ttft_p50": 0.578,
+   "ttft_p90": 0.694,
+   "reasoning_tokens_max": 0,
+   "repeated_sentence": 0,
+   "failures": []
+  }
+ },
+ "rows": {
+  "vertex/gemini-3.1-flash-lite": [
+   {
+    "id": "confirm_basic",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.7237694769974041,
+    "total": 0.8354019729995343,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "changes_data": true,
+       "instructions": "Create a new lead: first name Jane, last name Doe, company Acme Robotics, phone 4155550142, email jane.doe@acmerobotics.com"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "no_readback_yet",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.6287501680017158,
+    "total": 0.7252430020016618,
+    "calls": [],
+    "text": "I have Jane Doe at Acme Robotics with the phone number 415 555 0142, shall I add that?",
+    "rep": 0
+   },
+   {
+    "id": "asr_email_words",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.5762976909973077,
+    "total": 0.6965733239994734,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "changes_data": true,
+       "instructions": "Create a new lead: first name Marco, last name Rossi, company Bluefin Logistics, email marco.rossi@bluefin.io"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "asr_email_at_the_rate",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.45821235699986573,
+    "total": 0.5132938110000396,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "instructions": "Create a new lead: first name Ravi, last name Kumar, company Quarry Labs, email ravi.kumar@gmail.com",
+       "changes_data": true
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "phone_double_triple",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.6267438329996367,
+    "total": 0.6785149409988662,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "instructions": "Create a new lead: first name Hannah, last name Novak, company Orbit Robotics, phone 4155550144",
+       "changes_data": true
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "phone_country_code",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.5540784130025713,
+    "total": 0.6296330700024555,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "changes_data": true,
+       "instructions": "Create a new lead: first name Lukas, last name Brunner, company Helvetic Dairy, phone +41 79 555 12 34."
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "self_correction_company",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.5600930500004324,
+    "total": 0.598406740999053,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "changes_data": true,
+       "instructions": "Create a new lead: first name Sofia, last name Moreau, company Nimbus Analytics, email sofia@nimbus.com"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "spelled_last_name",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.4187253870004497,
+    "total": 0.4658599979993596,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "changes_data": true,
+       "instructions": "Create a new lead: first name Tran, last name Nguyen, company Quarry Labs."
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "spelled_email_overrides_asr",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.8199486439989414,
+    "total": 1.0639117419996182,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "changes_data": true,
+       "instructions": "Create a new lead: first name Priya, last name Iyer, company Nimbus Analytics, email priya.iyer@nimbus.com"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "reject_readback",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.46432437999828835,
+    "total": 0.5816852229982032,
+    "calls": [],
+    "text": "I have Daniel Whitaker at Bluefin Logistics, email daniel at bluefin dot com. Shall I add that?",
+    "rep": 0
+   },
+   {
+    "id": "yes_but_change",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.48280089200125076,
+    "total": 0.5332704810025461,
+    "calls": [],
+    "text": "I have Amara Okafor at Orbit Robotics, phone 415 555 2222. Shall I add that?",
+    "rep": 0
+   },
+   {
+    "id": "corrected_then_confirmed",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.6459970140022051,
+    "total": 0.7521656280005118,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "instructions": "Create a new lead: first name Amara, last name Okafor, company Orbit Robotics, phone 4155552222",
+       "changes_data": true
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "missing_company_ask",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.7132385170007183,
+    "total": 0.8824709500004246,
+    "calls": [],
+    "text": "I can certainly help you with that, but I'll need to know the company he works for.",
+    "rep": 0
+   },
+   {
+    "id": "fillers_hesitation",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.5776708189987403,
+    "total": 0.6300134929988417,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "changes_data": true,
+       "instructions": "Create a new lead: first name Sarah, last name Connor, company Cyberdyne Systems, phone 4155559876"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "prospect_self",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.48087142900112667,
+    "total": 0.5374561210010143,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "changes_data": true,
+       "instructions": "Create a new lead: first name Tom, last name Becker, company Zurich Insurance, email tom.becker@zurich.ch, note: interested in a demo."
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "title_volunteered",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.5871015830016404,
+    "total": 0.715306762002001,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "changes_data": true,
+       "instructions": "Create a new lead: first name Elena, last name Petrova, company Quarry Labs, job title CTO, email elena@quarrylabs.com"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "duplicate_then_override",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.6602375639995444,
+    "total": 0.7990915709997353,
+    "calls": [
+     {
+      "name": "message_browser_agent",
+      "args": {
+       "message": "Yes, create it anyway."
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "duplicate_then_decline",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.5478843469973071,
+    "total": 0.5900406459986698,
+    "calls": [],
+    "text": "Understood, I've cancelled that request. Is there anything else I can help you with today?",
+    "rep": 0
+   },
+   {
+    "id": "find_existing",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.9944294549968618,
+    "total": 1.211894559997745,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "changes_data": false,
+       "instructions": "Find all contacts or leads associated with the company Bluefin Logistics and tell me their names."
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "off_topic",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.5436585140014358,
+    "total": 0.6830421049999131,
+    "calls": [],
+    "text": "I'd be happy to help with that, but I'll need to know who you're meeting with and what time on Tuesday the 14th works for you.",
+    "rep": 0
+   },
+   {
+    "id": "long_second_lead",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.6799223810012336,
+    "total": 0.7992688750018715,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "changes_data": true,
+       "instructions": "Create a new lead: first name Omar, last name Haddad, company Bluefin Logistics, phone 4155553391"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "long_many_corrections",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.44302929200057406,
+    "total": 0.48504013800265966,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "changes_data": true,
+       "instructions": "Create a new lead: first name Katarina, last name Wolff, company Orbit Robotics, phone 4155551213, email katarina@orbitrobotics.com"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "long_chitchat_first",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.6754193929991743,
+    "total": 0.7124667390016839,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "changes_data": true,
+       "instructions": "Create a new lead: first name Lea, last name Fischer, company Helvetic Dairy, email lea.fischer@helvetic.ch"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "long_find_then_create",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.6460762819988304,
+    "total": 0.7362294459999248,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "instructions": "Create a new lead: first name Ivan, last name Petrov, company Quarry Labs, phone +447700900123",
+       "changes_data": true
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "long_wrapup_no_tool",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.6484278419993643,
+    "total": 0.748704309000459,
+    "calls": [],
+    "text": "You're very welcome, have a great day.",
+    "rep": 0
+   },
+   {
+    "id": "update_request_needs_confirm",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.5385769140011689,
+    "total": 0.6190284449985484,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "instructions": "Find the lead Jane Doe at ACME to confirm she exists and get her current details.",
+       "changes_data": false
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "update_confirmed",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.6580991400005587,
+    "total": 0.7330235090012138,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "changes_data": true,
+       "instructions": "Set the phone number of Jane Doe at ACME to 1112131415."
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "what_can_you_change",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.46183527399989543,
+    "total": 0.7112094920012169,
+    "calls": [],
+    "text": "I can update fields like phone numbers, emails, or job titles for existing leads, and I can also change their status or add notes to their records. What would you like to update?",
+    "rep": 0
+   },
+   {
+    "id": "duplicate_then_wants_update",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.5821606870013056,
+    "total": 0.6233706470011384,
+    "calls": [],
+    "text": "I'll update the existing Jane Doe at ACME with the phone number 111 213 1415, okay?",
+    "rep": 0
+   },
+   {
+    "id": "lookup_details",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.6161183119984344,
+    "total": 0.7185099240014097,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "changes_data": false,
+       "instructions": "Find leads named Jane Doe at ACME and report their email."
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "answer_relay",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.5125316239973472,
+    "total": 0.5571905679971678,
+    "calls": [
+     {
+      "name": "message_browser_agent",
+      "args": {
+       "message": "The Jane Doe at ACME."
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "meeting_needs_confirm",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.6848524870001711,
+    "total": 0.7731569389979995,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "changes_data": false,
+       "instructions": "Find a lead named Jane Doe at ACME to confirm her details for a meeting."
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "meeting_confirmed",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.6801589700007753,
+    "total": 0.817513093999878,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "instructions": "Schedule a meeting with Jane Doe from ACME on Tuesday December 1st at 3 pm, titled Intro call.",
+       "changes_data": true
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "delete_refused",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.5230811660003383,
+    "total": 0.636227773000428,
+    "calls": [],
+    "text": "I'm sorry, I can't delete records from the CRM. Is there anything else I can help you with?",
+    "rep": 0
+   },
+   {
+    "id": "count_question",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.5688254310007324,
+    "total": 0.6162628490019415,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "changes_data": false,
+       "instructions": "Count the number of opportunities currently in the 'Negotiation' stage."
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "interrupt_with_new_request",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.6553671199981181,
+    "total": 0.8015007419999165,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "changes_data": false,
+       "instructions": "Find a person named James Smith and report their details"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "new_question_after_result",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.4342963069975667,
+    "total": 0.47655349699925864,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "instructions": "Count the total number of leads in the CRM.",
+       "changes_data": false
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "confirm_basic",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.6437681950010301,
+    "total": 0.6741471419991285,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "changes_data": true,
+       "instructions": "Create a new lead: first name Jane, last name Doe, company Acme Robotics, phone 4155550142, email jane.doe@acmerobotics.com"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "no_readback_yet",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.5500283750006929,
+    "total": 0.6185603600024479,
+    "calls": [],
+    "text": "I have Jane Doe at Acme Robotics with the phone number 415 555 0142, shall I add that?",
+    "rep": 1
+   },
+   {
+    "id": "asr_email_words",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.5400857919994451,
+    "total": 0.5856109790001938,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "instructions": "Create a new lead: first name Marco, last name Rossi, company Bluefin Logistics, email marco.rossi@bluefin.io",
+       "changes_data": true
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "asr_email_at_the_rate",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.6885188679989369,
+    "total": 0.7324575889979315,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "instructions": "Create a new lead: first name Ravi, last name Kumar, company Quarry Labs, email ravi.kumar@gmail.com",
+       "changes_data": true
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "phone_double_triple",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.6697237959997437,
+    "total": 0.7170504379973863,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "changes_data": true,
+       "instructions": "Create a new lead: first name Hannah, last name Novak, company Orbit Robotics, phone 4155550144"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "phone_country_code",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.4917122709994146,
+    "total": 0.5297680699986813,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "instructions": "Create a new lead: first name Lukas, last name Brunner, company Helvetic Dairy, phone +41795551234",
+       "changes_data": true
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "self_correction_company",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.7261443159986811,
+    "total": 0.8047708730009617,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "changes_data": true,
+       "instructions": "Create a new lead: first name Sofia, last name Moreau, company Nimbus Analytics, email sofia@nimbus.com"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "spelled_last_name",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.4752615990000777,
+    "total": 0.5588681859990174,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "changes_data": true,
+       "instructions": "Create a new lead: first name Tran, last name Nguyen, company Quarry Labs."
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "spelled_email_overrides_asr",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.4797140560003754,
+    "total": 0.5142520330009575,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "instructions": "Create a new lead: first name Priya, last name Iyer, company Nimbus Analytics, email priya.iyer@nimbus.com",
+       "changes_data": true
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "reject_readback",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.5673230800020974,
+    "total": 0.6916154870013997,
+    "calls": [],
+    "text": "I have Daniel Whitaker at Bluefin Logistics, email daniel at bluefin dot com. Shall I add that?",
+    "rep": 1
+   },
+   {
+    "id": "yes_but_change",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.5303316819990869,
+    "total": 0.5968788270001824,
+    "calls": [],
+    "text": "I have Amara Okafor at Orbit Robotics, phone 415 555 2222. Shall I add that?",
+    "rep": 1
+   },
+   {
+    "id": "corrected_then_confirmed",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.7459245099998952,
+    "total": 0.8366320500026632,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "instructions": "Create a new lead: first name Amara, last name Okafor, company Orbit Robotics, phone 4155552222",
+       "changes_data": true
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "missing_company_ask",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.520459714000026,
+    "total": 0.6265616380005667,
+    "calls": [],
+    "text": "I can certainly help you add Kenji Lindqvist. Could you please tell me the name of his company?",
+    "rep": 1
+   },
+   {
+    "id": "fillers_hesitation",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.6434832200029632,
+    "total": 0.7593785310018575,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "instructions": "Create a new lead: first name Sarah, last name Connor, company Cyberdyne Systems, phone 4155559876",
+       "changes_data": true
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "prospect_self",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.6622286120000354,
+    "total": 0.7462086629966507,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "changes_data": true,
+       "instructions": "Create a new lead: first name Tom, last name Becker, company Zurich Insurance, email tom.becker@zurich.ch, note: interested in a demo."
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "title_volunteered",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.6343320630003291,
+    "total": 0.6756350210016535,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "instructions": "Create a new lead: first name Elena, last name Petrova, company Quarry Labs, job title CTO, email elena@quarrylabs.com",
+       "changes_data": true
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "duplicate_then_override",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.44716342099854955,
+    "total": 0.49024330400061444,
+    "calls": [
+     {
+      "name": "message_browser_agent",
+      "args": {
+       "message": "Yes, create the new lead anyway."
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "duplicate_then_decline",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.5448879639989173,
+    "total": 0.6540324540001166,
+    "calls": [],
+    "text": "Understood, I'll leave that record as it is. Is there anything else I can help you with today?",
+    "rep": 1
+   },
+   {
+    "id": "find_existing",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.4992411509992962,
+    "total": 0.6009622479978134,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "instructions": "Find all contacts or leads associated with the company Bluefin Logistics and tell me their names.",
+       "changes_data": false
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "off_topic",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.5753456160018686,
+    "total": 0.65099556000132,
+    "calls": [],
+    "text": "I'd be happy to help with that, but I'll need to know who you're meeting with and what time on Tuesday the 12th works for you.",
+    "rep": 1
+   },
+   {
+    "id": "long_second_lead",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.5304464900000312,
+    "total": 0.6110243680013809,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "instructions": "Create a new lead: first name Omar, last name Haddad, company Bluefin Logistics, phone 4155553391",
+       "changes_data": true
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "long_many_corrections",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.4503474550001556,
+    "total": 0.48627352100083954,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "instructions": "Create a new lead: first name Katarina, last name Wolff, company Orbit Robotics, phone 4155551213, email katarina@orbitrobotics.com",
+       "changes_data": true
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "long_chitchat_first",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.6942055260005873,
+    "total": 0.8221036800023285,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "instructions": "Create a new lead: first name Lea, last name Fischer, company Helvetic Dairy, email lea.fischer@helvetic.ch",
+       "changes_data": true
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "long_find_then_create",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.6658810190019722,
+    "total": 0.7653312440015725,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "instructions": "Create a new lead: first name Ivan, last name Petrov, company Quarry Labs, phone +447700900123",
+       "changes_data": true
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "long_wrapup_no_tool",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.661733438999363,
+    "total": 0.9004864429989539,
+    "calls": [],
+    "text": "You're very welcome, have a great day.",
+    "rep": 1
+   },
+   {
+    "id": "update_request_needs_confirm",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.5894185319993994,
+    "total": 0.6569677959996625,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "changes_data": false,
+       "instructions": "Find a lead named Jane Doe at ACME to confirm she exists."
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "update_confirmed",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.8501812840004277,
+    "total": 0.9176775499981886,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "changes_data": true,
+       "instructions": "Set the phone number of Jane Doe at ACME to 1112131415."
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "what_can_you_change",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.5771217520014034,
+    "total": 0.7738081889983732,
+    "calls": [],
+    "text": "I can update fields like phone numbers, email addresses, or job titles for your existing leads. Just let me know the name of the lead and the company they are with, and I'll be happy to help you make those changes.",
+    "rep": 1
+   },
+   {
+    "id": "duplicate_then_wants_update",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.5778345180005999,
+    "total": 0.6851366450027854,
+    "calls": [],
+    "text": "I'll update the existing Jane Doe at ACME with the phone number 111 213 1415, okay?",
+    "rep": 1
+   },
+   {
+    "id": "lookup_details",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.5164999379994697,
+    "total": 0.5461495570016268,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "changes_data": false,
+       "instructions": "Find leads named Jane Doe at ACME and report their email."
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "answer_relay",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.6080121380000492,
+    "total": 0.7171795060021395,
+    "calls": [
+     {
+      "name": "message_browser_agent",
+      "args": {
+       "message": "The Jane Doe at ACME."
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "meeting_needs_confirm",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.6188021640009538,
+    "total": 0.6881669149988738,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "instructions": "Find lead Jane Doe at ACME to confirm she exists for the meeting.",
+       "changes_data": false
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "meeting_confirmed",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.6444787129985343,
+    "total": 0.7396365530003095,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "instructions": "Schedule a meeting with Jane Doe from ACME on Tuesday December 1st at 3 pm, titled Intro call.",
+       "changes_data": true
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "delete_refused",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.5466884580018814,
+    "total": 0.6600807370014081,
+    "calls": [],
+    "text": "I'm sorry, but I don't have the ability to delete records from the CRM. Is there anything else I can help you with instead?",
+    "rep": 1
+   },
+   {
+    "id": "count_question",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.5730301939984201,
+    "total": 0.6211296759975085,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "instructions": "Find all opportunities in the \"Negotiation\" stage and tell me how many there are.",
+       "changes_data": false
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "interrupt_with_new_request",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.7188078280014452,
+    "total": 0.7701650999988487,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "changes_data": false,
+       "instructions": "Find a person named James Smith and report their details"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "new_question_after_result",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.5646200529990892,
+    "total": 0.6576402969985793,
+    "calls": [
+     {
+      "name": "browser_task",
+      "args": {
+       "instructions": "Count the total number of leads in the CRM.",
+       "changes_data": false
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   }
+  ]
+ },
+ "ran_at": "2026-11-27 18:36"
+}

@@ -977,5 +977,75 @@
     "changes_data": false
    }
   }
+ },
+ {
+  "id": "interrupt_with_new_request",
+  "turns": [
+   [
+    "user",
+    "Can you open a person named Charles Patry?"
+   ],
+   [
+    "tool",
+    {
+     "name": "browser_task",
+     "args": {
+      "instructions": "Find a person named Charles Patry and report their details",
+      "changes_data": false
+     },
+     "output": "STARTED browser task t1. [Later] Browser result (verified on screen): I found Charles Patry (Interpreter at Scottsdale Source); his email is charles.patry@demo.com, phone is +12393953979."
+    }
+   ],
+   [
+    "assistant",
+    "I found Charles Patry, an interpreter at Scottsdale Source, his email is"
+   ],
+   [
+    "user",
+    "Wait. Can you open James Smith instead?"
+   ]
+  ],
+  "expect": {
+   "tool": "browser_task",
+   "args": {
+    "instructions_contains": "james",
+    "changes_data": false
+   }
+  }
+ },
+ {
+  "id": "new_question_after_result",
+  "turns": [
+   [
+    "user",
+    "Can you open a person named Charles Patry?"
+   ],
+   [
+    "tool",
+    {
+     "name": "browser_task",
+     "args": {
+      "instructions": "Find a person named Charles Patry and report their details",
+      "changes_data": false
+     },
+     "output": "STARTED browser task t1. [Later] Browser result (verified on screen): I found Charles Patry (Interpreter at Scottsdale Source); his email is charles.patry@demo.com, phone is +12393953979."
+    }
+   ],
+   [
+    "assistant",
+    "I found Charles Patry, an interpreter at Scottsdale Source, with the email charles dot patry at demo dot com."
+   ],
+   [
+    "user",
+    "Okay. How many leads are in the CRM?"
+   ]
+  ],
+  "expect": {
+   "tool": "browser_task",
+   "args": {
+    "instructions_contains": "lead",
+    "changes_data": false
+   }
+  }
  }
 ]
