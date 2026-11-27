@@ -10,3 +10,4 @@ evals/results/*.raw.*
 logs/
 evals/results/voices/*.wav
 evals/results/voices/*.mp3
+JD.md
