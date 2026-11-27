@@ -1,0 +1,98 @@
+{
+ "summary": {
+  "gemini-3.1-flash-lite": {
+   "pass": 3,
+   "n": 4,
+   "median_s": 20.7,
+   "max_s": 36.4
+  }
+ },
+ "rows": [
+  {
+   "model": "gemini-3.1-flash-lite",
+   "task": "create_new",
+   "ok": true,
+   "status": "done",
+   "summary": "I have successfully created the new lead for Nora Testcreate8514 at Nimbus Analytics.",
+   "seconds": 8.4,
+   "steps": 4,
+   "llm_ms_p50": 1008,
+   "events": [
+    "progress: Creating lead for Nora Testcreate8514",
+    "progress: filling in the new lead Nora Testcreate8514",
+    "record: {\"id\": \"d15be21ea9c184491\", \"url\": \"https://demo.us.espocrm.com/#Lead/view/d15be21ea9c184491\", \"name\": \"Nora Testcreate8514\", \"account_name\": \"Nimbus Analytics\", \"phone\": \"415 555 0177\", \"email\": \"nora.testcreate8514@nimbus.com\", \"title\": \"None\", \"source\": \"Call\", \"status\": \"New\", \"description\": \"None\"}",
+    "progress: double-checking the saved record",
+    "done: I have successfully created the new lead for Nora Testcreate8514 at Nimbus Analytics."
+   ]
+  },
+  {
+   "model": "gemini-3.1-flash-lite",
+   "task": "edit_phone",
+   "ok": true,
+   "status": "done",
+   "summary": "I have added the phone number 415 555 0199 to the lead Ravi Ferreira32 at Orbit Robotics.",
+   "seconds": 9.3,
+   "steps": 8,
+   "llm_ms_p50": 671,
+   "events": [
+    "progress: Searching for Ravi Ferreira32 at Orbit Robotics",
+    "progress: searching leads for Ravi Ferreira32",
+    "step: go_to {\"target\": \"#Lead/view/655edd2aebe599c5b\"} (858 ms)",
+    "step: click {\"ref\": 3} (345 ms)",
+    "step: type_text {\"text\": \"415 555 0199\", \"ref\": 13, \"submit\": true} (506 ms)",
+    "step: click {\"ref\": 1} (317 ms)",
+    "progress: double-checking the saved record",
+    "done: I have added the phone number 415 555 0199 to the lead Ravi Ferreira32 at Orbit Robotics."
+   ]
+  },
+  {
+   "model": "gemini-3.1-flash-lite",
+   "task": "meeting",
+   "ok": true,
+   "status": "done",
+   "summary": "I have scheduled the meeting 'Intro 27001' with Kofi Nakamura86 for November 30, 2026, from 3:00 PM to 3:30 PM.",
+   "seconds": 36.4,
+   "steps": 23,
+   "llm_ms_p50": 659,
+   "events": [
+    "step: click {\"ref\": 5} (286 ms)",
+    "step: click {\"ref\": 7} (309 ms)",
+    "step: type_text {\"ref\": 6, \"text\": \"Kofi Nakamura86\", \"submit\": true} (534 ms)",
+    "step: click {\"ref\": 33} (304 ms)",
+    "step: type_text {\"ref\": 10, \"text\": \"11/30/2026\"} (521 ms)",
+    "step: type_text {\"ref\": 12, \"text\": \"15:00\"} (397 ms)",
+    "step: type_text {\"ref\": 16, \"text\": \"15:30\"} (478 ms)",
+    "step: type_text {\"ref\": 16, \"text\": \"15:30\"} (385 ms)",
+    "step: click {\"ref\": 1} (343 ms)",
+    "step: go_to {\"target\": \"#Meeting/view/615b9c47933fa7ce9\"} (859 ms)",
+    "progress: double-checking the saved record",
+    "done: I have scheduled the meeting 'Intro 27001' with Kofi Nakamura86 for November 30, 2026, from 3:00 PM to 3:30 PM."
+   ]
+  },
+  {
+   "model": "gemini-3.1-flash-lite",
+   "task": "opportunity",
+   "ok": false,
+   "status": "failed",
+   "summary": "I created the opportunity 'Pilot 86688', but the close date is set to Oct 11, 2027, instead of 2026-11-27, as the system did not accept the date change.",
+   "seconds": 20.7,
+   "steps": 17,
+   "llm_ms_p50": 754,
+   "events": [
+    "step: type_text {\"ref\": 9, \"text\": \"5000\"} (362 ms)",
+    "step: click {\"ref\": 1} (324 ms)",
+    "step: type_text {\"text\": \"2026-11-27\", \"ref\": 12} (525 ms)",
+    "step: click {\"ref\": 1} (327 ms)",
+    "step: click {\"ref\": 2} (342 ms)",
+    "step: type_text {\"text\": \"2026-11-27\", \"ref\": 12} (526 ms)",
+    "step: click {\"ref\": 1} (321 ms)",
+    "step: click {\"ref\": 2} (340 ms)",
+    "step: type_text {\"ref\": 12, \"text\": \"2026-11-27\"} (513 ms)",
+    "step: click {\"ref\": 1} (319 ms)",
+    "progress: double-checking the saved record",
+    "failed: I created the opportunity 'Pilot 86688', but the close date is set to Oct 11, 2027, instead of 2026-11-27, as the system did not accept the date change."
+   ]
+  }
+ ],
+ "ran_at": "2026-11-27 19:03"
+}

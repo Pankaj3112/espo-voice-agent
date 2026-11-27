@@ -1047,5 +1047,29 @@
     "changes_data": false
    }
   }
+ },
+ {
+  "id": "meeting_ist_converted",
+  "turns": [
+   [
+    "user",
+    "Schedule a 30 minute meeting called Intro with Jane Doe from ACME on Monday at 6 pm IST."
+   ],
+   [
+    "assistant",
+    "I'll schedule Intro with Jane Doe from ACME on Monday the 30th at 6 pm IST for 30 minutes, okay?"
+   ],
+   [
+    "user",
+    "Yes."
+   ]
+  ],
+  "expect": {
+   "tool": "browser_task",
+   "args": {
+    "instructions_contains": "12:30",
+    "changes_data": true
+   }
+  }
  }
 ]

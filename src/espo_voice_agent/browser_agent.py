@@ -116,7 +116,8 @@ at #<Type>/create (e.g. #Account/create); a record at #<Type>/view/<id>. On a re
 a lead creates a contact/account/opportunity from it.
 Fields: a link field (e.g. Account on a contact) is a text input: type part of the name, then click the matching \
 `option` in the next outline. Date fields: type the date in the format the field's placeholder or the page \
-shows; time fields likewise. Required fields are marked; if Save fails, read the error on the page and fix it.
+shows; time fields likewise. Times in the task are in the CRM's timezone (UTC) unless it says otherwise. For a \
+meeting or call, always set BOTH the start and the end (or the duration) as asked; never leave a default end time. Required fields are marked; if Save fails, read the error on the page and fix it.
 Linked items: to add a task, meeting or call FOR a record, open that record and use the create button in its \
 Tasks or Activities side panel (it links the new item automatically); don't start from #Task/create.
 Converting a lead: open the lead, click Convert, keep only the record types asked for checked (e.g. only \
@@ -221,6 +222,7 @@ class BrowserTask:
     status: str = "running"  # running | waiting_for_caller | done | failed | cancelled
     writes: bool = False  # set by the voice agent: does this job change CRM data?
     created_record: bool = False  # the create skill already showed its own result card
+    verified: bool = False  # a write job must pass one explicit verification round before finishing
     summary: str = ""
     events: list[TaskEvent] = field(default_factory=list)
     started: float = field(default_factory=time.time)
@@ -464,6 +466,19 @@ class BrowserAgent:
         try:
             if name == "finish":
                 ok = bool(args.get("success"))
+                if ok and task.writes and not task.verified:
+                    # Enforced verification: before a change is reported as done, the model must compare every
+                    # requested value with the saved record on screen (one extra model call). It once reported a
+                    # meeting as scheduled with a 1 h 45 duration nobody asked for.
+                    task.verified = True
+                    await self._event(task, "progress", "double-checking the saved record")
+                    return (
+                        "VERIFY BEFORE FINISHING. Make sure the saved record is on screen (open its detail view if not). "
+                        "Compare EVERY value the task asked for (names, fields, dates, start AND end times, duration, "
+                        "links) with what the page shows. If anything differs, fix it now; if you can't, finish with "
+                        "success=false and say what differs. If everything matches, call finish again.\n\nCURRENT PAGE:\n"
+                        + await tl.outline()
+                    )
                 task.status = "done" if ok else "failed"
                 task.summary = str(args.get("summary") or "")
                 await self._event(task, "done" if ok else "failed", task.summary)

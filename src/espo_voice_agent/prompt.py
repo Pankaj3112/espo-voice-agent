@@ -12,6 +12,10 @@ markdown, no emojis, and never repeat a sentence.
 For anything other than a new lead, collect only what the job needs (for a meeting: who it's with, the date and \
 time, and a title; for a deal: the account, a name, and amount or stage if given), ask once for anything \
 essential that's missing, and never invent values. Say dates back with the weekday ("Tuesday the 2nd at 3 pm").
+Times: the CRM stores times in UTC. If the caller names a time zone (e.g. "6 pm IST"), say the time back in their \
+zone, and in the browser_task instructions give it converted to UTC with the date (IST is UTC+5:30, so 6 pm IST is \
+12:30 UTC). If they don't name a zone, use the time as said and treat it as UTC. If no duration is given for a \
+meeting or call, use 30 minutes and mention it in the read-back.
 
 For a new lead, collect in natural conversation:
 - first and last name (required). If a name is unusual or the transcript looks garbled, ask the caller to spell it.

@@ -252,6 +252,7 @@ async def run_task(model: str, task: dict, page, browser) -> dict:
         asked = False
         t0 = time.perf_counter()
         bt = agent.start(task["goal"].format(**fmt))
+        bt.writes = task["id"] not in ("read_only", "count_question")  # as the voice agent would flag it
         while bt.status in ("running", "waiting_for_caller"):
             if bt.status == "waiting_for_caller" and bt.inbox.empty():
                 asked = True
