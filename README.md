@@ -46,9 +46,9 @@ watch live: adding leads, updating records, scheduling meetings, converting lead
 | Eval | What it checks | Latest |
 |---|---|---|
 | Unit tests | confirmation guard, read-back compare, tag stripping, agent hand-offs | 23/23 |
-| Conversation eval | Ava's tool choice and arguments on 35 ASR-style dialogues, run twice | 70/70, first token 0.6 s median |
-| Browser tasks | 16 real jobs on EspoCRM (create, duplicate, edits, ambiguity, account, contact, task, meeting, opportunity, convert, count), checked via the REST API | see technical notes |
-| Simulated calls | full voice loop with an LLM caller speaking into the room | see technical notes |
+| Conversation eval | Ava's tool choice and arguments on 35 ASR-style dialogues, run twice | 70/70, first token 0.85 s median (latest run) |
+| Browser tasks | 16 real jobs on EspoCRM (create, duplicate, edits, ambiguity, account, contact, task, meeting, opportunity, convert, count), checked via the REST API | 16/16, 7.5 s median |
+| Simulated calls | full voice loop with an LLM caller speaking into the room | 2/4 latest (one real ASR/read-back miss, one lost-audio harness failure; see notes) |
 
 Measured on real calls: **~1.5 s median** from the caller going quiet to Ava speaking (end-of-turn ~0.4 s,
 LLM first token ~0.6 s, voice first audio ~0.25 s). A new lead is saved and verified in ~4.5 s; edits take 7–10 s

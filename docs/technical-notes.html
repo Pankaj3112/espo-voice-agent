@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ava: voice agent that drives a CRM. Technical notes</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+@page { size: A4; margin: 16mm 16mm 18mm; }
+* { box-sizing: border-box; }
+body { font: 10pt/1.5 Geist, system-ui, sans-serif; color: #111; margin: 0; }
+h1 { font-size: 21pt; letter-spacing: -.02em; margin: 0 0 4pt; font-weight: 600; }
+h2 { font-size: 13pt; margin: 18pt 0 6pt; padding-top: 6pt; border-top: 1px solid #e5e5e5; font-weight: 600; letter-spacing: -.01em; }
+h2, h3 { break-after: avoid; } h3 { font-size: 10.5pt; margin: 10pt 0 4pt; font-weight: 600; }
+p { margin: 0 0 6pt; }
+ul { margin: 0 0 6pt; padding-left: 14pt; } li { margin: 1.5pt 0; }
+.sub { color: #555; font-size: 10.5pt; margin-bottom: 10pt; }
+.meta { font-family: "Geist Mono", monospace; font-size: 8.5pt; color: #555; }
+code, .mono { font-family: "Geist Mono", ui-monospace, monospace; font-size: 8.6pt; background: #f4f4f5; padding: 0 3pt; border-radius: 3pt; }
+table { width: 100%; border-collapse: collapse; margin: 4pt 0 8pt; font-size: 9pt; page-break-inside: avoid; }
+th, td { text-align: left; padding: 3.5pt 6pt; border-bottom: 1px solid #ececec; vertical-align: top; }
+th { font-weight: 600; color: #333; background: #fafafa; }
+td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.box { border: 1px solid #e5e5e5; border-radius: 6pt; padding: 8pt 10pt; margin: 6pt 0 8pt; page-break-inside: avoid; }
+pre.diagram { font-family: "Geist Mono", monospace; font-size: 7.9pt; line-height: 1.35; margin: 0; white-space: pre; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 10pt; }
+.kpi { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6pt; margin: 8pt 0 6pt; }
+.kpi div { border: 1px solid #e5e5e5; border-radius: 6pt; padding: 6pt 8pt; }
+.kpi b { display: block; font-size: 14pt; font-weight: 600; letter-spacing: -.01em; }
+.kpi span { font-size: 8.5pt; color: #555; }
+.note { color: #555; font-size: 8.8pt; }
+.pb { page-break-before: always; }
+a { color: #0068d6; text-decoration: none; }
+</style>
+</head>
+<body>
+
+<h1>Ava: a voice agent that drives a real CRM</h1>
+<div class="sub">Take-home for Cedric (Software Engineer, Voice AI &amp; Browser Automation). Pankaj Beniwal, 27–29 Nov 2026.</div>
+<div class="meta">Live demo: https://34-186-111-176.sslip.io · Repo: github.com/Pankaj3112/espo-voice-agent · Target: demo.us.espocrm.com</div>
+
+<div class="kpi">
+  <div><b>~1.5 s</b><span>median reply time on real calls (caller quiet → Ava speaking)</span></div>
+  <div><b>16 / 16</b><span>real CRM jobs by the browser agent, checked via the REST API</span></div>
+  <div><b>70 / 70</b><span>conversation eval: right tool, right values, right moment</span></div>
+  <div><b>Yes-gated</b><span>every write needs a clear spoken yes (enforced in code) and is verified on screen</span></div>
+</div>
+
+<h2>1 · What it does</h2>
+<p>You open the page and talk. Ava (the voice agent) understands the request, reads back anything that would change
+data and waits for a clear yes. A second agent (the browser agent) then does the job in the EspoCRM web app through
+a real Chromium browser, streamed live to the caller. One workflow was asked for (create a lead); because the
+browser agent's tools are generic, the same system also handles other CRM work: edit fields, change status, add
+notes, create accounts and contacts, link tasks and meetings to records, convert leads, and answer questions
+("how many opportunities are in negotiation?"). It does not delete records or run mass actions, by rule.</p>
+
+<h2>2 · Architecture</h2>
+<div class="box"><pre class="diagram">
+ caller's browser ⇄ LiveKit Cloud (WebRTC) ⇄ <b>voice agent "Ava"</b>  (Python · LiveKit Agents 1.9 · GCP c3-standard-4, us-east4)
+   mic, captions,                           ├ Krisp background-voice cancellation · LiveKit adaptive interruptions
+   live browser view                        ├ <b>Deepgram Flux</b>: streaming speech-to-text and end-of-turn detection
+                                            ├ <b>Gemini 3.1 Flash-Lite</b> on Vertex AI (fallback: Gemini 3.6 Flash via OpenRouter)
+                                            ├ <b>Fish Audio S2.1 Pro</b> voice via LiveKit Inference (fallback: Deepgram Aura-2)
+                                            │
+                       browser_task("Set the title of Jane Doe at ACME to Head of Sales", changes_data=true)
+                                            │                  ▲ progress notes · questions · verified result
+                                            ▼                  │
+                                       <b>browser agent</b>  (Gemini 3.1 Flash-Lite, own tool loop, one job at a time)
+                                            ├ skills:  create_lead (scripted fill + read-back) · search_records (any entity)
+                                            └ generic: look · click · type_text · select_option · go_to · press_key · scroll
+                                                       report_progress · ask_caller · finish
+                                                  │
+                                            Playwright Chromium (logged-in session) ── demo.us.espocrm.com
+                                                  └ CDP screencast → LiveKit video track → caller
+</pre></div>
+<ul>
+  <li><b>Two agents, two jobs.</b> Ava only converses; she has four tools, all for talking to the browser agent
+  (<code>browser_task</code>, <code>message_browser_agent</code>, <code>browser_task_status</code>,
+  <code>cancel_browser_task</code>). CRM work runs in the background, so Ava acknowledges in her own words
+  ("sure, updating her now"), keeps talking, relays the browser agent's questions, and phrases its result when it
+  arrives. Nothing is hard-coded in what she says.</li>
+  <li><b>Why not one agent?</b> The voice model must answer in ~0.5 s and stay short; the browser loop needs many
+  tool calls and can take 5–25 s. Splitting them keeps the conversation responsive and gives each prompt one job.
+  An earlier version gave Ava a <code>create_lead</code> tool directly; she once used it to "update" a lead and
+  created a duplicate. Moving all CRM work behind one hand-off removed that class of mistake.</li>
+  <li><b>Per call:</b> one LiveKit room, one agent process, one Chromium logged in to the CRM. The process exits
+  when the caller hangs up. The server caps concurrent calls (3) and calls per IP (8/hour).</li>
+</ul>
+
+<h2>3 · How the agent reads and acts on the interface</h2>
+<h3>Reading: a page outline instead of screenshots</h3>
+<p>After every action the browser agent receives a compact text outline of the visible page, generated in the
+page by one DOM walk: headings, field labels with their values, and every visible control with a ref number,
+its role, accessible name, current value, checkbox state and dropdown options. A lead's detail page is
+~1.5k characters. Example:</p>
+<div class="box"><pre class="diagram">URL: …#Lead/view/2856681483313ee92        [3] button "Edit" id=edit
+# Overview                                  [6] link "1112131415" field=phoneNumber
+name: Jane Doe                              [1] checkbox "Contact" checked=no      (convert form)
+accountName: ACME                           [24] dropdown "New" field=status → [27] option "In Process"</pre></div>
+<p>The model acts by ref (<code>click(3)</code>, <code>type_text(13, "…")</code>); refs are re-issued on every
+outline, and the active element is outlined in purple on the live video so the caller can follow. Text outlines
+are far cheaper and faster than screenshots for a form-heavy app (each step's model call is ~0.6–1.0 s) and they
+expose state a screenshot hides (values, checked boxes). Two real failures shaped the outline: dropdown options
+were invisible (a status change took 26 steps by arrow keys; 11 after options became clickable), and checkbox
+state was missing (lead conversion looped until 30 steps; 7 steps once the outline said
+<code>checkbox "Contact" checked=no</code>).</p>
+<h3>Acting: skills first, generic tools for everything else</h3>
+<ul>
+  <li><b>Skills</b> are scripted Playwright routines for frequent jobs. <code>create_lead</code> types each field
+  visibly using EspoCRM's stable <code>data-name</code> attributes, picks the dropdown, saves, handles EspoCRM's own
+  "might already exist" dialog, then reads the saved detail view and compares every field with the request.
+  <code>search_records</code> queries any entity through the logged-in app's own AJAX layer (same session and
+  permissions as the UI, ~0.4 s) with optional exact filters, after which the agent opens the record so it is on screen.</li>
+  <li><b>Generic tools</b> (look, click, type, select, navigate, keys, scroll) handle everything else. They contain
+  nothing EspoCRM-specific; the system prompt adds a short map of EspoCRM (where lists, forms and side panels are)
+  and field tips (link fields, dates).</li>
+  <li><b>Verification.</b> The browser agent must re-read every value it set on the saved record before calling
+  <code>finish(success, summary)</code>; Ava only repeats what that summary says.</li>
+</ul>
+<p class="note">Everything that changes CRM data happens through the UI. The in-page AJAX is used only for reads
+(search, duplicate check); evals use the REST API only to set up, verify and clean up test data.</p>
+
+<h2>4 · Choices, with the measurements behind them</h2>
+<table>
+  <tr><th>Layer</th><th>Choice</th><th>Why (measured unless noted)</th></tr>
+  <tr><td>Transport</td><td>LiveKit Cloud + Agents</td><td>WebRTC, turn handling, interruptions, text streams for captions and agent events, screen-share track for the browser view.</td></tr>
+  <tr><td>STT + end-of-turn</td><td>Deepgram Flux</td><td>End-of-turn 0.3–1.1 s vs 1.2–2.0 s with Nova-3 + LiveKit's text turn detector on the same calls; one model instead of two.</td></tr>
+  <tr><td>Room noise</td><td>Krisp BVC + adaptive interruptions</td><td>Background speech was being heard as the caller and cancelled replies. Adaptive interruption is on by default only in dev mode; production must enable it explicitly (found from call logs).</td></tr>
+  <tr><td>Voice LLM</td><td>Gemini 3.1 Flash-Lite, Vertex AI</td><td>70/70 on the conversation eval, 0.6–0.85 s median first token, no hidden reasoning. See table below.</td></tr>
+  <tr><td>Browser LLM</td><td>Gemini 3.1 Flash-Lite, Vertex AI</td><td>6/6 tasks at 9.0 s median vs Gemini 3.8 Flash 6/6 at 16.5 s; now 16/16 at 7.5 s.</td></tr>
+  <tr><td>Voice</td><td>Fish Audio S2.1 Pro</td><td>Chosen by ear from 14 samples across 7 providers; 0.25 s median first audio in calls; supports emotion cues. Deepgram Aura-2 fallback so a quota or outage never makes Ava silent.</td></tr>
+  <tr><td>Hosting</td><td>GCP c3-standard-4, us-east4</td><td>Co-located with LiveKit US East, Deepgram and the CRM. A 2-vCPU e2-medium starved under two concurrent calls (load 12, VAD 34 s behind real time).</td></tr>
+</table>
+<h3>Model selection (conversation eval, each case run twice)</h3>
+<table>
+  <tr><th>Model · route</th><th class="n">Pass</th><th class="n">First token p50</th><th class="n">p90</th><th>Note</th></tr>
+  <tr><td><b>Gemini 3.1 Flash-Lite · Vertex (chosen)</b></td><td class="n">70/70</td><td class="n">0.85 s</td><td class="n">1.51 s</td><td>latest: 35 cases, longer CRM-wide prompt</td></tr>
+  <tr><td>same, before the CRM-wide prompt</td><td class="n">62/62</td><td class="n">0.64 s</td><td class="n">0.78 s</td><td>31 cases</td></tr>
+  <tr><td>Gemini 3.6 Flash · OpenRouter</td><td class="n">50/50</td><td class="n">1.07–1.30 s</td><td class="n">1.45 s</td><td>previous choice; retired on Vertex 19 Nov 2026</td></tr>
+  <tr><td>Gemini 3.8 Flash · Vertex</td><td class="n">50/50</td><td class="n">2.09 s</td><td class="n">11.6 s</td><td>cannot turn thinking below "low"</td></tr>
+  <tr><td>Gemini 3.7 Flash · OpenRouter</td><td class="n">50/50</td><td class="n">2.16 s</td><td class="n">2.91 s</td><td>reasons up to 450 tokens first</td></tr>
+  <tr><td>Gemini 3.5 Flash · Vertex</td><td class="n">48/50</td><td class="n">2.94 s</td><td class="n">4.75 s</td><td></td></tr>
+  <tr><td>Gemini 3.5 Flash-Lite · Vertex</td><td class="n">39/50</td><td class="n">0.62 s</td><td class="n">0.70 s</td><td>drops the company field</td></tr>
+  <tr><td>Claude Haiku 5.5 · OpenRouter</td><td class="n">48/50</td><td class="n">2.02 s</td><td class="n">–</td><td>round 2, 25 cases</td></tr>
+  <tr><td>GPT-6 Luna · OpenRouter</td><td class="n">47/50</td><td class="n">1.34 s</td><td class="n">–</td><td>repeated a sentence in 2 runs</td></tr>
+</table>
+
+<h2>5 · Latency</h2>
+<p>Measured from the agent's own timeline (user stopped speaking → first agent audio sent), per turn, on real calls
+through the public page from India to the US East server. The network leg back to the caller (~0.2–0.3 s from India)
+is not included. These calls predate the final, longer CRM-wide prompt, which raised the eval's median first token
+from 0.64 s to 0.85 s, so expect roughly 0.2 s more until the prompt is trimmed.</p>
+<table>
+  <tr><th>Stage (typical turn)</th><th class="n">Median</th><th class="n">Range</th></tr>
+  <tr><td>End of turn (Flux)</td><td class="n">0.4 s</td><td class="n">0.1–1.1 s</td></tr>
+  <tr><td>LLM first token (Gemini 3.1 Flash-Lite, Vertex)</td><td class="n">0.6 s</td><td class="n">0.4–1.2 s</td></tr>
+  <tr><td>Voice first audio (Fish S2.1 Pro, streaming)</td><td class="n">0.25 s</td><td class="n">0.2–1.0 s</td></tr>
+  <tr><td><b>Caller quiet → Ava speaking</b></td><td class="n"><b>~1.5 s</b></td><td class="n">0.8–2.5 s</td></tr>
+</table>
+<table>
+  <tr><th>Milestone</th><th class="n">Reply time (median)</th></tr>
+  <tr><td>Home server, Nova-3 + text turn detector, Gemini via OpenRouter</td><td class="n">2.0–3.8 s</td></tr>
+  <tr><td>GCP US East, Deepgram Flux (after fixing interruptions)</td><td class="n">1.66 s</td></tr>
+  <tr><td>+ Gemini 3.1 Flash-Lite on Vertex (no OpenRouter hop)</td><td class="n">1.46 s</td></tr>
+  <tr><td>+ Fish voice (slower first audio than ElevenLabs Flash, warmer sound)</td><td class="n">1.53 s</td></tr>
+</table>
+<p><b>CRM work</b> (browser-task eval, 16 jobs): new lead 4.5 s · edit a field 6–10 s · lookups 2–3 s · linked
+task/contact 12–14 s · meeting 27 s (slowest: date and time widgets). Ava talks through these: she acknowledges
+immediately, gives a short update if a job runs past ~8 s and the line is quiet, and announces the result when it
+lands (and repeats it if the caller talked over it).</p>
+<p><b>Context.</b> Natural human turn gaps are ~200 ms; most cascaded production voice agents land around 1–1.5 s.
+At ~1.5 s Ava is in that range, not best in class. The remaining budget is mostly end-of-turn and LLM time; options
+are in §8.</p>
+
+<h2>6 · Evaluation</h2>
+<table>
+  <tr><th>Eval</th><th>What it checks</th><th class="n">Result</th></tr>
+  <tr><td>Unit tests (<code>tests/</code>)</td><td>confirmation guard, read-back compare, emotion-tag stripping (incl. tags split across tokens), result hand-off to Ava, re-announcing a talked-over result</td><td class="n">23/23</td></tr>
+  <tr><td>Conversation eval (<code>evals/llm_eval.py</code>)</td><td>35 ASR-style dialogues on the exact production prompt and tools: spelled names, "at the rate", corrections, "yes but…", duplicates, edits needing read-back, meetings, delete refusal, counts, off-topic. Scores tool, values inside the hand-off instructions, and timing (no write before a clear yes).</td><td class="n">70/70</td></tr>
+  <tr><td>Browser tasks (<code>evals/browser_tasks.py</code>)</td><td>16 real jobs on the demo CRM, each with fresh test data created over REST, verified over REST, then deleted: create, duplicate (must ask first), 5 edits, lookup, ambiguous edit (two identical leads: must ask), new account, contact linked to an account, task on a lead, 30-min meeting on a date, opportunity, lead conversion, count question checked against the real total.</td><td class="n">16/16</td></tr>
+  <tr><td>Simulated calls (<code>evals/sim_call.py</code>)</td><td>Full voice loop: an LLM caller with a persona speaks (TTS) into the LiveKit room; outcome checked in the CRM; caller-side latency recorded; optional background-talker noise.</td><td class="n" id="simres">2/4</td></tr>
+</table>
+<p><b>Simulated calls, latest run (2/4):</b> happy path and decline passed. <i>One breath</i> failed for a real
+reason: speech-to-text heard "Whitaker" as "Whittaker" (so the name and email were saved with that spelling), and Ava
+garbled the phone digits in her read-back (the saved phone was correct); the simulated caller said yes anyway. A human
+might have caught it; Ava should ask for spelling on surnames she hasn't confirmed. <i>Correction</i> failed in the
+test setup, not the agent: the caller's second utterance never reached the room (the agent registered no audio and a
+WebRTC publisher renegotiation error; the simulated caller ran on a home connection), so the call timed out.
+Caller-side reply latency in these calls was 1.2–2.8 s, including the network to India.</p>
+<p class="note">All runs are committed under <code>evals/results/</code>. Eval LLM calls run on Vertex from the server; evals
+never run on the live server while it serves calls (that is how the CPU-starvation bug was found).</p>
+
+<h2>7 · Safety and reliability</h2>
+<ul>
+  <li><b>No write without a yes, in code.</b> Any job with <code>changes_data=true</code> is refused unless the
+  caller's latest utterance is an explicit yes with no correction ("yes, but…" fails).</li>
+  <li><b>Verified, grounded reporting.</b> The browser agent verifies on screen; every one of Ava's turns gets the
+  real job status injected ("still in progress / finished and verified: … / did not complete: …"), so she cannot
+  claim an unfinished job is done.</li>
+  <li><b>Ambiguity is asked, not guessed.</b> Several matches → the browser agent asks what tells them apart.</li>
+  <li><b>Fallbacks:</b> LLM (Vertex → OpenRouter), voice (Fish → Deepgram, with emotion tags stripped), retries with
+  backoff on Vertex 429/5xx (seen in testing on a new project).</li>
+  <li><b>Resource hygiene:</b> the agent leaves when the caller hangs up; the concurrency cap counts only rooms with a
+  real caller (it previously counted rooms the agent was still leaving, which locked users out).</li>
+</ul>
+
+<h2>8 · Limitations and next steps</h2>
+<ul>
+  <li><b>Read-backs of long numbers</b> can be garbled by the LLM even when the saved value is right; a deterministic
+  formatter for phone numbers and emails in the read-back would remove that.</li>
+  <li><b>Breadth vs depth of testing.</b> 35 dialogues and 16 CRM jobs, not thousands of real calls. Speech-to-text is
+  weak on some Indian names and emails ("Pankaj" → "Bonkers"); spelling recovers it, at the cost of turns. Next:
+  keyterm boosting from CRM names, and replaying real call audio in CI.</li>
+  <li><b>Browser automation beyond EspoCRM is unproven.</b> The tools are generic, but logins, expiring sessions,
+  unexpected modals and recovering from a wrong click need work. Page text is untrusted input to the browser agent
+  (prompt injection via a record's fields); it can't delete or mass-update, but a production version needs an allowlist of actions and
+  per-tenant review.</li>
+  <li><b>Latency.</b> Speculative LLM start on Flux's early end-of-turn signal; a faster voice (ElevenLabs Flash is
+  ~0.15 s vs Fish ~0.25 s); skills for more frequent jobs (scheduling) to cut 20+ s jobs to a few seconds; a
+  learned skill library where the generic agent records a successful path and later replays it.</li>
+  <li><b>Scale.</b> One VM, one Chromium per call (~3 concurrent calls), free-tier limits (LiveKit: 5 concurrent TTS
+  connections, $2.50 inference credit). Next: browser pool, autoscaling workers, monitoring and alerting.</li>
+  <li><b>Product.</b> Phone numbers (LiveKit SIP), caller authentication, data-retention policy for call logs.</li>
+</ul>
+
+<h2>9 · Problems found along the way</h2>
+<table>
+  <tr><th>Symptom</th><th>Cause</th><th>Fix</th></tr>
+  <tr><td>Choppy audio on the first server</td><td>Two calls + an eval on 2 shared vCPUs</td><td>c3-standard-4; never run evals on the live server</td></tr>
+  <tr><td>4–12 s stalls only in production</td><td>Adaptive interruptions are off by default in production mode; noise interrupted replies</td><td>Enable explicitly; Krisp BVC; browser AEC/NS</td></tr>
+  <tr><td>"Updated" lead was actually a duplicate</td><td>Voice LLM used create for an edit and paraphrased the result</td><td>All CRM work behind one hand-off; result wording; eval cases</td></tr>
+  <tr><td>Results never reached Ava</td><td>A logging call crashed before the hand-off</td><td>Fix + per-turn job status + regression tests</td></tr>
+  <tr><td>Gemini 3.6 Flash "not found" on Vertex</td><td>Retired on Vertex 19 Nov 2026; new projects blocked</td><td>Re-ran the eval; moved to 3.1 Flash-Lite</td></tr>
+  <tr><td>Simulated-call latency 1 s too high</td><td>Harness stamped end-of-speech before audio was sent</td><td>Stamp after playout, trim TTS silence</td></tr>
+</table>
+
+</body>
+</html>
