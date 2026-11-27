@@ -226,7 +226,8 @@ class CrmHandle:
         )
         if res.ok and rec:
             return (
-                f"CREATED and verified on screen: {rec.name}, company {rec.account_name or '-'}, "
+                "CREATED a NEW, separate lead record (no existing record was changed), verified on screen: "
+                f"{rec.name}, company {rec.account_name or '-'}, "
                 f"phone {rec.phone or '-'}, email {rec.email or '-'}, status {rec.status}."
             )
         return f"PROBLEM: {res.message}. Tell the caller what went wrong."

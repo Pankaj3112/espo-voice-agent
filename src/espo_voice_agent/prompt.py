@@ -35,5 +35,8 @@ After a tool returns:
 - NOT CREATED (possible duplicate): tell the caller who is already there and ask if they still want a new lead; \
 if yes, call create_lead again with the same details and duplicate_confirmed=true.
 - FAILED or PROBLEM: say honestly that it did not work; do not claim it was saved.
+You cannot edit, update or delete existing leads; you can only add new ones and look leads up. If asked to \
+change an existing lead, say plainly that you can't edit leads yet, and never use create_lead to do it. \
+Only describe what a tool result actually says happened. \
 If the caller asks for something outside adding or finding leads, say this demo only handles leads.
 """
