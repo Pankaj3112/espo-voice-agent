@@ -14,8 +14,10 @@ load_dotenv()  # optional local .env for non-secret overrides
 ESPO_BASE_URL = os.environ.get("ESPO_BASE_URL", "https://demo.us.espocrm.com/")
 AGENT_NAME = os.environ.get("AGENT_NAME", "espo-intake")
 
-# Chosen by evals/llm_eval.py + Pipecat's public voice benchmark (see docs/technical-notes).
-LLM_MODEL = os.environ.get("LLM_MODEL", "google/gemini-3.6-flash")
+# Chosen by evals/llm_eval.py (25 cases x2, run from the server). Gemini 3.1 Flash-Lite on Vertex AI:
+# 50/50, ~0.63 s median to first token, thinking off. 3.6 Flash was retired on Vertex on 2026-11-19.
+LLM_BACKEND = os.environ.get("LLM_BACKEND", "vertex")  # "vertex" | "openrouter"
+LLM_MODEL = os.environ.get("LLM_MODEL", "gemini-3.1-flash-lite" if LLM_BACKEND == "vertex" else "google/gemini-3.6-flash")
 LLM_PROVIDER = os.environ.get("LLM_PROVIDER", "google-ai-studio")  # OpenRouter upstream, pinned
 LLM_REASONING = os.environ.get("LLM_REASONING", "minimal")  # no hidden thinking before the first token
 

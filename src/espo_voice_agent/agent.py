@@ -245,7 +245,19 @@ class CrmHandle:
         return f"{len(res.matches)} match(es): {rows}"
 
 
-def build_llm() -> openai.LLM:
+def build_llm():
+    if config.LLM_BACKEND == "vertex":
+        from livekit.plugins import google
+
+        # Credentials: the VM's service account (Application Default Credentials).
+        return google.LLM(
+            model=config.LLM_MODEL,
+            vertexai=True,
+            project=config.GCP_PROJECT,
+            location=config.GCP_LOCATION,
+            temperature=0.2,
+            thinking_config={"thinking_level": config.LLM_REASONING},
+        )
     return openai.LLM.with_openrouter(
         model=config.LLM_MODEL,
         provider={"order": [config.LLM_PROVIDER], "allow_fallbacks": True},
