@@ -4,7 +4,7 @@
 agent does it in the real [EspoCRM demo](https://demo.us.espocrm.com/) by driving a Chromium browser that you
 watch live: adding leads, updating records, scheduling meetings, converting leads, answering questions.
 
-**Live demo:** <https://34-186-111-176.sslip.io>  ·  **Technical notes (PDF):** <https://34-186-111-176.sslip.io/notes.pdf> (also [`docs/technical-notes.pdf`](docs/technical-notes.pdf))
+**Live demo:** <https://ava.beniwalpankaj.com>  ·  **Technical notes (PDF):** <https://ava.beniwalpankaj.com/notes.pdf> (also [`docs/technical-notes.pdf`](docs/technical-notes.pdf))
 
 > Try: *"Add Jane Doe from Acme Robotics, phone 415 555 0142, email jane dot doe at acme dot com."*
 > Then: *"Change her title to Head of Sales."* or *"Schedule an intro call with her on Tuesday at 3 pm."*

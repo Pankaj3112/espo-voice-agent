@@ -349,7 +349,7 @@ svg.chart {{ width: 100%; height: auto; }}
         <div class="kpi"><b>{kpi_llm}</b><span>conversation tests: right action, right values, right moment</span></div>
         <div class="kpi"><b>0</b><span>writes without your spoken “yes” — enforced in code</span></div>
       </div>
-      <div class="links"><b>Live demo</b>&nbsp; 34-186-111-176.sslip.io<br><b>Code</b>&nbsp; github.com/Pankaj3112/espo-voice-agent</div>
+      <div class="links"><b>Live demo</b>&nbsp; ava.beniwalpankaj.com<br><b>Code</b>&nbsp; github.com/Pankaj3112/espo-voice-agent</div>
     </div>
     <div>
       <div class="shot"><div class="bar"><i></i><i></i><i></i><em>demo.us.espocrm.com — the agent's browser, streamed live</em></div><img src="{img(ASSETS / "espo_lead.png")}"></div>
