@@ -43,7 +43,7 @@ _SNAPSHOT_JS = r"""
     return s.visibility !== 'hidden' && s.display !== 'none' && Number(s.opacity) > 0.05;
   };
   const clean = (t, n) => (t || '').replace(/\s+/g, ' ').trim().slice(0, n);
-  const isCtl = (el) => el.matches('a[href],button,input,select,textarea,[role=button],[role=link],[role=menuitem],[role=option],[role=tab],[role=checkbox],[contenteditable=true],.selectize-input,[data-action]');
+  const isCtl = (el) => el.matches('a[href],button,input,select,textarea,[role=button],[role=link],[role=menuitem],[role=option],[role=tab],[role=checkbox],[contenteditable=true],.selectize-input,.selectize-dropdown .option,[data-action]');
   const nameOf = (el) => {
     let n = clean(el.innerText, 80) || el.getAttribute('aria-label') || '';
     if (!n && el.id) { const l = document.querySelector(`label[for="${el.id}"]`); if (l) n = l.innerText; }
@@ -61,7 +61,7 @@ _SNAPSHOT_JS = r"""
       ref += 1; el.setAttribute('data-agent-ref', String(ref));
       const tag = el.tagName.toLowerCase();
       const type = el.getAttribute('type') || '';
-      const role = el.getAttribute('role') || (tag === 'a' ? 'link' : tag === 'select' ? 'select' : tag === 'textarea' ? 'textarea' : tag === 'input' ? `input${type ? ':' + type : ''}` : el.classList.contains('selectize-input') ? 'dropdown' : 'button');
+      const role = el.getAttribute('role') || (tag === 'a' ? 'link' : tag === 'select' ? 'select' : tag === 'textarea' ? 'textarea' : tag === 'input' ? `input${type ? ':' + type : ''}` : el.classList.contains('selectize-input') ? 'dropdown' : el.classList.contains('option') ? 'option' : 'button');
       const own = el.getAttribute('data-name') || el.getAttribute('data-action') || el.getAttribute('name');
       const field = el.parentElement?.closest('[data-name]')?.getAttribute('data-name');
       let extra = own ? ` id=${own}` : '';
@@ -96,7 +96,8 @@ with click / type_text / select_option. Refs change after every action, so alway
 
 Work efficiently: prefer direct navigation (e.g. go_to("#Lead") for the leads list, the global search box, \
 or a record's detail URL) over exploring. Typical edit flow in EspoCRM: open the record, click Edit, change \
-the field, click Save, then read the detail view.
+the field, click Save, then read the detail view. For a dropdown, click it, then click the wanted `option` in \
+the next outline.
 
 Rules:
 - Never invent data. Only enter values that are in the task or in messages from the voice assistant.

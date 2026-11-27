@@ -27,8 +27,9 @@ GCP_PROJECT = os.environ.get("GCP_PROJECT", "espo-voice-agent-1127")
 GCP_LOCATION = os.environ.get("GCP_LOCATION", "global")
 
 # Browser agent (second LLM that operates the UI). Accuracy matters more than first-token speed here.
-BROWSER_LLM_MODEL = os.environ.get("BROWSER_LLM_MODEL", "gemini-3.8-flash")
-BROWSER_LLM_THINKING = os.environ.get("BROWSER_LLM_THINKING", "low")
+# evals/browser_tasks.py: 3.1 Flash-Lite 6/6 at 9.0 s median vs 3.8 Flash 6/6 at 16.5 s.
+BROWSER_LLM_MODEL = os.environ.get("BROWSER_LLM_MODEL", "gemini-3.1-flash-lite")
+BROWSER_LLM_THINKING = os.environ.get("BROWSER_LLM_THINKING", "minimal")
 BROWSER_TASK_TIMEOUT_S = float(os.environ.get("BROWSER_TASK_TIMEOUT_S", "150"))
 BROWSER_TASK_MAX_STEPS = int(os.environ.get("BROWSER_TASK_MAX_STEPS", "30"))
 

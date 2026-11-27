@@ -131,6 +131,16 @@ function upsertMessage(segId, who, text) {
 function addStep(ev) {
   const list = $('steps');
   list.querySelector('.empty')?.remove();
+  if (ev.type === 'task') {  // browser-agent task: show its plain-language progress, not raw clicks
+    if (ev.kind === 'step') return;
+    const tags = { start: '▶', progress: '…', question: '?', answer: '↩', message: '↩', done: '✓', failed: '✕' };
+    const li = document.createElement('li');
+    li.className = ev.kind === 'done' ? 'done' : ev.kind === 'failed' ? 'error' : 'start';
+    li.innerHTML = `<span class="tag">${tags[ev.kind] || '·'}</span><span></span>`;
+    li.lastChild.textContent = (ev.kind === 'start' ? 'Browser agent: ' : '') + ev.text;
+    list.appendChild(li); list.scrollTop = list.scrollHeight;
+    return;
+  }
   const names = { duplicate_check: 'Check for duplicates', create_lead: 'Fill & save Lead form', find_lead: 'Search Leads' };
   const li = document.createElement('li');
   li.className = ev.state;
