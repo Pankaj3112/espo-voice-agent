@@ -73,6 +73,10 @@ class IntakeAgent(Agent):
 
     async def on_user_turn_completed(self, turn_ctx, new_message) -> None:
         self.last_user_text = new_message.text_content or ""
+        # Ground every reply in the real state of the CRM job, so the LLM never has to guess
+        # whether something finished (results are also pushed to it as soon as they arrive).
+        if self.crm is not None and (status := self.crm.job_context()):
+            turn_ctx.add_message(role="assistant", content=status)
 
     @function_tool()
     async def create_lead(
@@ -341,6 +345,17 @@ class CrmHandle:
         await self.emit(type="task", id=t.id, kind="message", text=message)
         return "Passed on to the browser agent."
 
+    def job_context(self) -> str | None:
+        t = self.task
+        if not t:
+            return None
+        if t.status in ("running", "waiting_for_caller"):
+            q = f" It is waiting for the caller to answer: {t.pending_question!r}." if t.pending_question else ""
+            return f"[CRM job status] Still in progress: {t.goal!r}.{q} Nothing about it is confirmed yet."
+        if t.status == "done":
+            return f"[CRM job status] Finished and verified: {t.summary}"
+        return f"[CRM job status] Did not complete ({t.status}): {t.summary}"
+
     def task_status(self) -> str:
         t = self.task
         if not t:
@@ -355,7 +370,7 @@ class CrmHandle:
 
     async def on_task_event(self, task: BrowserTask, kind: str, text: str) -> None:
         """Progress goes to the screen; questions and results go to the voice LLM, which phrases them."""
-        self.slog.write("task_event", id=task.id, kind=kind, text=text)
+        self.slog.write("task_event", id=task.id, event=kind, text=text)
         await self.emit(type="task", id=task.id, kind=kind, text=text)
         if kind in ("step", "progress"):
             self._last_progress = text
