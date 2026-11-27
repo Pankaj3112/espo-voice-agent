@@ -1,0 +1,140 @@
+{
+ "summary": {
+  "gemini-3.8-flash": {
+   "pass": 6,
+   "n": 6,
+   "median_s": 16.5,
+   "max_s": 30.3
+  }
+ },
+ "rows": [
+  {
+   "model": "gemini-3.8-flash",
+   "task": "edit_phone",
+   "ok": true,
+   "status": "done",
+   "summary": "Added phone number 415 555 0199 to lead Mara Lindqvist55 at Quarry Labs.",
+   "seconds": 13.8,
+   "steps": 8,
+   "llm_ms_p50": 1769,
+   "events": [
+    "progress: Finding lead Mara Lindqvist55",
+    "step: go_to {\"target\": \"#Lead\"}",
+    "step: click {\"ref\": 17}",
+    "progress: Adding phone number to Mara Lindqvist55",
+    "step: click {\"ref\": 3}",
+    "step: type_text {\"submit\": false, \"text\": \"415 555 0199\", \"ref\": 13}",
+    "step: click {\"ref\": 1}",
+    "done: Added phone number 415 555 0199 to lead Mara Lindqvist55 at Quarry Labs."
+   ]
+  },
+  {
+   "model": "gemini-3.8-flash",
+   "task": "edit_email",
+   "ok": true,
+   "status": "done",
+   "summary": "Updated the email address for lead Lena Brandt58 (Orbit Robotics) to lena.new@orbit.com.",
+   "seconds": 14.1,
+   "steps": 10,
+   "llm_ms_p50": 1426,
+   "events": [
+    "progress: finding Lena Brandt58",
+    "step: go_to {\"target\": \"#Lead\"}",
+    "step: type_text {\"ref\": 3, \"submit\": true, \"text\": \"Lena Brandt58\"}",
+    "progress: opening Lena Brandt58",
+    "step: click {\"ref\": 18}",
+    "step: click {\"ref\": 3}",
+    "progress: updating email to lena.new@orbit.com",
+    "step: type_text {\"text\": \"lena.new@orbit.com\", \"ref\": 8, \"submit\": false}",
+    "step: click {\"ref\": 1}",
+    "done: Updated the email address for lead Lena Brandt58 (Orbit Robotics) to lena.new@orbit.com."
+   ]
+  },
+  {
+   "model": "gemini-3.8-flash",
+   "task": "set_title",
+   "ok": true,
+   "status": "done",
+   "summary": "Set the job title of lead Ines Brandt97 at Quarry Labs to Head of Operations.",
+   "seconds": 16.5,
+   "steps": 10,
+   "llm_ms_p50": 1803,
+   "events": [
+    "progress: Searching for lead Ines Brandt97",
+    "step: go_to {\"target\": \"#Lead\"}",
+    "step: type_text {\"text\": \"Ines Brandt97\", \"submit\": true, \"ref\": 3}",
+    "step: click {\"ref\": 18}",
+    "progress: Editing job title",
+    "step: click {\"ref\": 3}",
+    "step: type_text {\"submit\": false, \"text\": \"Head of Operations\", \"ref\": 17}",
+    "progress: Saving changes",
+    "step: click {\"ref\": 1}",
+    "done: Set the job title of lead Ines Brandt97 at Quarry Labs to Head of Operations."
+   ]
+  },
+  {
+   "model": "gemini-3.8-flash",
+   "task": "status",
+   "ok": true,
+   "status": "done",
+   "summary": "The status of lead Lena Okonkwo44 from Nimbus Analytics has been changed to In Process.",
+   "seconds": 30.3,
+   "steps": 15,
+   "llm_ms_p50": 1433,
+   "events": [
+    "step: type_text {\"submit\": true, \"ref\": 3, \"text\": \"Lena Okonkwo44\"}",
+    "progress: Opening Lena Okonkwo44",
+    "step: click {\"ref\": 18}",
+    "progress: Updating status to In Process",
+    "step: click {\"ref\": 3}",
+    "step: click {\"ref\": 24}",
+    "step: press_key {\"key\": \"ArrowDown\"}",
+    "step: press_key {\"key\": \"ArrowDown\"}",
+    "step: press_key {\"key\": \"Enter\"}",
+    "progress: Saving changes",
+    "step: click {\"ref\": 1}",
+    "done: The status of lead Lena Okonkwo44 from Nimbus Analytics has been changed to In Process."
+   ]
+  },
+  {
+   "model": "gemini-3.8-flash",
+   "task": "add_note",
+   "ok": true,
+   "status": "done",
+   "summary": "Updated the description for lead Mara Brandt40 at Orbit Robotics to \"Interested in a pilot in Q1.\"",
+   "seconds": 24.9,
+   "steps": 10,
+   "llm_ms_p50": 1415,
+   "events": [
+    "progress: Finding Mara Brandt40",
+    "step: go_to {\"target\": \"#Lead\"}",
+    "step: type_text {\"text\": \"Mara Brandt40\", \"ref\": 3, \"submit\": true}",
+    "step: click {\"ref\": 18}",
+    "progress: Updating description",
+    "step: click {\"ref\": 3}",
+    "step: type_text {\"submit\": false, \"ref\": 32, \"text\": \"Interested in a pilot in Q1.\"}",
+    "progress: Saving lead",
+    "step: click {\"ref\": 1}",
+    "done: Updated the description for lead Mara Brandt40 at Orbit Robotics to \"Interested in a pilot in Q1.\""
+   ]
+  },
+  {
+   "model": "gemini-3.8-flash",
+   "task": "read_only",
+   "ok": true,
+   "status": "done",
+   "summary": "Ravi Brandt82 is with the company Bluefin Logistics.",
+   "seconds": 13.5,
+   "steps": 5,
+   "llm_ms_p50": 1584,
+   "events": [
+    "progress: Looking up lead Ravi Brandt82",
+    "step: go_to {\"target\": \"#Lead\"}",
+    "step: type_text {\"ref\": 3, \"submit\": true, \"text\": \"Ravi Brandt82\"}",
+    "step: click {\"ref\": 18}",
+    "done: Ravi Brandt82 is with the company Bluefin Logistics."
+   ]
+  }
+ ],
+ "ran_at": "2026-11-27 15:43"
+}

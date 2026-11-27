@@ -29,6 +29,7 @@ from livekit.plugins import deepgram, elevenlabs, noise_cancellation, openai, si
 from playwright.async_api import async_playwright
 
 from . import config
+from .browser_agent import BrowserAgent, BrowserTask
 from .espo import EspoBrowser, LeadInput
 from .prompt import GREETING, INSTRUCTIONS
 from .screen import BrowserStreamer
@@ -86,7 +87,7 @@ class IntakeAgent(Agent):
         notes: str | None = None,
         duplicate_confirmed: bool = False,
     ) -> str:
-        """Create a new Lead in EspoCRM. Only call this after the caller has confirmed the details you read back.
+        """Create a NEW Lead in EspoCRM (fast, scripted). Only call this after the caller has confirmed the details you read back.
 
         Args:
             first_name: Lead's first name, correctly capitalised.
@@ -113,16 +114,52 @@ class IntakeAgent(Agent):
             source="Call",
             description=_clean(notes),
         )
-        return await self.crm.create(context, lead, duplicate_confirmed)
+        return await self.crm.create(lead, duplicate_confirmed)
+
+    @function_tool()
+    async def browser_task(self, context: RunContext, instructions: str, changes_data: bool) -> str:
+        """Hand a job to the browser agent, which operates the EspoCRM web app like a person (open records, edit
+        fields, change status, add notes, look things up). It runs in the background; you keep talking. Its result,
+        questions and progress come back to you automatically.
+
+        Args:
+            instructions: Plain-language task with every value needed, e.g. "Set the phone of lead Jane Doe at ACME to 1112131415".
+            changes_data: True if the task edits, adds or deletes anything (then the caller must have just confirmed it).
+        """
+        if changes_data and not is_confirmation(self.last_user_text):
+            return (
+                "NOT CONFIRMED: read the change back to the caller and get a clear yes first "
+                f"(their last reply was {self.last_user_text!r}). Nothing was started."
+            )
+        return await self.crm.start_browser_task(instructions)
+
+    @function_tool()
+    async def message_browser_agent(self, context: RunContext, message: str) -> str:
+        """Send the running browser task the caller's answer to its question, or extra details/corrections.
+
+        Args:
+            message: What to pass on, in plain language.
+        """
+        return await self.crm.message_task(message)
+
+    @function_tool()
+    async def browser_task_status(self, context: RunContext) -> str:
+        """What the browser agent is doing right now (use if the caller asks how it's going)."""
+        return self.crm.task_status()
+
+    @function_tool()
+    async def cancel_browser_task(self, context: RunContext) -> str:
+        """Stop the running browser task (if the caller changes their mind)."""
+        return await self.crm.cancel_task()
 
     @function_tool()
     async def find_lead(self, context: RunContext, query: str) -> str:
-        """Search existing Leads in EspoCRM by name, company, email or phone. Use when the caller asks whether a lead already exists.
+        """Quick search of existing Leads by name, company, email or phone (returns name, email, phone, status).
 
         Args:
             query: Text to search for, e.g. a last name or company.
         """
-        return await self.crm.search(context, query)
+        return await self.crm.search(query)
 
 
 def _clean(v: str | None) -> str | None:
@@ -141,6 +178,11 @@ class CrmHandle:
         self.start_error: Exception | None = None
         self._pw = None
         self.streamer: BrowserStreamer | None = None
+        self.session: AgentSession | None = None
+        self.agent: BrowserAgent | None = None
+        self.task: BrowserTask | None = None
+        self._last_progress = ""
+        self._heartbeat: asyncio.Task | None = None
 
     async def start(self) -> None:
         t = time.perf_counter()
@@ -168,6 +210,10 @@ class CrmHandle:
             self.ready.set()
 
     async def close(self) -> None:
+        if self.agent:
+            await self.agent.cancel()
+        if self._heartbeat:
+            self._heartbeat.cancel()
         if self.streamer:
             await self.streamer.stop()
         await self.browser.close()
@@ -186,26 +232,50 @@ class CrmHandle:
             return "The CRM browser failed to start, so nothing was saved. Apologise and suggest trying again shortly."
         return None
 
-    async def create(self, context: RunContext, lead: LeadInput, duplicate_confirmed: bool) -> str:
-        # Speak while the browser works so the caller is never left in silence.
-        context.session.say("Okay, one moment while I enter that in the CRM.", add_to_chat_ctx=False)
+    # ---- background work -------------------------------------------------------------------
+    # Browser work never blocks the conversation: tools start it and return at once, the voice
+    # LLM says something natural in its own words, and the outcome is handed back to it later.
+
+    def busy(self) -> str | None:
+        t = self.task
+        if t and t.status in ("running", "waiting_for_caller"):
+            return f"BUSY: the browser is still working on: {t.goal!r} ({t.status}). Wait for it, or cancel it first."
+        return None
+
+    async def create(self, lead: LeadInput, duplicate_confirmed: bool) -> str:
         if err := await self._wait_ready():
             return err
+        if b := self.busy():
+            return b
+        if not duplicate_confirmed:  # fast (~0.1 s), so it stays synchronous
+            await self.emit(type="tool", name="duplicate_check", state="start")
+            dup = await self.browser.find_duplicates(lead)
+            self.slog.write("tool", name="find_duplicates", ok=dup.ok, n=len(dup.matches), timings=dup.timings_ms)
+            await self.emit(type="tool", name="duplicate_check", state="done", detail=dup.message)
+            if dup.matches:
+                m = dup.matches[0]
+                return (
+                    "NOT CREATED: possible duplicate already in the CRM: "
+                    f"{m['name']} ({m['accountName'] or 'no company'}, {m['emailAddress'] or 'no email'}, "
+                    f"{m['phoneNumber'] or 'no phone'}), created {m['createdAt']}. "
+                    "Tell the caller and ask whether to create a new lead anyway."
+                )
+        self.task = BrowserTask(id=f"c{int(time.time())}", goal=f"create lead {lead.first_name} {lead.last_name}")
+        self.task._runner = asyncio.create_task(self._create_bg(self.task, lead, duplicate_confirmed))  # type: ignore[attr-defined]
+        return (
+            "STARTED: the lead is being entered in the CRM now (takes a few seconds). Tell the caller briefly, in your "
+            "own words, that you're adding it. Do not say it is added until the result arrives."
+        )
+
+    async def _create_bg(self, task: BrowserTask, lead: LeadInput, duplicate_confirmed: bool) -> None:
+        text = await self._create(lead, duplicate_confirmed)
+        task.status = "done" if text.startswith("CREATED") else "failed"
+        task.summary = text
+        await self.on_task_event(task, task.status, text)
+
+    async def _create(self, lead: LeadInput, duplicate_confirmed: bool) -> str:
         t = time.perf_counter()
         try:
-            if not duplicate_confirmed:
-                await self.emit(type="tool", name="duplicate_check", state="start")
-                dup = await self.browser.find_duplicates(lead)
-                self.slog.write("tool", name="find_duplicates", ok=dup.ok, n=len(dup.matches), timings=dup.timings_ms)
-                await self.emit(type="tool", name="duplicate_check", state="done", detail=dup.message)
-                if dup.matches:
-                    m = dup.matches[0]
-                    return (
-                        "NOT CREATED: possible duplicate already in the CRM: "
-                        f"{m['name']} ({m['accountName'] or 'no company'}, {m['emailAddress'] or 'no email'}, "
-                        f"{m['phoneNumber'] or 'no phone'}), created {m['createdAt']}. "
-                        "Tell the caller and ask whether to create a new lead anyway."
-                    )
             await self.emit(type="tool", name="create_lead", state="start", detail=f"{lead.first_name} {lead.last_name}")
             res = await self.browser.create_lead(lead, allow_duplicate=duplicate_confirmed)
         except Exception as e:
@@ -232,10 +302,11 @@ class CrmHandle:
             )
         return f"PROBLEM: {res.message}. Tell the caller what went wrong."
 
-    async def search(self, context: RunContext, query: str) -> str:
-        context.session.say("Let me look that up.", add_to_chat_ctx=False)
+    async def search(self, query: str) -> str:
         if err := await self._wait_ready():
             return err
+        if b := self.busy():
+            return b
         await self.emit(type="tool", name="find_lead", state="start", detail=query)
         res = await self.browser.search_leads(query)
         self.slog.write("tool", name="find_lead", ok=res.ok, n=len(res.matches), timings=res.timings_ms)
@@ -244,6 +315,88 @@ class CrmHandle:
             return f"No leads match '{query}'."
         rows = "; ".join(f"{m['name']} ({m['emailAddress'] or 'no email'}, {m['phoneNumber'] or 'no phone'}, {m['status']})" for m in res.matches)
         return f"{len(res.matches)} match(es): {rows}"
+
+
+    async def start_browser_task(self, instructions: str) -> str:
+        if err := await self._wait_ready():
+            return err
+        if b := self.busy():
+            return b
+        if self.agent is None:
+            self.agent = BrowserAgent(self.browser.page, self.on_task_event, self.browser._lock)
+        self.task = self.agent.start(instructions)
+        self.slog.write("browser_task", id=self.task.id, goal=instructions)
+        await self.emit(type="task", id=self.task.id, kind="start", text=instructions)
+        self._heartbeat = asyncio.create_task(self._heartbeat_loop(self.task))
+        return (
+            f"STARTED browser task {self.task.id}. Tell the caller briefly, in your own words, that you're on it. "
+            "You'll receive its progress, questions and result automatically; never claim it's done before that."
+        )
+
+    async def message_task(self, message: str) -> str:
+        t = self.task
+        if not t or t.status not in ("running", "waiting_for_caller"):
+            return "No browser task is running."
+        t.inbox.put_nowait(message)
+        await self.emit(type="task", id=t.id, kind="message", text=message)
+        return "Passed on to the browser agent."
+
+    def task_status(self) -> str:
+        t = self.task
+        if not t:
+            return "No browser task has run in this call."
+        return f"Task {t.id} ({t.goal!r}) is {t.status}; recent steps: {t.recent(4) or 'starting'}."
+
+    async def cancel_task(self) -> str:
+        if self.agent and self.task and self.task.status in ("running", "waiting_for_caller"):
+            await self.agent.cancel()
+            return "Cancelled. Tell the caller; anything already saved stays saved."
+        return "Nothing is running."
+
+    async def on_task_event(self, task: BrowserTask, kind: str, text: str) -> None:
+        """Progress goes to the screen; questions and results go to the voice LLM, which phrases them."""
+        self.slog.write("task_event", id=task.id, kind=kind, text=text)
+        await self.emit(type="task", id=task.id, kind=kind, text=text)
+        if kind in ("step", "progress"):
+            self._last_progress = text
+            return
+        if kind in ("answer", "message"):
+            return
+        if self.session is None:
+            return
+        if kind == "question":
+            instr = (
+                f"The browser agent needs an answer to continue: {text!r}. Ask the caller this in your own words, then "
+                "pass their answer on with message_browser_agent."
+            )
+        elif kind == "done":
+            instr = (
+                f"Browser result (verified on screen): {text} Tell the caller in one short sentence, in your own words, "
+                "stating only what this says."
+            )
+        else:
+            instr = (
+                f"Browser task did NOT complete: {text} Tell the caller honestly and briefly; don't claim anything was saved "
+                "unless this says so."
+            )
+        self.session.generate_reply(instructions=instr)
+
+    async def _heartbeat_loop(self, task: BrowserTask) -> None:
+        """If a task runs long and the line is quiet, let the voice LLM give a short natural update."""
+        try:
+            await asyncio.sleep(8)
+            while task.status == "running":
+                s = self.session
+                if s and s.agent_state == "listening" and s.user_state != "speaking":
+                    s.generate_reply(
+                        instructions=(
+                            f"The browser task is still running (latest step: {self._last_progress or 'working'}). "
+                            "Give the caller a very short, natural progress update; don't repeat earlier wording."
+                        )
+                    )
+                await asyncio.sleep(12)
+        except asyncio.CancelledError:
+            pass
 
 
 def build_llm():
@@ -369,6 +522,7 @@ async def entrypoint(ctx: JobContext) -> None:
 
     ctx.add_shutdown_callback(_shutdown)
 
+    crm.session = session
     await session.start(
         agent=IntakeAgent(crm),
         room=ctx.room,

@@ -94,9 +94,13 @@ def norm_digits(s: str | None) -> str:
 
 def score(case: dict, calls: list[dict]) -> tuple[bool, str]:
     exp = case["expect"]
-    if exp["tool"] is None:
-        bad = [c for c in calls if c["name"] == "create_lead"]
-        return (not bad, "unexpected create_lead" if bad else "ok")
+    forbid = exp.get("forbid", ["create_lead"])
+    if exp.get("tool_any"):
+        hit = [c for c in calls if c["name"] in exp["tool_any"] and not (c["name"] == "browser_task" and c["args"].get("changes_data"))]
+        return (bool(hit), "ok" if hit else f"want one of {exp['tool_any']} (read-only), got {[c['name'] for c in calls]}")
+    if exp.get("tool") is None:
+        bad = [c for c in calls if c["name"] in forbid]
+        return (not bad, f"unexpected {[c['name'] for c in bad]}" if bad else "ok")
     match = [c for c in calls if c["name"] == exp["tool"]]
     if not match:
         return False, f"no {exp['tool']} call (got {[c['name'] for c in calls]})"
@@ -107,6 +111,10 @@ def score(case: dict, calls: list[dict]) -> tuple[bool, str]:
             ok = norm_digits(got).endswith(norm_digits(want)[-10:]) and len(norm_digits(want)) > 0
         elif k == "query":
             ok = want.lower() in (got or "").lower()
+        elif k == "instructions_digits":
+            ok = want in norm_digits(args.get("instructions"))
+        elif k == "message_contains":
+            ok = want.lower() in (args.get("message") or "").lower()
         elif isinstance(want, bool):
             ok = bool(got) == want
         else:

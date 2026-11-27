@@ -756,5 +756,166 @@
   "expect": {
    "tool": null
   }
+ },
+ {
+  "id": "update_request_needs_confirm",
+  "turns": [
+   [
+    "user",
+    "Can you add the phone number one one one two one three one four one five to Jane Doe at ACME?"
+   ]
+  ],
+  "expect": {
+   "tool": null,
+   "forbid": [
+    "create_lead",
+    "browser_task"
+   ]
+  }
+ },
+ {
+  "id": "update_confirmed",
+  "turns": [
+   [
+    "user",
+    "Can you add the phone number one one one two one three one four one five to Jane Doe at ACME?"
+   ],
+   [
+    "assistant",
+    "I'll add the phone number 111 213 1415 to Jane Doe at ACME, okay?"
+   ],
+   [
+    "user",
+    "Yes."
+   ]
+  ],
+  "expect": {
+   "tool": "browser_task",
+   "args": {
+    "instructions_digits": "1112131415",
+    "changes_data": true
+   }
+  }
+ },
+ {
+  "id": "what_can_you_change",
+  "turns": [
+   [
+    "user",
+    "What can I change for an existing lead?"
+   ]
+  ],
+  "expect": {
+   "tool": null,
+   "forbid": [
+    "create_lead",
+    "browser_task"
+   ]
+  }
+ },
+ {
+  "id": "duplicate_then_wants_update",
+  "turns": [
+   [
+    "user",
+    "Add Jane Doe from ACME, phone one one one two one three one four one five."
+   ],
+   [
+    "assistant",
+    "I have Jane Doe from ACME, phone 111 213 1415. Shall I add that?"
+   ],
+   [
+    "user",
+    "Yes."
+   ],
+   [
+    "tool",
+    {
+     "name": "create_lead",
+     "args": {
+      "first_name": "Jane",
+      "last_name": "Doe",
+      "company": "ACME",
+      "phone": "1112131415"
+     },
+     "output": "NOT CREATED: possible duplicate already in the CRM: Jane Doe (ACME, janedoe@gmail.com, no phone), created 2026-11-27 15:12:18. Tell the caller and ask whether to create a new lead anyway."
+    }
+   ],
+   [
+    "assistant",
+    "Jane Doe from ACME is already in the CRM, without a phone number. Do you still want a new lead?"
+   ],
+   [
+    "user",
+    "No, just put the phone number on the existing one."
+   ]
+  ],
+  "expect": {
+   "tool": null,
+   "forbid": [
+    "create_lead"
+   ]
+  }
+ },
+ {
+  "id": "lookup_details",
+  "turns": [
+   [
+    "user",
+    "What email do we have for Jane Doe at ACME?"
+   ]
+  ],
+  "expect": {
+   "tool_any": [
+    "find_lead",
+    "browser_task"
+   ]
+  }
+ },
+ {
+  "id": "answer_relay",
+  "turns": [
+   [
+    "user",
+    "Change Jane Doe's title to Head of Sales."
+   ],
+   [
+    "assistant",
+    "I'll set Jane Doe's title to Head of Sales, okay?"
+   ],
+   [
+    "user",
+    "Yes."
+   ],
+   [
+    "tool",
+    {
+     "name": "browser_task",
+     "args": {
+      "instructions": "Set the title of lead Jane Doe to Head of Sales",
+      "changes_data": true
+     },
+     "output": "STARTED browser task t1."
+    }
+   ],
+   [
+    "assistant",
+    "On it."
+   ],
+   [
+    "assistant",
+    "There are two Jane Does, one at ACME and one at Helvetic Dairy. Which one?"
+   ],
+   [
+    "user",
+    "The one at ACME."
+   ]
+  ],
+  "expect": {
+   "tool": "message_browser_agent",
+   "args": {
+    "message_contains": "acme"
+   }
+  }
  }
 ]
