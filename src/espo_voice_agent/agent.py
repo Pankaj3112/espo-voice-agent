@@ -322,6 +322,27 @@ async def entrypoint(ctx: JobContext) -> None:
             last_user_stop["t"] = None
         slog.write("turn", **rec)
 
+    # Fine-grained timeline (wall clock) to see where each second of a reply goes.
+    @session.on("user_state_changed")
+    def _on_user_state(ev) -> None:
+        slog.write("user_state", state=ev.new_state, at=time.time())
+
+    @session.on("agent_state_changed")
+    def _on_agent_state(ev) -> None:
+        slog.write("agent_state", state=ev.new_state, at=time.time())
+
+    @session.on("user_input_transcribed")
+    def _on_transcript(ev) -> None:
+        if ev.is_final:
+            slog.write("stt_final", text=ev.transcript[:80], at=time.time())
+
+    @session.on("metrics_collected")
+    def _on_metrics(ev) -> None:
+        m = ev.metrics
+        d = {k: v for k, v in (m.model_dump() if hasattr(m, "model_dump") else {}).items()
+             if isinstance(v, (int, float, str, bool)) and k not in ("label", "request_id", "speech_id")}
+        slog.write("metrics", mtype=type(m).__name__, at=time.time(), **d)
+
     async def _shutdown() -> None:
         await crm.close()
         slog.write("end")
