@@ -115,7 +115,7 @@ class IntakeAgent(Agent):
                 "NOT CONFIRMED: read the change back to the caller and get a clear yes first "
                 f"(their last reply was {self.last_user_text!r}). Nothing was started."
             )
-        return await self.crm.start_browser_task(instructions)
+        return await self.crm.start_browser_task(instructions, changes_data)
 
     @function_tool()
     async def message_browser_agent(self, context: RunContext, message: str) -> str:
@@ -214,7 +214,7 @@ class CrmHandle:
             return f"BUSY: the browser is still working on: {t.goal!r} ({t.status}). Wait for it, or cancel it first."
         return None
 
-    async def start_browser_task(self, instructions: str) -> str:
+    async def start_browser_task(self, instructions: str, changes_data: bool = False) -> str:
         if err := await self._wait_ready():
             return err
         if b := self.busy():
@@ -222,8 +222,9 @@ class CrmHandle:
         if self.agent is None:
             self.agent = BrowserAgent(self.browser.page, self.on_task_event, asyncio.Lock(), skills=self.browser)
         self.task = self.agent.start(instructions)
+        self.task.writes = bool(changes_data)
         self.slog.write("browser_task", id=self.task.id, goal=instructions)
-        await self.emit(type="task", id=self.task.id, kind="start", text=instructions)
+        await self.emit(type="task", id=self.task.id, kind="start", text=instructions, writes=self.task.writes)
         self._heartbeat = asyncio.create_task(self._heartbeat_loop(self.task))
         return (
             f"STARTED browser task {self.task.id}. Tell the caller briefly, in your own words, that you're on it. "
@@ -275,7 +276,7 @@ class CrmHandle:
     async def on_task_event(self, task: BrowserTask, kind: str, text: str) -> None:
         """Progress goes to the screen; questions and results go to the voice LLM, which phrases them."""
         self.slog.write("task_event", id=task.id, event=kind, text=text)
-        await self.emit(type="task", id=task.id, kind=kind, text=text)
+        await self.emit(type="task", id=task.id, kind=kind, text=text, writes=task.writes, created=task.created_record)
         if kind == "record":  # a lead the create skill saved and read back: show its card on the page
             rec = json.loads(text)
             await self.emit(type="tool", name="create_lead", state="done", detail="Lead created and verified", url=rec.get("url"), record=rec)
@@ -511,7 +512,17 @@ async def entrypoint(ctx: JobContext) -> None:
     async def _time_limit() -> None:
         await asyncio.sleep(config.MAX_CALL_SECONDS)
         slog.write("time_limit")
-        await session.say("We've reached the time limit for this demo call. Thanks for trying it, goodbye!")
+        handle = session.say("We've reached the time limit for this demo call. Thanks for trying it, goodbye!",
+                             allow_interruptions=False)
+        try:
+            await asyncio.wait_for(handle.wait_for_playout(), timeout=10)
+        except Exception:
+            pass
+        # Close the room so the caller is actually disconnected, not left in a silent call.
+        try:
+            await ctx.delete_room()
+        except Exception:
+            log.warning("could not delete room at time limit", exc_info=True)
         ctx.shutdown(reason="time limit")
 
     asyncio.create_task(_time_limit())

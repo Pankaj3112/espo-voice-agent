@@ -219,6 +219,8 @@ class BrowserTask:
     id: str
     goal: str
     status: str = "running"  # running | waiting_for_caller | done | failed | cancelled
+    writes: bool = False  # set by the voice agent: does this job change CRM data?
+    created_record: bool = False  # the create skill already showed its own result card
     summary: str = ""
     events: list[TaskEvent] = field(default_factory=list)
     started: float = field(default_factory=time.time)
@@ -450,6 +452,7 @@ class BrowserAgent:
         res = await b.create_lead(lead, allow_duplicate=allow)
         rec = res.record
         if rec:
+            task.created_record = True
             await self._event(task, "record", json.dumps(rec.__dict__))
         if res.ok and rec:
             return (f"CREATED and verified on screen: {rec.name}, company {rec.account_name or '-'}, phone {rec.phone or '-'}, "

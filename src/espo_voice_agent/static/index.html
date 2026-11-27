@@ -337,12 +337,13 @@ function onEvent(ev) {
     if (String(ev.id).startsWith('c')) return;  // scripted create: shown via its own tool events
     const k = ev.kind;
     if (k === 'step') return;  // raw clicks stay off the timeline
-    if (k === 'start') { addAct('run', '▶', 'Browser agent started', ev.text); doing('Starting: ' + ev.text); }
+    if (k === 'start') { addAct('run', '▶', ev.writes ? 'Browser agent: change' : 'Browser agent: lookup', ev.text); doing(ev.writes ? 'Working on it…' : 'Looking it up…'); }
     else if (k === 'progress') { addAct('run', '…', ev.text); doing(ev.text); }
     else if (k === 'question') { addAct('q', '?', 'Browser agent asks', ev.text); doing('Needs an answer: ' + ev.text, true); }
     else if (k === 'answer' || k === 'message') { addAct('', '↩', 'Passed to browser agent', ev.text); doing('Continuing…'); }
-    else if (k === 'done') { addAct('done', '✓', 'Done and verified', ev.text); doing(''); if (!/^CREATED/.test(ev.text)) resultCard(true, 'Updated in EspoCRM', `<p>${esc(ev.text)}</p>`); }
-    else if (k === 'failed') { addAct('error', '✕', 'Did not complete', ev.text); doing(''); if (!/^CREATED/.test(ev.text)) resultCard(false, 'Not completed', `<p>${esc(ev.text)}</p>`); }
+    // Cards only for jobs that change data; lookups are answered by Ava and listed under Activity.
+    else if (k === 'done') { addAct('done', '✓', ev.writes ? 'Done and verified' : 'Answered', ev.text); doing(''); if (ev.writes && !ev.created) resultCard(true, 'Updated in EspoCRM', `<p>${esc(ev.text)}</p>`); }
+    else if (k === 'failed') { addAct('error', '✕', 'Did not complete', ev.text); doing(''); if (ev.writes) resultCard(false, 'Not completed', `<p>${esc(ev.text)}</p>`); }
     return;
   }
   const names = { duplicate_check: 'Checked for duplicates', create_lead: 'Lead form', find_lead: 'Searched leads', browser: 'Browser' };
@@ -395,6 +396,8 @@ async function start() {
     });
     room.on(RoomEvent.ParticipantAttributesChanged, (_c, p) => { const s = p.attributes?.['lk.agent.state']; if (s) setState(s); });
     room.on(RoomEvent.Disconnected, () => stop(true));
+    // If Ava leaves (time limit, error), end the call here too instead of sitting in a silent room.
+    room.on(RoomEvent.ParticipantDisconnected, (p) => { if (p.isAgent || /^agent/.test(p.identity)) setTimeout(() => room && stop(false), 1500); });
     room.registerTextStreamHandler('lk.transcription', async (reader, info) => {
       const who = info.identity === room.localParticipant.identity ? 'user' : 'agent';
       const seg = reader.info.attributes?.['lk.segment_id'] || reader.info.id;
@@ -409,6 +412,7 @@ async function start() {
     t0 = Date.now();
     timerInt = setInterval(() => {
       const left = Math.max(0, maxSecs - Math.floor((Date.now() - t0) / 1000));
+      if (Math.floor((Date.now() - t0) / 1000) > maxSecs + 15 && room) { stop(false); return; }  // safety net
       const txt = `${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')} left`;
       $('timer').textContent = txt; $('timerM').textContent = txt;
     }, 500);
