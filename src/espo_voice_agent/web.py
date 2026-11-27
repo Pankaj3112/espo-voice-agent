@@ -38,6 +38,12 @@ async def index() -> FileResponse:
     return FileResponse(STATIC / "index.html", headers={"Cache-Control": "no-cache"})
 
 
+@app.get("/notes.pdf")
+async def notes() -> FileResponse:
+    return FileResponse(STATIC / "notes.pdf", media_type="application/pdf", filename="ava-technical-notes.pdf",
+                        content_disposition_type="inline")
+
+
 @app.get("/healthz")
 async def healthz() -> dict:
     return {"ok": True}

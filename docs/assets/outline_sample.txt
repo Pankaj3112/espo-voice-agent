@@ -1,0 +1,114 @@
+<page_content untrusted="true">
+URL: https://demo.us.espocrm.com/?l=en_US#Lead/view/5f61b3790fe4d0aa3
+TITLE: Nina Thomson
+# LeadsNina Thomson
+[1] button "Followed" id=unfollow
+[2] button "Convert" id=convert
+[3] button "Edit" id=edit
+[4] button ""
+# Overview
+Name
+name: Ms. Nina Thomson
+Account Name
+accountName: Sunflower
+Email
+[5] button "ninathomson@example.com" field=emailAddress id=mailTo
+Phone
+[6] link "+10794476017" field=phoneNumber id=dial
+phoneNumber: Mobile
+Title
+title: Marketing Manager
+Website
+[7] link "www.sunflower.de.info" field=website
+Address
+address: 94 Nottingham Rd Brighton SY7 9QP United Kingdom
+# Details
+Status
+status: New
+Source
+source: Existing Customer
+Opportunity Amount
+opportunityAmount: None
+Campaign
+campaign: None
+Industry
+industry: Education
+Description
+description: None
+[8] button "stream" field=stream
+# Stream
+[9] textarea "Write your comment here" field=stream id=post value="" placeholder="Write your comment here"
+[10] button "stream" field=stream
+stream: updated this lead
+[11] link "Jack Adams" field=stream
+[12] button "Opportunity Amount" field=stream id=expandDetails
+[13] link "18:00" field=stream
+[14] button "stream" field=stream
+stream: created this lead self-assigned
+[15] link "Jack Adams" field=stream
+stream: New
+[16] link "18:00" field=stream
+[17] button "stream" field=stream
+[18] button "View" field=stream id=quickView
+stream: linked meeting with this lead
+[19] link "Jack Adams" field=stream
+[20] link "Business Forum for Online Shops" field=stream
+[21] link "18:00" field=stream
+[22] button "stream" field=stream
+[23] button "View" field=stream id=quickView
+stream: linked meeting with this lead
+[24] link "Jack Adams" field=stream
+[25] link "Business meeting with potential partners" field=stream
+[26] link "18:00" field=stream
+[27] button "targetLists" field=targetLists
+# Target Lists
+[28] button "Name" field=name id=name
+targetStatus: Target Status
+[29] link "Contacts September 2020" field=name
+targetStatus: Listed
+[30] button "buttons" field=buttons
+[31] link "Marketing Promo October 2020" field=name
+targetStatus: Listed
+[32] button "buttons" field=buttons
+Assigned User
+[33] link "Jack Adams" field=assignedUser
+Teams
+[34] link "Sales" field=teams
+Created
+createdAt: Today 18:00
+[35] link "Jack Adams" field=createdBy
+Modified
+modifiedAt: Today 18:00
+[36] link "Jack Adams" field=modifiedBy
+Followers
+[37] link "Jack Adams" field=followers
+[38] button "Compose Email" field=activities id=composeEmail
+[39] button "Schedule Meeting" field=activities id=createActivity
+[40] button "Schedule Call" field=activities id=createActivity
+[41] button "activities" field=activities
+# Activities
+[42] button "buttons" field=buttons
+[43] button "View" field=ico id=quickView
+[44] link "Business Forum for Online Shops" field=name
+dateStart: Jan 02, 2027 12:00
+[45] link "Jack Adams" field=assignedUser
+[46] button "buttons" field=buttons
+[47] button "View" field=ico id=quickView
+[48] link "New website design presentation" field=name
+dateStart: Dec 27 09:30
+[49] link "Adam Powers" field=assignedUser
+[50] button "buttons" field=buttons
+[51] button "View" field=ico id=quickView
+[52] link "Business meeting with potential partners" field=name
+dateStart: Dec 18 07:15
+[53] link "Jack Adams" field=assignedUser
+[54] button "history" field=history
+# History
+history: No Data
+[55] button "Create Task" field=tasks id=createTask
+[56] button "tasks" field=tasks
+# Tasks
+tasks: No Data
+© 2026
+[57] link "EspoCRM, Inc."
+</page_content>

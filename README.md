@@ -4,7 +4,7 @@
 agent does it in the real [EspoCRM demo](https://demo.us.espocrm.com/) by driving a Chromium browser that you
 watch live: adding leads, updating records, scheduling meetings, converting leads, answering questions.
 
-**Live demo:** <https://34-186-111-176.sslip.io>  ·  **Technical notes:** [`docs/technical-notes.pdf`](docs/technical-notes.pdf)
+**Live demo:** <https://34-186-111-176.sslip.io>  ·  **Technical notes (PDF):** <https://34-186-111-176.sslip.io/notes.pdf> (also [`docs/technical-notes.pdf`](docs/technical-notes.pdf))
 
 > Try: *"Add Jane Doe from Acme Robotics, phone 415 555 0142, email jane dot doe at acme dot com."*
 > Then: *"Change her title to Head of Sales."* or *"Schedule an intro call with her on Tuesday at 3 pm."*
@@ -54,18 +54,18 @@ flowchart LR
   verified result says, and every reply is grounded in the job's real status.
 - **No deletes, no mass actions,** by rule.
 
-## Results (all reproducible, see `evals/`)
+## Results (final code, all reproducible, see `evals/`)
 
-| Eval | What it checks | Latest |
+| Eval | What it checks | Result |
 |---|---|---|
-| Unit tests | confirmation guard, read-back compare, tag stripping, agent hand-offs | 23/23 |
-| Conversation eval | Ava's tool choice and arguments on 37 ASR-style dialogues, run twice | 74/74, first token 0.58 s median |
-| Browser tasks | 16 real jobs on EspoCRM (create, duplicate, edits, ambiguity, account, contact, task, meeting, opportunity, convert, count), checked via the REST API | 16/16, 7.5 s median |
-| Simulated calls | full voice loop with an LLM caller speaking into the room | 2/4 latest (one real ASR/read-back miss, one lost-audio harness failure; see notes) |
+| Unit tests | confirmation guard, read-back value match, compare, tag stripping, agent hand-offs | 27/27 |
+| Conversation eval | Ava's action, values and timing on 38 ASR-style dialogues, run twice, production settings | **76/76**, first token 0.60 s median |
+| Browser tasks | 16 real jobs on EspoCRM (create, duplicate, 5 edits, ambiguity, account, linked contact, task, 3 PM meeting, opportunity, convert, count), each checked exactly via the REST API | **16/16**, 10.2 s median |
+| Simulated calls | full voice loop with an LLM caller | 2/4 in the last run: one real mishearing ("Whitaker"), one lost-audio harness failure |
 
-Measured on real calls: **~1.5 s median** from the caller going quiet to Ava speaking (end-of-turn ~0.4 s,
-LLM first token ~0.6 s, voice first audio ~0.25 s). A new lead is saved and verified in ~4.5 s; edits take 7–10 s
-while Ava keeps talking.
+Real calls: ~1.3 s median from the caller going quiet to Ava's first audio (server-side, last test call; add
+~0.2 s of network from India). The code was reviewed by two independent AI reviews before submission and every
+confirmed issue was fixed.
 
 ## Run it
 
