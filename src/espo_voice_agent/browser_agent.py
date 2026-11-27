@@ -43,7 +43,7 @@ _SNAPSHOT_JS = r"""
     return s.visibility !== 'hidden' && s.display !== 'none' && Number(s.opacity) > 0.05;
   };
   const clean = (t, n) => (t || '').replace(/\s+/g, ' ').trim().slice(0, n);
-  const isCtl = (el) => el.matches('a[href],button,input,select,textarea,[role=button],[role=link],[role=menuitem],[role=option],[role=tab],[role=checkbox],[contenteditable=true],.selectize-input,.selectize-dropdown .option,[data-action]');
+  const isCtl = (el) => el.matches('a[href],button,input,select,textarea,[role=button],[role=link],[role=menuitem],[role=option],[role=tab],[role=checkbox],[contenteditable=true],.selectize-input,.selectize-dropdown .option,.autocomplete-suggestion,[data-action]');
   const nameOf = (el) => {
     let n = clean(el.innerText, 80) || el.getAttribute('aria-label') || '';
     if (!n && el.id) { const l = document.querySelector(`label[for="${el.id}"]`); if (l) n = l.innerText; }
@@ -61,10 +61,15 @@ _SNAPSHOT_JS = r"""
       ref += 1; el.setAttribute('data-agent-ref', String(ref));
       const tag = el.tagName.toLowerCase();
       const type = el.getAttribute('type') || '';
-      const role = el.getAttribute('role') || (tag === 'a' ? 'link' : tag === 'select' ? 'select' : tag === 'textarea' ? 'textarea' : tag === 'input' ? `input${type ? ':' + type : ''}` : el.classList.contains('selectize-input') ? 'dropdown' : el.classList.contains('option') ? 'option' : 'button');
+      const role = el.getAttribute('role') || (tag === 'a' ? 'link' : tag === 'select' ? 'select' : tag === 'textarea' ? 'textarea' : tag === 'input' ? `input${type ? ':' + type : ''}` : el.classList.contains('selectize-input') ? 'dropdown' : el.classList.contains('option') || el.classList.contains('autocomplete-suggestion') ? 'option' : 'button');
       const own = el.getAttribute('data-name') || el.getAttribute('data-action') || el.getAttribute('name');
       const field = el.parentElement?.closest('[data-name]')?.getAttribute('data-name');
       let extra = own ? ` id=${own}` : '';
+      if (tag === 'input' && (type === 'checkbox' || type === 'radio')) {
+        const lab = clean(el.closest('label')?.innerText || el.nextElementSibling?.innerText || el.parentElement?.innerText || el.parentElement?.nextElementSibling?.innerText, 50);
+        lines.push(`[${ref}] ${type} "${nameOf(el) || lab}"${field ? ` field=${field}` : ''} checked=${el.checked ? 'yes' : 'no'}`);
+        return;
+      }
       if (tag === 'input' || tag === 'textarea') extra += ` value="${clean(el.value, 80)}"` + (el.getAttribute('placeholder') ? ` placeholder="${clean(el.getAttribute('placeholder'), 40)}"` : '');
       if (tag === 'select') extra += ` value="${clean(el.options[el.selectedIndex]?.text, 40)}" options=[${[...el.options].slice(0, 12).map(o => clean(o.text, 25)).join('|')}]`;
       lines.push(`[${ref}] ${role} "${nameOf(el)}"${field ? ` field=${field}` : ''}${extra}`);
@@ -88,7 +93,8 @@ _SNAPSHOT_JS = r"""
 
 _SYSTEM = """\
 You operate a CRM web app (EspoCRM) in a real browser on behalf of a voice assistant that is on a live \
-call with a sales rep. You receive a task in plain language and complete it through the UI.
+call with a sales rep. You receive a task in plain language and complete it through the UI. You can work with \
+any part of the CRM the UI offers: leads, contacts, accounts, opportunities, meetings, calls, tasks, cases.
 
 How you see the page: each tool returns a compact outline of the visible page. Controls appear as \
 `[ref] role "name" field=... value=...`; text lines give labels, field values and messages. Use the refs \
@@ -98,11 +104,27 @@ Skills (fast, scripted, verified; prefer them when they fit):
 - create_lead: adds a NEW lead by filling and saving the form, then checks the saved record. It first checks for \
 duplicates: if it reports a DUPLICATE, ask the caller (ask_caller) whether to create a new lead anyway, and only \
 then call it again with allow_duplicate=true. Never use it to change an existing lead.
-- search_leads: finds leads by name, company, email or phone and returns their ids; then open one with \
-go_to("#Lead/view/<id>") instead of clicking through the list.
+- search_records: finds records of one type (Lead, Contact, Account, Opportunity, Meeting, Call, Task, Case) by \
+name, email or phone and returns their ids and key fields; then open one with go_to("#<Type>/view/<id>") \
+instead of clicking through a list. Use it to answer questions too, but open the record so the caller sees it.
 For anything else use the generic page tools.
 
-Work efficiently: prefer direct navigation (e.g. go_to("#Lead/view/<id>") after search_leads, or go_to("#Lead")) \
+EspoCRM map: lists at #Lead, #Contact, #Account, #Opportunity, #Meeting, #Call, #Task, #Case; a new record form \
+at #<Type>/create (e.g. #Account/create); a record at #<Type>/view/<id>. On a record's page, side panels \
+(Activities, Tasks, History) have their own create buttons that link the new item to that record. "Convert" on \
+a lead creates a contact/account/opportunity from it.
+Fields: a link field (e.g. Account on a contact) is a text input: type part of the name, then click the matching \
+`option` in the next outline. Date fields: type the date in the format the field's placeholder or the page \
+shows; time fields likewise. Required fields are marked; if Save fails, read the error on the page and fix it.
+Linked items: to add a task, meeting or call FOR a record, open that record and use the create button in its \
+Tasks or Activities side panel (it links the new item automatically); don't start from #Task/create.
+Converting a lead: open the lead, click Convert, keep only the record types asked for checked (e.g. only \
+Contact), then click the Convert button at the top of that form, and check the lead now shows status Converted.
+Counting ("how many ..."): call search_records with field/value (e.g. entity Opportunity, field stage, value \
+Negotiation); it returns the exact TOTAL. Then go_to the list (e.g. #Opportunity) so the caller sees it.
+If a dialog asks whether to leave a page with unsaved changes, answer it deliberately; don't loop.
+
+Work efficiently: prefer direct navigation (e.g. go_to("#<Type>/view/<id>") after search_records, or go_to("#<Type>/create")) \
 over exploring. Typical edit flow in EspoCRM: open the record, click Edit, change \
 the field, click Save, then read the detail view. For a dropdown, click it, then click the wanted `option` in \
 the next outline.
@@ -111,8 +133,10 @@ Rules:
 - Never invent data. Only enter values that are in the task or in messages from the voice assistant.
 - If the task is ambiguous (e.g. two records match) or a needed value is missing, call ask_caller with one \
 short question and wait for the answer. Do not guess.
-- Do not delete anything unless the task explicitly says to delete.
-- After saving, check the saved values on the record's detail view before finishing.
+- Never delete records and never use mass actions (select-all, mass update), even if asked; report that you \
+can't. Change only the record(s) the task names.
+- After saving, check EVERY value you were asked to set on the record's detail view (for meetings and calls \
+that includes the start, the end or duration, and who it's linked to). If one is wrong, fix it before finishing.
 - Call report_progress with a few plain words when you start a meaningful step (e.g. "opening Jane Doe", \
 "saving the new phone"). Keep it occasional, not every click.
 - Finish with finish(success, summary). The summary is what the assistant will tell the caller: one short \
@@ -145,7 +169,14 @@ TOOLS = types.Tool(
             },
             ["first_name", "last_name"],
         ),
-        _decl("search_leads", "SKILL: search leads; returns id, name, company, email, phone, status for each match.", {"query": _S("name, company, email or phone")}, ["query"]),
+        _decl(
+            "search_records",
+            "SKILL: search records of one type; returns id, name and key fields for each match (fast).",
+            {"entity": _S("Lead, Contact, Account, Opportunity, Meeting, Call, Task or Case"),
+             "query": _S("name, email or phone (start of the name works best); empty to list all"),
+             "field": _S("optional exact-match filter field, e.g. stage, status"), "value": _S("value for the filter, e.g. Negotiation")},
+            ["entity"],
+        ),
         _decl("look", "Return the current page outline (use if unsure what is on screen)."),
         _decl("click", "Click a control.", {"ref": _I("ref from the latest outline")}, ["ref"]),
         _decl(
@@ -317,7 +348,8 @@ class BrowserAgent:
     async def _loop(self, task: BrowserTask) -> None:
         outline = await self.tools.outline()
         contents: list[types.Content] = [
-            types.Content(role="user", parts=[types.Part(text=f"TASK: {task.goal}\n\nCURRENT PAGE:\n{outline}")])
+            types.Content(role="user", parts=[types.Part(text=(
+                f"TASK: {task.goal}\n(Today is {time.strftime('%A %Y-%m-%d', time.gmtime())}, UTC.)\n\nCURRENT PAGE:\n{outline}"))])
         ]
         cfg = types.GenerateContentConfig(
             system_instruction=_SYSTEM,
@@ -332,8 +364,10 @@ class BrowserAgent:
                 msg = task.inbox.get_nowait()
                 contents.append(types.Content(role="user", parts=[types.Part(text=f"MESSAGE FROM THE VOICE ASSISTANT: {msg}")]))
             t0 = time.perf_counter()
-            resp = await self.client.aio.models.generate_content(model=self.model, contents=contents, config=cfg)
+            resp = await self._generate(contents, cfg)
             task.llm_ms.append(round((time.perf_counter() - t0) * 1000))
+            if task.llm_ms[-1] > 5000:
+                log.warning("slow browser-agent LLM call: %d ms", task.llm_ms[-1])
             cand = resp.candidates[0].content if resp.candidates else None
             if cand is None or not cand.parts:
                 contents.append(types.Content(role="user", parts=[types.Part(text="Continue: call a tool, or finish().")]))
@@ -354,21 +388,40 @@ class BrowserAgent:
         task.status, task.summary = "failed", "The browser task ran out of steps before finishing; it may be incomplete."
         await self._event(task, "failed", task.summary)
 
+    async def _generate(self, contents, cfg):
+        """Vertex can rate-limit a young project (429) or blip (5xx): retry with backoff before failing the task."""
+        delay = 1.0
+        for attempt in range(4):
+            try:
+                return await self.client.aio.models.generate_content(model=self.model, contents=contents, config=cfg)
+            except Exception as e:  # google.genai.errors.APIError carries .code
+                code = getattr(e, "code", None)
+                if code not in (429, 500, 503, 504) or attempt == 3:
+                    raise
+                log.warning("browser-agent LLM %s, retrying in %.0fs", code, delay)
+                await asyncio.sleep(delay)
+                delay *= 2
+
     async def _skill(self, task: BrowserTask, name: str, args: dict[str, Any]) -> str:
         from .espo import LeadInput  # local import keeps this module free of EspoCRM at import time
 
         if self.skills is None:
             return "This skill is not available; use the page tools."
         b = self.skills
-        if name == "search_leads":
-            await self._event(task, "progress", f"searching leads for {args.get('query', '')}"[:120])
-            res = await b.search_leads(str(args.get("query", "")))
-            rows = [{k: m.get(k) for k in ("id", "name", "accountName", "emailAddress", "phoneNumber", "status")} for m in res.matches]
+        if name == "search_records":
+            entity = str(args.get("entity", "Lead")).strip().title().replace(" ", "")
+            await self._event(task, "progress", f"searching {entity.lower()}s for {args.get('query', '')}"[:120])
+            res = await b.search_records(entity, str(args.get("query") or ""), field=args.get("field") or None, value=args.get("value"))
+            if not res.ok:
+                return f"ERROR: {res.message}"
+            rows = res.matches
             if not rows:
-                return "No leads match."
+                return f"No {entity} records match ({res.message})."
+            if args.get("field"):
+                return f"TOTAL matching: {res.message}. First rows: {json.dumps(rows)}"
             if len(rows) > 1:
                 return (
-                    f"{len(rows)} MATCHES: {json.dumps(rows)}. If the task will change a record and the details you were "
+                    f"{len(rows)} MATCHES ({res.message}): {json.dumps(rows)}. If the task will change a record and the details you were "
                     "given don't single out exactly one of these, call ask_caller first (mention what tells them apart, "
                     "e.g. email or phone). Never pick one yourself."
                 )
@@ -418,7 +471,7 @@ class BrowserAgent:
                 task.status, task.pending_question = "running", None
                 await self._event(task, "answer", answer)
                 return f"CALLER ANSWERED: {answer}\n\nCURRENT PAGE:\n{await tl.outline()}"
-            if name in ("create_lead", "search_leads"):
+            if name in ("create_lead", "search_records"):
                 return await self._skill(task, name, args)
             if name == "look":
                 return await tl.outline()
@@ -432,9 +485,11 @@ class BrowserAgent:
             }.get(name)
             if action is None:
                 return f"unknown tool {name}"
+            t0 = time.perf_counter()
             msg = await action()
-            await self._event(task, "step", f"{name} {json.dumps(args)[:100]}")
-            return f"{msg}\n\nCURRENT PAGE:\n{await tl.outline()}"
+            out = await tl.outline()
+            await self._event(task, "step", f"{name} {json.dumps(args)[:90]} ({round((time.perf_counter() - t0) * 1000)} ms)")
+            return f"{msg}\n\nCURRENT PAGE:\n{out}"
         except asyncio.TimeoutError:
             task.status, task.pending_question = "running", None
             return "No answer from the caller in time. Finish with what you have, or fail."

@@ -268,6 +268,36 @@ class EspoBrowser:
             msg = f"{len(matches)} possible duplicate(s)" if matches else "no duplicates"
             return ActionResult(ok=True, message=msg, matches=matches, timings_ms=t.marks)
 
+    # Entities the agent may search; the in-page text filter matches each entity's name/email/phone fields.
+    SEARCHABLE = ("Lead", "Contact", "Account", "Opportunity", "Meeting", "Call", "Task", "Case")
+    _SUMMARY_FIELDS = ("accountName", "emailAddress", "phoneNumber", "status", "stage", "amount", "dateStart",
+                       "dateEnd", "parentName", "closeDate", "website", "title")
+
+    async def search_records(self, entity: str, query: str = "", limit: int = 6, field: str | None = None, value: str | None = None) -> ActionResult:
+        """Search any entity through the logged-in app's own AJAX layer (same session and permissions as
+        the UI, ~0.1 s). The browser agent then opens the record so the caller sees it on screen."""
+        if entity not in self.SEARCHABLE:
+            return ActionResult(ok=False, message=f"unknown entity {entity}")
+        async with self._lock:
+            t = _Timer()
+            res = await self._p.evaluate(
+                """async ([entity, q, n, field, value]) => {
+                    const params = {maxSize: n, orderBy: 'createdAt', order: 'desc'};
+                    if (q) params.textFilter = q;
+                    if (field) params.where = [{type: 'equals', attribute: field, value: value}];
+                    const r = await Espo.Ajax.getRequest(entity, params);
+                    return {total: r.total, list: r.list};
+                }""",
+                [entity, query, limit, field, value],
+            )
+            t.mark("query")
+            matches = []
+            for r in res.get("list", []):
+                row = {"id": r.get("id", ""), "name": r.get("name") or ""}
+                row.update({k: r[k] for k in self._SUMMARY_FIELDS if r.get(k) not in (None, "", [])})
+                matches.append(row)
+            return ActionResult(ok=True, message=f"{res.get('total', len(matches))} total", matches=matches, timings_ms=t.marks)
+
     async def create_lead(self, lead: LeadInput, allow_duplicate: bool = False) -> ActionResult:
         async with self._lock:
             t = _Timer()

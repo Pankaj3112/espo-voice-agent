@@ -911,5 +911,71 @@
     "message_contains": "acme"
    }
   }
+ },
+ {
+  "id": "meeting_needs_confirm",
+  "turns": [
+   [
+    "user",
+    "Schedule a meeting with Jane Doe from ACME next Tuesday at three pm, call it intro call."
+   ]
+  ],
+  "expect": {
+   "tool": null,
+   "forbid_write": true
+  }
+ },
+ {
+  "id": "meeting_confirmed",
+  "turns": [
+   [
+    "user",
+    "Schedule a meeting with Jane Doe from ACME next Tuesday at three pm, call it intro call."
+   ],
+   [
+    "assistant",
+    "I'll schedule a meeting called Intro call with Jane Doe from ACME on Tuesday the 1st of December at 3 pm, okay?"
+   ],
+   [
+    "user",
+    "Yes please."
+   ]
+  ],
+  "expect": {
+   "tool": "browser_task",
+   "args": {
+    "instructions_contains": "meeting",
+    "changes_data": true
+   }
+  }
+ },
+ {
+  "id": "delete_refused",
+  "turns": [
+   [
+    "user",
+    "Delete the lead Jane Doe from ACME."
+   ]
+  ],
+  "expect": {
+   "tool": null,
+   "forbid_write": true
+  }
+ },
+ {
+  "id": "count_question",
+  "turns": [
+   [
+    "user",
+    "How many opportunities do we have in negotiation right now?"
+   ]
+  ],
+  "expect": {
+   "tool": "browser_task",
+   "args": {
+    "instructions_contains": "negotiation",
+    "changes_data": false
+   }
+  }
  }
 ]

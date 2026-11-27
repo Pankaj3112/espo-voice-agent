@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
 import logging
 import re
 import time
@@ -60,6 +61,11 @@ _YES = re.compile(
 _NO = re.compile(r"\b(no|not|nope|wrong|incorrect|wait|hold on|change|actually|instead|but)\b|n['’]?t\b", re.I)
 
 
+def today_line() -> str:
+    now = time.gmtime()
+    return f"Today is {time.strftime('%A %d %B %Y', now)}; the time is {time.strftime('%H:%M', now)} (server time, UTC)."
+
+
 def is_confirmation(text: str) -> bool:
     """Deterministic guard for the one irreversible action: the caller's latest
     utterance must be an explicit yes with no correction in it."""
@@ -69,7 +75,7 @@ def is_confirmation(text: str) -> bool:
 class IntakeAgent(Agent):
     def __init__(self, crm: "CrmHandle") -> None:
         # Note: don't pass llm=None here; Agent treats that as "no LLM" and overrides the session's.
-        super().__init__(instructions=INSTRUCTIONS)
+        super().__init__(instructions=INSTRUCTIONS + "\n" + today_line())
         self.crm = crm
         self.last_user_text = ""
 
@@ -321,7 +327,7 @@ def build_llm():
         from livekit.plugins import google
 
         # Credentials: the VM's service account (Application Default Credentials).
-        return google.LLM(
+        primary = google.LLM(
             model=config.LLM_MODEL,
             vertexai=True,
             project=config.GCP_PROJECT,
@@ -329,6 +335,17 @@ def build_llm():
             temperature=0.2,
             thinking_config={"thinking_level": config.LLM_REASONING},
         )
+        if not os.environ.get("OPENROUTER_API_KEY"):
+            return primary
+        from livekit.agents import llm as lkllm
+
+        # If Vertex rate-limits or fails, the same conversation continues on Gemini 3.6 Flash via OpenRouter
+        # (50/50 on the eval earlier; only used when Vertex is unavailable).
+        backup = openai.LLM.with_openrouter(
+            model="google/gemini-3.6-flash", provider={"order": ["google-ai-studio"], "allow_fallbacks": True},
+            reasoning_effort="minimal", temperature=0.2, app_name="espo-voice-agent",
+        )
+        return lkllm.FallbackAdapter([primary, backup])
     return openai.LLM.with_openrouter(
         model=config.LLM_MODEL,
         provider={"order": [config.LLM_PROVIDER], "allow_fallbacks": True},

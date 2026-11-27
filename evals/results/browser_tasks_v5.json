@@ -1,0 +1,319 @@
+{
+ "summary": {
+  "gemini-3.1-flash-lite": {
+   "pass": 16,
+   "n": 16,
+   "median_s": 7.5,
+   "max_s": 26.8
+  }
+ },
+ "rows": [
+  {
+   "model": "gemini-3.1-flash-lite",
+   "task": "create_new",
+   "ok": true,
+   "status": "done",
+   "summary": "I have successfully created the new lead for Nora Testcreate8481 at Bluefin Logistics.",
+   "seconds": 4.5,
+   "steps": 2,
+   "llm_ms_p50": 990,
+   "events": [
+    "progress: filling in the new lead Nora Testcreate8481",
+    "record: {\"id\": \"79d0fe66abc05f48e\", \"url\": \"https://demo.us.espocrm.com/#Lead/view/79d0fe66abc05f48e\", \"name\": \"Nora Testcreate8481\", \"account_name\": \"Bluefin Logistics\", \"phone\": \"415 555 0177\", \"email\": \"nora.testcreate8481@bluefin.com\", \"title\": \"None\", \"source\": \"Call\", \"status\": \"New\", \"description\": \"None\"}",
+    "done: I have successfully created the new lead for Nora Testcreate8481 at Bluefin Logistics."
+   ]
+  },
+  {
+   "model": "gemini-3.1-flash-lite",
+   "task": "create_duplicate",
+   "ok": true,
+   "status": "done",
+   "summary": "I have successfully created a new lead for Lena Brandt92 at Orbit Robotics.",
+   "seconds": 5.4,
+   "steps": 4,
+   "llm_ms_p50": 853,
+   "events": [
+    "question: A lead for Lena Brandt92 at Orbit Robotics already exists. Should I create a new one anyway?",
+    "answer: Yes, create a new one anyway.",
+    "progress: filling in the new lead Lena Brandt92",
+    "record: {\"id\": \"28fb89ff0572b9e78\", \"url\": \"https://demo.us.espocrm.com/#Lead/view/28fb89ff0572b9e78\", \"name\": \"Lena Brandt92\", \"account_name\": \"Orbit Robotics\", \"phone\": \"None\", \"email\": \"None\", \"title\": \"None\", \"source\": \"Call\", \"status\": \"New\", \"description\": \"None\"}",
+    "done: I have successfully created a new lead for Lena Brandt92 at Orbit Robotics."
+   ]
+  },
+  {
+   "model": "gemini-3.1-flash-lite",
+   "task": "edit_phone",
+   "ok": true,
+   "status": "done",
+   "summary": "I have added the phone number 415 555 0199 to the lead Ines Lindqvist46 at Orbit Robotics.",
+   "seconds": 6.3,
+   "steps": 6,
+   "llm_ms_p50": 693,
+   "events": [
+    "progress: searching leads for Ines Lindqvist46",
+    "step: go_to {\"target\": \"#Lead/view/1b07013e871564fc3\"} (859 ms)",
+    "step: click {\"ref\": 3} (347 ms)",
+    "step: type_text {\"ref\": 13, \"submit\": true, \"text\": \"415 555 0199\"} (502 ms)",
+    "step: click {\"ref\": 1} (310 ms)",
+    "done: I have added the phone number 415 555 0199 to the lead Ines Lindqvist46 at Orbit Robotics."
+   ]
+  },
+  {
+   "model": "gemini-3.1-flash-lite",
+   "task": "edit_email",
+   "ok": true,
+   "status": "done",
+   "summary": "The email for lead Ravi Okonkwo94 has been updated to ravi.new@nimbus.com.",
+   "seconds": 6.3,
+   "steps": 6,
+   "llm_ms_p50": 718,
+   "events": [
+    "progress: searching leads for Ravi Okonkwo94",
+    "step: go_to {\"target\": \"#Lead/view/62a2a895a81f7b7d1\"} (859 ms)",
+    "step: click {\"ref\": 3} (334 ms)",
+    "step: type_text {\"submit\": true, \"ref\": 8, \"text\": \"ravi.new@nimbus.com\"} (601 ms)",
+    "step: click {\"ref\": 1} (314 ms)",
+    "done: The email for lead Ravi Okonkwo94 has been updated to ravi.new@nimbus.com."
+   ]
+  },
+  {
+   "model": "gemini-3.1-flash-lite",
+   "task": "set_title",
+   "ok": true,
+   "status": "done",
+   "summary": "The job title for lead Kofi Lindqvist86 at Orbit Robotics has been updated to Head of Operations.",
+   "seconds": 6.0,
+   "steps": 6,
+   "llm_ms_p50": 665,
+   "events": [
+    "progress: searching leads for Kofi Lindqvist86",
+    "step: go_to {\"target\": \"#Lead/view/95576a695417355e5\"} (860 ms)",
+    "step: click {\"ref\": 3} (339 ms)",
+    "step: type_text {\"submit\": true, \"text\": \"Head of Operations\", \"ref\": 17} (593 ms)",
+    "step: click {\"ref\": 1} (314 ms)",
+    "done: The job title for lead Kofi Lindqvist86 at Orbit Robotics has been updated to Head of Operations."
+   ]
+  },
+  {
+   "model": "gemini-3.1-flash-lite",
+   "task": "status",
+   "ok": true,
+   "status": "done",
+   "summary": "The status of the lead Kofi Nakamura76 has been updated to In Process.",
+   "seconds": 9.9,
+   "steps": 9,
+   "llm_ms_p50": 774,
+   "events": [
+    "progress: searching leads for Kofi Nakamura76",
+    "step: go_to {\"target\": \"#Lead/view/2616a6f63de7b0158\"} (859 ms)",
+    "progress: Changing status of Kofi Nakamura76 to In Process",
+    "step: click {\"ref\": 3} (347 ms)",
+    "step: click {\"ref\": 24} (289 ms)",
+    "step: click {\"ref\": 27} (301 ms)",
+    "step: click {\"ref\": 1} (320 ms)",
+    "done: The status of the lead Kofi Nakamura76 has been updated to In Process."
+   ]
+  },
+  {
+   "model": "gemini-3.1-flash-lite",
+   "task": "add_note",
+   "ok": true,
+   "status": "done",
+   "summary": "I have updated the description for the lead Ravi Nakamura32 to \"Interested in a pilot in Q1.\"",
+   "seconds": 7.5,
+   "steps": 7,
+   "llm_ms_p50": 684,
+   "events": [
+    "progress: searching leads for Ravi Nakamura",
+    "step: go_to {\"target\": \"#Lead/view/70c59dd174490594e\"} (859 ms)",
+    "progress: editing Ravi Nakamura32 description",
+    "step: click {\"ref\": 3} (353 ms)",
+    "step: type_text {\"text\": \"Interested in a pilot in Q1.\", \"submit\": true, \"ref\": 32} (699 ms)",
+    "step: click {\"ref\": 1} (315 ms)",
+    "done: I have updated the description for the lead Ravi Nakamura32 to \"Interested in a pilot in Q1.\""
+   ]
+  },
+  {
+   "model": "gemini-3.1-flash-lite",
+   "task": "read_only",
+   "ok": true,
+   "status": "done",
+   "summary": "Kofi Okonkwo19 is with the company Quarry Labs.",
+   "seconds": 2.4,
+   "steps": 3,
+   "llm_ms_p50": 648,
+   "events": [
+    "progress: Searching for Kofi Okonkwo19",
+    "progress: searching leads for Kofi Okonkwo19",
+    "done: Kofi Okonkwo19 is with the company Quarry Labs."
+   ]
+  },
+  {
+   "model": "gemini-3.1-flash-lite",
+   "task": "ambiguous_edit",
+   "ok": true,
+   "status": "done",
+   "summary": "I have updated the job title for the lead Ravi Okonkwo38 (email: ravi.one@bluefin.com) to VP Sales.",
+   "seconds": 8.4,
+   "steps": 8,
+   "llm_ms_p50": 714,
+   "events": [
+    "progress: Searching for Ravi Okonkwo38",
+    "progress: searching leads for Ravi Okonkwo38",
+    "question: I found two leads named Ravi Okonkwo38 at Bluefin Logistics. One has the email ravi.two@bluefin.com and the other has ravi.one@bluefin.com. Which one should I update?",
+    "answer: The one with the email ravi.one@bluefin.com.",
+    "step: go_to {\"target\": \"#Lead/view/8e96ec03d1e00142c\"} (860 ms)",
+    "step: click {\"ref\": 3} (339 ms)",
+    "step: type_text {\"submit\": true, \"text\": \"VP Sales\", \"ref\": 17} (422 ms)",
+    "step: click {\"ref\": 1} (319 ms)",
+    "done: I have updated the job title for the lead Ravi Okonkwo38 (email: ravi.one@bluefin.com) to VP Sales."
+   ]
+  },
+  {
+   "model": "gemini-3.1-flash-lite",
+   "task": "new_account",
+   "ok": true,
+   "status": "done",
+   "summary": "I have created the account Evaltest Corp 87992 with the website evaltest-87992.com.",
+   "seconds": 6.3,
+   "steps": 6,
+   "llm_ms_p50": 605,
+   "events": [
+    "progress: Creating account Evaltest Corp 87992",
+    "step: go_to {\"target\": \"#Account/create\"} (859 ms)",
+    "step: type_text {\"ref\": 4, \"text\": \"Evaltest Corp 87992\"} (571 ms)",
+    "step: type_text {\"submit\": true, \"text\": \"evaltest-87992.com\", \"ref\": 5} (549 ms)",
+    "step: click {\"ref\": 1} (304 ms)",
+    "done: I have created the account Evaltest Corp 87992 with the website evaltest-87992.com."
+   ]
+  },
+  {
+   "model": "gemini-3.1-flash-lite",
+   "task": "contact_at_account",
+   "ok": true,
+   "status": "done",
+   "summary": "I have successfully created the contact Kim Evalcontact51553 linked to Evaltest Account 51553 with the email kim.51553@evaltest.com.",
+   "seconds": 13.5,
+   "steps": 12,
+   "llm_ms_p50": 703,
+   "events": [
+    "progress: searching accounts for Evaltest Account 51553",
+    "step: go_to {\"target\": \"#Account/view/d3f28e255495c462a\"} (859 ms)",
+    "step: click {\"ref\": 8} (305 ms)",
+    "step: go_to {\"target\": \"#Contact/create\"} (859 ms)",
+    "step: type_text {\"ref\": 5, \"text\": \"Kim\"} (339 ms)",
+    "step: type_text {\"text\": \"Evalcontact51553\", \"ref\": 6} (515 ms)",
+    "step: type_text {\"ref\": 7, \"text\": \"Evaltest Account 51553\"} (628 ms)",
+    "step: click {\"ref\": 32} (295 ms)",
+    "step: type_text {\"ref\": 12, \"text\": \"kim.51553@evaltest.com\"} (610 ms)",
+    "step: click {\"ref\": 1} (308 ms)",
+    "done: I have successfully created the contact Kim Evalcontact51553 linked to Evaltest Account 51553 with the email kim.51553@evaltest.com."
+   ]
+  },
+  {
+   "model": "gemini-3.1-flash-lite",
+   "task": "task_for_lead",
+   "ok": true,
+   "status": "done",
+   "summary": "I have created the task 'Send pricing 35836' for the lead Mara Ferreira63.",
+   "seconds": 12.0,
+   "steps": 13,
+   "llm_ms_p50": 445,
+   "events": [
+    "progress: searching leads for Mara Ferreira63",
+    "step: go_to {\"target\": \"#Lead/view/4afcb190039c1f08f\"} (859 ms)",
+    "step: click {\"ref\": 17} (312 ms)",
+    "step: go_to {\"target\": \"#Task/create\"} (858 ms)",
+    "step: type_text {\"ref\": 4, \"text\": \"Send pricing 35836\"} (544 ms)",
+    "step: click {\"ref\": 5} (286 ms)",
+    "step: click {\"ref\": 8} (292 ms)",
+    "step: type_text {\"ref\": 6, \"text\": \"Mara Ferreira63\", \"submit\": true} (559 ms)",
+    "step: click {\"ref\": 30} (295 ms)",
+    "step: click {\"ref\": 1} (294 ms)",
+    "done: I have created the task 'Send pricing 35836' for the lead Mara Ferreira63."
+   ]
+  },
+  {
+   "model": "gemini-3.1-flash-lite",
+   "task": "meeting",
+   "ok": true,
+   "status": "done",
+   "summary": "I have scheduled the meeting 'Intro 18331' with Kofi Ferreira65 for November 30, 2026, from 3:00 PM to 3:30 PM.",
+   "seconds": 26.8,
+   "steps": 20,
+   "llm_ms_p50": 649,
+   "events": [
+    "step: type_text {\"ref\": 6, \"text\": \"Quarry Labs\"} (472 ms)",
+    "step: press_key {\"key\": \"Enter\"} (258 ms)",
+    "step: type_text {\"text\": \"11/30/2026\", \"ref\": 10} (526 ms)",
+    "step: type_text {\"ref\": 12, \"text\": \"15:00\"} (404 ms)",
+    "step: type_text {\"ref\": 16, \"text\": \"15:30\"} (469 ms)",
+    "step: type_text {\"text\": \"Kofi Ferreira65\", \"ref\": 30} (530 ms)",
+    "step: click {\"ref\": 33} (300 ms)",
+    "step: click {\"ref\": 1} (303 ms)",
+    "step: click {\"ref\": 4} (365 ms)",
+    "step: type_text {\"ref\": 16, \"text\": \"15:30\"} (393 ms)",
+    "step: click {\"ref\": 1} (355 ms)",
+    "done: I have scheduled the meeting 'Intro 18331' with Kofi Ferreira65 for November 30, 2026, from 3:00 PM to 3:30 PM."
+   ]
+  },
+  {
+   "model": "gemini-3.1-flash-lite",
+   "task": "opportunity",
+   "ok": true,
+   "status": "done",
+   "summary": "I have created the opportunity 'Pilot 62110' for the account 'Evaltest Account 62110' with an amount of 5,000 and the stage set to 'Prospecting'.",
+   "seconds": 18.7,
+   "steps": 17,
+   "llm_ms_p50": 730,
+   "events": [
+    "step: click {\"ref\": 27} (301 ms)",
+    "step: type_text {\"ref\": 9, \"text\": \"5000\"} (357 ms)",
+    "step: click {\"ref\": 1} (327 ms)",
+    "step: type_text {\"text\": \"2026-11-27\", \"ref\": 12} (517 ms)",
+    "step: click {\"ref\": 1} (298 ms)",
+    "step: click {\"ref\": 2} (354 ms)",
+    "step: type_text {\"text\": \"2026-11-27\", \"ref\": 12} (517 ms)",
+    "step: click {\"ref\": 1} (322 ms)",
+    "step: click {\"ref\": 2} (346 ms)",
+    "step: type_text {\"text\": \"2026-11-27\", \"ref\": 12} (536 ms)",
+    "step: click {\"ref\": 1} (327 ms)",
+    "done: I have created the opportunity 'Pilot 62110' for the account 'Evaltest Account 62110' with an amount of 5,000 and the stage set to 'Prospecting'."
+   ]
+  },
+  {
+   "model": "gemini-3.1-flash-lite",
+   "task": "convert_lead",
+   "ok": true,
+   "status": "done",
+   "summary": "The lead Ravi Achebe39 has been successfully converted to a contact.",
+   "seconds": 12.0,
+   "steps": 7,
+   "llm_ms_p50": 601,
+   "events": [
+    "progress: searching leads for Ravi Achebe39",
+    "step: go_to {\"target\": \"#Lead/view/d6cba72300a70c0b0\"} (859 ms)",
+    "step: click {\"ref\": 2} (332 ms)",
+    "step: click {\"ref\": 2} (300 ms)",
+    "step: click {\"ref\": 30} (302 ms)",
+    "done: The lead Ravi Achebe39 has been successfully converted to a contact."
+   ]
+  },
+  {
+   "model": "gemini-3.1-flash-lite",
+   "task": "count_question",
+   "ok": true,
+   "status": "done",
+   "summary": "There are 8 opportunities currently in the Negotiation stage.",
+   "seconds": 3.3,
+   "steps": 3,
+   "llm_ms_p50": 697,
+   "events": [
+    "progress: searching opportunitys for ",
+    "step: go_to {\"target\": \"#Opportunity\"} (863 ms)",
+    "done: There are 8 opportunities currently in the Negotiation stage."
+   ]
+  }
+ ],
+ "ran_at": "2026-11-27 18:15"
+}
