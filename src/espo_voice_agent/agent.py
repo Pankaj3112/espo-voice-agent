@@ -206,7 +206,7 @@ class CrmHandle:
                         "Tell the caller and ask whether to create a new lead anyway."
                     )
             await self.emit(type="tool", name="create_lead", state="start", detail=f"{lead.first_name} {lead.last_name}")
-            res = await self.browser.create_lead(lead)
+            res = await self.browser.create_lead(lead, allow_duplicate=duplicate_confirmed)
         except Exception as e:
             log.exception("create_lead failed")
             self.slog.write("tool", name="create_lead", ok=False, error=repr(e))

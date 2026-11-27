@@ -268,7 +268,7 @@ class EspoBrowser:
             msg = f"{len(matches)} possible duplicate(s)" if matches else "no duplicates"
             return ActionResult(ok=True, message=msg, matches=matches, timings_ms=t.marks)
 
-    async def create_lead(self, lead: LeadInput) -> ActionResult:
+    async def create_lead(self, lead: LeadInput, allow_duplicate: bool = False) -> ActionResult:
         async with self._lock:
             t = _Timer()
             page = self._p
@@ -303,6 +303,8 @@ class EspoBrowser:
             )
             for p in pending:
                 p.cancel()
+            if "#Lead/view/" not in page.url and allow_duplicate and await self._confirm_duplicate_modal():
+                pass  # caller already agreed to add it despite the existing record
             if "#Lead/view/" not in page.url:
                 modal_text = " ".join((await page.locator(".modal-dialog").first.inner_text()).split())
                 cancel = page.locator('.modal-dialog button[data-name="cancel"]')
@@ -327,6 +329,23 @@ class EspoBrowser:
                     timings_ms=t.marks,
                 )
             return ActionResult(ok=True, message="Lead created and verified", record=record, timings_ms=t.marks)
+
+    async def _confirm_duplicate_modal(self) -> bool:
+        """EspoCRM's own duplicate warning: press its save button and wait for the detail view."""
+        page = self._p
+        modal = page.locator(".modal-dialog").first
+        text = " ".join((await modal.inner_text()).lower().split())
+        if "already exist" not in text and "duplicate" not in text:
+            return False  # a validation error or something else: don't force it
+        btn = modal.locator("button").filter(has_text=re.compile(r"^\s*(Create|Save)\s*$"))
+        if not await btn.count():
+            return False
+        await btn.first.click()
+        try:
+            await page.wait_for_url(re.compile(r"#Lead/view/"), timeout=15000)
+        except Exception:
+            return False
+        return True
 
     async def _wait_detail_mode(self) -> None:
         # After save the URL flips to #Lead/view/<id> before the edit form is swapped
