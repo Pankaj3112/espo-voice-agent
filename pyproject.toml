@@ -1,7 +1,7 @@
 [project]
 name = "espo-voice-agent"
 version = "0.1.0"
-description = "Add your description here"
+description = "Ava: a voice agent that drives a real CRM (EspoCRM) through the browser, with a second browser agent doing the work"
 readme = "README.md"
 authors = [
     { name = "Pankaj Beniwal", email = "pankajbeniwal3112@gmail.com" }
@@ -19,9 +19,6 @@ dependencies = [
     "python-dotenv>=1.2.4",
     "uvicorn[standard]>=0.54.0",
 ]
-
-[project.scripts]
-espo-voice-agent = "espo_voice_agent:main"
 
 [build-system]
 requires = ["uv_build>=0.13.7,<0.14.0"]

@@ -1,2 +1,1 @@
-def main() -> None:
-    print("Hello from espo-voice-agent!")
+"""Ava: voice agent (agent.py) + browser agent (browser_agent.py) for EspoCRM."""

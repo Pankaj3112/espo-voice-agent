@@ -54,7 +54,7 @@ flowchart LR
   verified result says, and every reply is grounded in the job's real status.
 - **No deletes, no mass actions,** by rule.
 
-## Results (final code, all reproducible, see `evals/`)
+## Results (final code, all reproducible; see [`evals/`](evals/README.md))
 
 | Eval | What it checks | Result |
 |---|---|---|
@@ -105,7 +105,8 @@ src/espo_voice_agent/
   prompt.py         Ava's instructions and greeting
   web.py            demo page + token endpoint (rate limit, concurrent-call cap)
   static/           the demo page
-evals/              conversation eval, browser-task eval, simulated calls, voice samples, results
+evals/              conversation eval, browser-task eval, simulated calls, voice samples, results (+ history)
+docs/               technical notes PDF and its generator (build_notes.py, built from the eval results)
 tests/              unit tests
 deploy/, Dockerfile production setup
 ```

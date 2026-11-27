@@ -162,7 +162,8 @@ async def _verify_meeting(c, f, lid, summary):
     m = rows[0]
     print(f"    [verify] meeting dateStart={m.get('dateStart')} dateEnd={m.get('dateEnd')} parent={m.get('parentType')}:{m.get('parentId')} lead={lid}")
     import datetime as dt
-    s0 = dt.datetime.fromisoformat(m["dateStart"]); s1 = dt.datetime.fromisoformat(m["dateEnd"])
+    s0 = dt.datetime.fromisoformat(m["dateStart"])
+    s1 = dt.datetime.fromisoformat(m["dateEnd"])
     want = dt.date.fromisoformat(f["meet_date"])
     full = (await c.get(f"{API}/Meeting/{m['id']}")).json()
     linked = m.get("parentId") == lid or lid in (full.get("leadsIds") or [])  # parent or attendee both count
