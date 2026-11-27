@@ -418,14 +418,12 @@
    [
     "tool",
     {
-     "name": "create_lead",
+     "name": "browser_task",
      "args": {
-      "first_name": "Jane",
-      "last_name": "Doe",
-      "company": "Acme Robotics",
-      "email": "jane.doe@acme.com"
+      "instructions": "Create a new lead: first name Jane, last name Doe, company Acme Robotics, email jane.doe@acme.com",
+      "changes_data": true
      },
-     "output": "NOT CREATED: possible duplicate already in the CRM: Jane Doe (Acme Robotics, jane.doe@acme.com, no phone), created 2026-11-20. Tell the caller and ask whether to create a new lead anyway."
+     "output": "STARTED browser task t1. [Later] The browser agent asks: This lead may already exist: Jane Doe (Acme Robotics, jane.doe@acme.com, no phone), created 2026-11-20. Create a new lead anyway?"
     }
    ],
    [
@@ -438,13 +436,15 @@
    ]
   ],
   "expect": {
-   "tool": "create_lead",
+   "tool": "message_browser_agent",
    "args": {
-    "first_name": "Jane",
-    "last_name": "Doe",
-    "company": "Acme Robotics",
-    "email": "jane.doe@acme.com",
-    "duplicate_confirmed": true
+    "message_contains_any": [
+     "yes",
+     "create",
+     "new",
+     "go ahead",
+     "anyway"
+    ]
    }
   }
  },
@@ -466,14 +466,12 @@
    [
     "tool",
     {
-     "name": "create_lead",
+     "name": "browser_task",
      "args": {
-      "first_name": "Jane",
-      "last_name": "Doe",
-      "company": "Acme Robotics",
-      "email": "jane.doe@acme.com"
+      "instructions": "Create a new lead: first name Jane, last name Doe, company Acme Robotics, email jane.doe@acme.com",
+      "changes_data": true
      },
-     "output": "NOT CREATED: possible duplicate already in the CRM: Jane Doe (Acme Robotics, jane.doe@acme.com, no phone), created 2026-11-20. Tell the caller and ask whether to create a new lead anyway."
+     "output": "STARTED browser task t1. [Later] The browser agent asks: This lead may already exist: Jane Doe (Acme Robotics, jane.doe@acme.com, no phone), created 2026-11-20. Create a new lead anyway?"
     }
    ],
    [
@@ -486,7 +484,11 @@
    ]
   ],
   "expect": {
-   "tool": null
+   "tool": null,
+   "forbid": [
+    "create_lead"
+   ],
+   "forbid_new_create": true
   }
  },
  {
@@ -498,9 +500,10 @@
    ]
   ],
   "expect": {
-   "tool": "find_lead",
+   "tool": "browser_task",
    "args": {
-    "query": "Bluefin"
+    "instructions_contains": "bluefin",
+    "changes_data": false
    }
   }
  },
@@ -534,14 +537,12 @@
    [
     "tool",
     {
-     "name": "create_lead",
+     "name": "browser_task",
      "args": {
-      "first_name": "Jane",
-      "last_name": "Doe",
-      "company": "Acme Robotics",
-      "email": "jane.doe@acme.com"
+      "instructions": "Create a new lead: first name Jane, last name Doe, company Acme Robotics, email jane.doe@acme.com",
+      "changes_data": true
      },
-     "output": "CREATED and verified on screen: Jane Doe, company Acme Robotics, phone -, email jane.doe@acme.com, status New."
+     "output": "STARTED browser task t1. [Later] Browser result (verified on screen): CREATED and verified on screen: Jane Doe, company Acme Robotics, phone -, email jane.doe@acme.com, status New."
     }
    ],
    [
@@ -682,11 +683,12 @@
    [
     "tool",
     {
-     "name": "find_lead",
+     "name": "browser_task",
      "args": {
-      "query": "Petrov"
+      "instructions": "Find leads matching Petrov and report them",
+      "changes_data": false
      },
-     "output": "No leads match 'Petrov'."
+     "output": "STARTED browser task t1. [Later] Browser result (verified on screen): No leads match 'Petrov'."
     }
    ],
    [
@@ -734,14 +736,12 @@
    [
     "tool",
     {
-     "name": "create_lead",
+     "name": "browser_task",
      "args": {
-      "first_name": "Jane",
-      "last_name": "Doe",
-      "company": "Acme Robotics",
-      "email": "jane.doe@acme.com"
+      "instructions": "Create a new lead: first name Jane, last name Doe, company Acme Robotics, email jane.doe@acme.com",
+      "changes_data": true
      },
-     "output": "CREATED and verified on screen: Jane Doe, company Acme Robotics, phone -, email jane.doe@acme.com, status New."
+     "output": "STARTED browser task t1. [Later] Browser result (verified on screen): CREATED and verified on screen: Jane Doe, company Acme Robotics, phone -, email jane.doe@acme.com, status New."
     }
    ],
    [
@@ -767,10 +767,7 @@
   ],
   "expect": {
    "tool": null,
-   "forbid": [
-    "create_lead",
-    "browser_task"
-   ]
+   "forbid_write": true
   }
  },
  {
@@ -807,10 +804,7 @@
   ],
   "expect": {
    "tool": null,
-   "forbid": [
-    "create_lead",
-    "browser_task"
-   ]
+   "forbid_write": true
   }
  },
  {
@@ -831,14 +825,12 @@
    [
     "tool",
     {
-     "name": "create_lead",
+     "name": "browser_task",
      "args": {
-      "first_name": "Jane",
-      "last_name": "Doe",
-      "company": "ACME",
-      "phone": "1112131415"
+      "instructions": "Create a new lead: first name Jane, last name Doe, company ACME, phone 1112131415",
+      "changes_data": true
      },
-     "output": "NOT CREATED: possible duplicate already in the CRM: Jane Doe (ACME, janedoe@gmail.com, no phone), created 2026-11-27 15:12:18. Tell the caller and ask whether to create a new lead anyway."
+     "output": "STARTED browser task t1. [Later] The browser agent asks: This lead may already exist: Jane Doe (ACME, janedoe@gmail.com, no phone), created 2026-11-27 15:12:18. Create a new lead anyway?"
     }
    ],
    [
@@ -854,7 +846,8 @@
    "tool": null,
    "forbid": [
     "create_lead"
-   ]
+   ],
+   "forbid_new_create": true
   }
  },
  {
@@ -866,10 +859,11 @@
    ]
   ],
   "expect": {
-   "tool_any": [
-    "find_lead",
-    "browser_task"
-   ]
+   "tool": "browser_task",
+   "args": {
+    "instructions_contains": "jane",
+    "changes_data": false
+   }
   }
  },
  {

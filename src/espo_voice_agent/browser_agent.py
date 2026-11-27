@@ -94,8 +94,16 @@ How you see the page: each tool returns a compact outline of the visible page. C
 `[ref] role "name" field=... value=...`; text lines give labels, field values and messages. Use the refs \
 with click / type_text / select_option. Refs change after every action, so always use the latest outline.
 
-Work efficiently: prefer direct navigation (e.g. go_to("#Lead") for the leads list, the global search box, \
-or a record's detail URL) over exploring. Typical edit flow in EspoCRM: open the record, click Edit, change \
+Skills (fast, scripted, verified; prefer them when they fit):
+- create_lead: adds a NEW lead by filling and saving the form, then checks the saved record. It first checks for \
+duplicates: if it reports a DUPLICATE, ask the caller (ask_caller) whether to create a new lead anyway, and only \
+then call it again with allow_duplicate=true. Never use it to change an existing lead.
+- search_leads: finds leads by name, company, email or phone and returns their ids; then open one with \
+go_to("#Lead/view/<id>") instead of clicking through the list.
+For anything else use the generic page tools.
+
+Work efficiently: prefer direct navigation (e.g. go_to("#Lead/view/<id>") after search_leads, or go_to("#Lead")) \
+over exploring. Typical edit flow in EspoCRM: open the record, click Edit, change \
 the field, click Save, then read the detail view. For a dropdown, click it, then click the wanted `option` in \
 the next outline.
 
@@ -127,6 +135,17 @@ _B = lambda d: types.Schema(type="BOOLEAN", description=d)  # noqa: E731
 
 TOOLS = types.Tool(
     function_declarations=[
+        _decl(
+            "create_lead",
+            "SKILL: create a NEW lead via the scripted form fill (fast, verified). Checks for duplicates first.",
+            {
+                "first_name": _S("first name"), "last_name": _S("last name"), "company": _S("company / account name"),
+                "phone": _S("phone digits, optional leading +"), "email": _S("email address"), "title": _S("job title"),
+                "description": _S("short note"), "allow_duplicate": _B("true only after the caller agreed to add it despite a duplicate"),
+            },
+            ["first_name", "last_name"],
+        ),
+        _decl("search_leads", "SKILL: search leads; returns id, name, company, email, phone, status for each match.", {"query": _S("name, company, email or phone")}, ["query"]),
         _decl("look", "Return the current page outline (use if unsure what is on screen)."),
         _decl("click", "Click a control.", {"ref": _I("ref from the latest outline")}, ["ref"]),
         _decl(
@@ -250,10 +269,11 @@ class PageTools:
 class BrowserAgent:
     """Runs one task at a time on the shared page (the caller watches the same page)."""
 
-    def __init__(self, page: Page, notify: Notify, lock: asyncio.Lock, model: str | None = None) -> None:
+    def __init__(self, page: Page, notify: Notify, lock: asyncio.Lock, model: str | None = None, skills=None) -> None:
         self.tools = PageTools(page, config.ESPO_BASE_URL)
         self.notify = notify
-        self.lock = lock
+        self.lock = lock  # serialises tasks (not the EspoBrowser lock, which the skills take themselves)
+        self.skills = skills  # EspoBrowser: scripted create/search routines
         self.model = model or config.BROWSER_LLM_MODEL
         self.client = genai.Client(vertexai=True, project=config.GCP_PROJECT, location=config.GCP_LOCATION)
         self.current: BrowserTask | None = None
@@ -334,6 +354,42 @@ class BrowserAgent:
         task.status, task.summary = "failed", "The browser task ran out of steps before finishing; it may be incomplete."
         await self._event(task, "failed", task.summary)
 
+    async def _skill(self, task: BrowserTask, name: str, args: dict[str, Any]) -> str:
+        from .espo import LeadInput  # local import keeps this module free of EspoCRM at import time
+
+        if self.skills is None:
+            return "This skill is not available; use the page tools."
+        b = self.skills
+        if name == "search_leads":
+            await self._event(task, "progress", f"searching leads for {args.get('query', '')}"[:120])
+            res = await b.search_leads(str(args.get("query", "")))
+            rows = [{k: m.get(k) for k in ("id", "name", "accountName", "emailAddress", "phoneNumber", "status")} for m in res.matches]
+            return f"{len(rows)} match(es): {json.dumps(rows)}" if rows else "No leads match."
+        clean = lambda v: (str(v).strip() or None) if v is not None else None  # noqa: E731
+        lead = LeadInput(
+            first_name=str(args.get("first_name", "")).strip(), last_name=str(args.get("last_name", "")).strip(),
+            account_name=clean(args.get("company")), phone=clean(args.get("phone")), email=clean(args.get("email")),
+            title=clean(args.get("title")), source="Call", description=clean(args.get("description")),
+        )
+        allow = bool(args.get("allow_duplicate"))
+        if not allow:
+            dup = await b.find_duplicates(lead)
+            if dup.matches:
+                m = dup.matches[0]
+                return (
+                    f"DUPLICATE: {m['name']} ({m.get('accountName') or 'no company'}, {m.get('emailAddress') or 'no email'}, "
+                    f"{m.get('phoneNumber') or 'no phone'}) already exists, id {m.get('id')}. Nothing was created. Ask the caller."
+                )
+        await self._event(task, "progress", f"filling in the new lead {lead.first_name} {lead.last_name}")
+        res = await b.create_lead(lead, allow_duplicate=allow)
+        rec = res.record
+        if rec:
+            await self._event(task, "record", json.dumps(rec.__dict__))
+        if res.ok and rec:
+            return (f"CREATED and verified on screen: {rec.name}, company {rec.account_name or '-'}, phone {rec.phone or '-'}, "
+                    f"email {rec.email or '-'}. Now call finish(success=true, ...).")
+        return f"PROBLEM: {res.message}"
+
     async def _exec(self, task: BrowserTask, name: str, args: dict[str, Any]) -> str:
         tl = self.tools
         try:
@@ -354,6 +410,8 @@ class BrowserAgent:
                 task.status, task.pending_question = "running", None
                 await self._event(task, "answer", answer)
                 return f"CALLER ANSWERED: {answer}\n\nCURRENT PAGE:\n{await tl.outline()}"
+            if name in ("create_lead", "search_leads"):
+                return await self._skill(task, name, args)
             if name == "look":
                 return await tl.outline()
             action = {

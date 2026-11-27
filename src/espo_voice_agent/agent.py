@@ -25,12 +25,14 @@ from livekit.agents import (
     function_tool,
     room_io,
 )
+from livekit.agents.types import TimedString
 from livekit.plugins import deepgram, elevenlabs, noise_cancellation, openai, silero
 from playwright.async_api import async_playwright
 
 from . import config
 from .browser_agent import BrowserAgent, BrowserTask
-from .espo import EspoBrowser, LeadInput
+from .espo import EspoBrowser
+from .expressive import TagStripper, strip_tags
 from .prompt import GREETING, INSTRUCTIONS
 from .screen import BrowserStreamer
 
@@ -78,57 +80,29 @@ class IntakeAgent(Agent):
         if self.crm is not None and (status := self.crm.job_context()):
             turn_ctx.add_message(role="assistant", content=status)
 
-    @function_tool()
-    async def create_lead(
-        self,
-        context: RunContext,
-        first_name: str,
-        last_name: str,
-        company: str | None = None,
-        phone: str | None = None,
-        email: str | None = None,
-        title: str | None = None,
-        notes: str | None = None,
-        duplicate_confirmed: bool = False,
-    ) -> str:
-        """Create a NEW Lead in EspoCRM (fast, scripted). Only call this after the caller has confirmed the details you read back.
-
-        Args:
-            first_name: Lead's first name, correctly capitalised.
-            last_name: Lead's last name, correctly capitalised.
-            company: Company / account name, if given.
-            phone: Phone number exactly as dictated, digits with optional leading + and country code.
-            email: Email address in normal written form, e.g. jane.doe@acme.com.
-            title: Job title, if given.
-            notes: Short free-text note about the lead (interest, context), if given.
-            duplicate_confirmed: Set true only if you already warned the caller about a possible duplicate and they still want a new lead.
-        """
-        if not is_confirmation(self.last_user_text):
-            return (
-                "NOT CONFIRMED: the caller's last reply was not a clear yes "
-                f"({self.last_user_text!r}). Nothing was saved."
-            )
-        lead = LeadInput(
-            first_name=first_name.strip(),
-            last_name=last_name.strip(),
-            account_name=_clean(company),
-            phone=_clean(phone),
-            email=_clean(email),
-            title=_clean(title),
-            source="Call",
-            description=_clean(notes),
-        )
-        return await self.crm.create(lead, duplicate_confirmed)
+    async def transcription_node(self, text, model_settings):
+        """Captions/transcript never show emotion tags like [laugh]; the voice performs them instead."""
+        stripper = TagStripper()
+        async for chunk in text:
+            out = stripper.feed(str(chunk))
+            if not out:
+                continue
+            if isinstance(chunk, TimedString):
+                yield TimedString(out, start_time=chunk.start_time, end_time=chunk.end_time)
+            else:
+                yield out
+        if tail := stripper.flush():
+            yield tail
 
     @function_tool()
     async def browser_task(self, context: RunContext, instructions: str, changes_data: bool) -> str:
-        """Hand a job to the browser agent, which operates the EspoCRM web app like a person (open records, edit
-        fields, change status, add notes, look things up). It runs in the background; you keep talking. Its result,
+        """Hand ANY CRM job to the browser agent, which operates the EspoCRM web app: create a new lead, look leads
+        up, edit fields, change status, add notes. It runs in the background; you keep talking. Its result,
         questions and progress come back to you automatically.
 
         Args:
-            instructions: Plain-language task with every value needed, e.g. "Set the phone of lead Jane Doe at ACME to 1112131415".
-            changes_data: True if the task edits, adds or deletes anything (then the caller must have just confirmed it).
+            instructions: Plain-language task with every value needed, e.g. "Create a new lead: Jane Doe, company Acme, phone 4155550142, email jane.doe@acme.com" or "Set the phone of lead Jane Doe at ACME to 1112131415" or "Find leads named Jane Doe and tell me their emails".
+            changes_data: True if the task creates or edits anything (then the caller must have just confirmed it).
         """
         if changes_data and not is_confirmation(self.last_user_text):
             return (
@@ -155,20 +129,6 @@ class IntakeAgent(Agent):
     async def cancel_browser_task(self, context: RunContext) -> str:
         """Stop the running browser task (if the caller changes their mind)."""
         return await self.crm.cancel_task()
-
-    @function_tool()
-    async def find_lead(self, context: RunContext, query: str) -> str:
-        """Quick search of existing Leads by name, company, email or phone (returns name, email, phone, status).
-
-        Args:
-            query: Text to search for, e.g. a last name or company.
-        """
-        return await self.crm.search(query)
-
-
-def _clean(v: str | None) -> str | None:
-    v = (v or "").strip()
-    return v or None
 
 
 class CrmHandle:
@@ -246,88 +206,13 @@ class CrmHandle:
             return f"BUSY: the browser is still working on: {t.goal!r} ({t.status}). Wait for it, or cancel it first."
         return None
 
-    async def create(self, lead: LeadInput, duplicate_confirmed: bool) -> str:
-        if err := await self._wait_ready():
-            return err
-        if b := self.busy():
-            return b
-        if not duplicate_confirmed:  # fast (~0.1 s), so it stays synchronous
-            await self.emit(type="tool", name="duplicate_check", state="start")
-            dup = await self.browser.find_duplicates(lead)
-            self.slog.write("tool", name="find_duplicates", ok=dup.ok, n=len(dup.matches), timings=dup.timings_ms)
-            await self.emit(type="tool", name="duplicate_check", state="done", detail=dup.message)
-            if dup.matches:
-                m = dup.matches[0]
-                return (
-                    "NOT CREATED: possible duplicate already in the CRM: "
-                    f"{m['name']} ({m['accountName'] or 'no company'}, {m['emailAddress'] or 'no email'}, "
-                    f"{m['phoneNumber'] or 'no phone'}), created {m['createdAt']}. "
-                    "Tell the caller and ask whether to create a new lead anyway."
-                )
-        self.task = BrowserTask(id=f"c{int(time.time())}", goal=f"create lead {lead.first_name} {lead.last_name}")
-        self.task._runner = asyncio.create_task(self._create_bg(self.task, lead, duplicate_confirmed))  # type: ignore[attr-defined]
-        return (
-            "STARTED: the lead is being entered in the CRM now (takes a few seconds). Tell the caller briefly, in your "
-            "own words, that you're adding it. Do not say it is added until the result arrives."
-        )
-
-    async def _create_bg(self, task: BrowserTask, lead: LeadInput, duplicate_confirmed: bool) -> None:
-        text = await self._create(lead, duplicate_confirmed)
-        task.status = "done" if text.startswith("CREATED") else "failed"
-        task.summary = text
-        await self.on_task_event(task, task.status, text)
-
-    async def _create(self, lead: LeadInput, duplicate_confirmed: bool) -> str:
-        t = time.perf_counter()
-        try:
-            await self.emit(type="tool", name="create_lead", state="start", detail=f"{lead.first_name} {lead.last_name}")
-            res = await self.browser.create_lead(lead, allow_duplicate=duplicate_confirmed)
-        except Exception as e:
-            log.exception("create_lead failed")
-            self.slog.write("tool", name="create_lead", ok=False, error=repr(e))
-            await self.emit(type="tool", name="create_lead", state="error", detail=str(e)[:200])
-            return "FAILED: the CRM did not respond as expected and the lead may not be saved. Tell the caller honestly."
-        total_ms = round((time.perf_counter() - t) * 1000)
-        self.slog.write("tool", name="create_lead", ok=res.ok, msg=res.message, timings=res.timings_ms, total_ms=total_ms)
-        rec = res.record
-        await self.emit(
-            type="tool",
-            name="create_lead",
-            state="done" if res.ok else "error",
-            detail=res.message,
-            url=rec.url if rec else None,
-            record=rec.__dict__ if rec else None,
-        )
-        if res.ok and rec:
-            return (
-                "CREATED a NEW, separate lead record (no existing record was changed), verified on screen: "
-                f"{rec.name}, company {rec.account_name or '-'}, "
-                f"phone {rec.phone or '-'}, email {rec.email or '-'}, status {rec.status}."
-            )
-        return f"PROBLEM: {res.message}. Tell the caller what went wrong."
-
-    async def search(self, query: str) -> str:
-        if err := await self._wait_ready():
-            return err
-        if b := self.busy():
-            return b
-        await self.emit(type="tool", name="find_lead", state="start", detail=query)
-        res = await self.browser.search_leads(query)
-        self.slog.write("tool", name="find_lead", ok=res.ok, n=len(res.matches), timings=res.timings_ms)
-        await self.emit(type="tool", name="find_lead", state="done", detail=res.message)
-        if not res.matches:
-            return f"No leads match '{query}'."
-        rows = "; ".join(f"{m['name']} ({m['emailAddress'] or 'no email'}, {m['phoneNumber'] or 'no phone'}, {m['status']})" for m in res.matches)
-        return f"{len(res.matches)} match(es): {rows}"
-
-
     async def start_browser_task(self, instructions: str) -> str:
         if err := await self._wait_ready():
             return err
         if b := self.busy():
             return b
         if self.agent is None:
-            self.agent = BrowserAgent(self.browser.page, self.on_task_event, self.browser._lock)
+            self.agent = BrowserAgent(self.browser.page, self.on_task_event, asyncio.Lock(), skills=self.browser)
         self.task = self.agent.start(instructions)
         self.slog.write("browser_task", id=self.task.id, goal=instructions)
         await self.emit(type="task", id=self.task.id, kind="start", text=instructions)
@@ -372,6 +257,10 @@ class CrmHandle:
         """Progress goes to the screen; questions and results go to the voice LLM, which phrases them."""
         self.slog.write("task_event", id=task.id, event=kind, text=text)
         await self.emit(type="task", id=task.id, kind=kind, text=text)
+        if kind == "record":  # a lead the create skill saved and read back: show its card on the page
+            rec = json.loads(text)
+            await self.emit(type="tool", name="create_lead", state="done", detail="Lead created and verified", url=rec.get("url"), record=rec)
+            return
         if kind in ("step", "progress"):
             self._last_progress = text
             return
@@ -436,6 +325,24 @@ def build_llm():
     )
 
 
+class _PlainDeepgramTTS(deepgram.TTS):
+    """Backup voice: same Deepgram TTS, but emotion tags are removed so it never reads them aloud."""
+
+    def synthesize(self, text, **kw):
+        return super().synthesize(strip_tags(text), **kw)
+
+    def stream(self, **kw):
+        st = super().stream(**kw)
+        stripper, push = TagStripper(), st.push_text
+
+        def _push(token: str) -> None:
+            if out := stripper.feed(token):
+                push(out)
+
+        st.push_text = _push  # type: ignore[method-assign]
+        return st
+
+
 def build_tts():
     if config.TTS_PROVIDER == "fish":
         from livekit.agents import inference
@@ -443,7 +350,7 @@ def build_tts():
 
         # If Fish errors or LiveKit's inference allowance runs out, keep talking in the backup voice.
         return lktts.FallbackAdapter(
-            [inference.TTS(model=config.TTS_MODEL), deepgram.TTS(model=config.TTS_FALLBACK_MODEL)]
+            [inference.TTS(model=config.TTS_MODEL), _PlainDeepgramTTS(model=config.TTS_FALLBACK_MODEL)]
         )
     if config.TTS_PROVIDER == "deepgram":
         return deepgram.TTS(model=config.TTS_MODEL)

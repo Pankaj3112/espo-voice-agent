@@ -1,0 +1,154 @@
+{
+ "summary": {
+  "gemini-3.1-flash-lite": {
+   "pass": 8,
+   "n": 8,
+   "median_s": 7.8,
+   "max_s": 9.6
+  }
+ },
+ "rows": [
+  {
+   "model": "gemini-3.1-flash-lite",
+   "task": "create_new",
+   "ok": true,
+   "status": "done",
+   "summary": "I have successfully created the new lead for Nora Testcreate2913 at Bluefin Logistics.",
+   "seconds": 4.5,
+   "steps": 2,
+   "llm_ms_p50": 985,
+   "events": [
+    "progress: filling in the new lead Nora Testcreate2913",
+    "record: {\"id\": \"3b8bbbcc12efc4163\", \"url\": \"https://demo.us.espocrm.com/#Lead/view/3b8bbbcc12efc4163\", \"name\": \"Nora Testcreate2913\", \"account_name\": \"Bluefin Logistics\", \"phone\": \"415 555 0177\", \"email\": \"nora.testcreate2913@bluefin.com\", \"title\": \"None\", \"source\": \"Call\", \"status\": \"New\", \"description\": \"None\"}",
+    "done: I have successfully created the new lead for Nora Testcreate2913 at Bluefin Logistics."
+   ]
+  },
+  {
+   "model": "gemini-3.1-flash-lite",
+   "task": "create_duplicate",
+   "ok": true,
+   "status": "done",
+   "summary": "I have successfully created a new lead for Tomas Lindqvist83 at Nimbus Analytics.",
+   "seconds": 5.7,
+   "steps": 4,
+   "llm_ms_p50": 954,
+   "events": [
+    "question: A lead for Tomas Lindqvist83 at Nimbus Analytics already exists. Should I create a new one anyway?",
+    "answer: Yes, create a new one anyway.",
+    "progress: filling in the new lead Tomas Lindqvist83",
+    "record: {\"id\": \"9a80acbdd52859d39\", \"url\": \"https://demo.us.espocrm.com/#Lead/view/9a80acbdd52859d39\", \"name\": \"Tomas Lindqvist83\", \"account_name\": \"Nimbus Analytics\", \"phone\": \"None\", \"email\": \"None\", \"title\": \"None\", \"source\": \"Call\", \"status\": \"New\", \"description\": \"None\"}",
+    "done: I have successfully created a new lead for Tomas Lindqvist83 at Nimbus Analytics."
+   ]
+  },
+  {
+   "model": "gemini-3.1-flash-lite",
+   "task": "edit_phone",
+   "ok": true,
+   "status": "done",
+   "summary": "I have added the phone number 415 555 0199 to the lead Lena Okonkwo14.",
+   "seconds": 8.7,
+   "steps": 7,
+   "llm_ms_p50": 703,
+   "events": [
+    "progress: searching leads for Lena Okonkwo14",
+    "step: go_to {\"target\": \"#Lead/view/9bd75b95041d0c054\"}",
+    "progress: editing Lena Okonkwo14 to add phone number",
+    "step: click {\"ref\": 3}",
+    "step: type_text {\"text\": \"415 555 0199\", \"submit\": true, \"ref\": 13}",
+    "step: click {\"ref\": 1}",
+    "done: I have added the phone number 415 555 0199 to the lead Lena Okonkwo14."
+   ]
+  },
+  {
+   "model": "gemini-3.1-flash-lite",
+   "task": "edit_email",
+   "ok": true,
+   "status": "done",
+   "summary": "I have updated the email address for Ravi Okonkwo66 to ravi.new@nimbus.com.",
+   "seconds": 7.8,
+   "steps": 6,
+   "llm_ms_p50": 683,
+   "events": [
+    "progress: searching leads for Ravi Okonkwo66",
+    "step: go_to {\"target\": \"#Lead/view/92419696cc5ccb997\"}",
+    "step: click {\"ref\": 3}",
+    "step: type_text {\"ref\": 8, \"text\": \"ravi.new@nimbus.com\", \"submit\": true}",
+    "step: click {\"ref\": 1}",
+    "done: I have updated the email address for Ravi Okonkwo66 to ravi.new@nimbus.com."
+   ]
+  },
+  {
+   "model": "gemini-3.1-flash-lite",
+   "task": "set_title",
+   "ok": true,
+   "status": "done",
+   "summary": "I have updated the job title for Tomas Achebe55 to Head of Operations.",
+   "seconds": 8.4,
+   "steps": 7,
+   "llm_ms_p50": 739,
+   "events": [
+    "progress: searching leads for Tomas Achebe55",
+    "step: go_to {\"target\": \"#Lead/view/1220d94a53f7d8448\"}",
+    "progress: editing Tomas Achebe55",
+    "step: click {\"ref\": 3}",
+    "step: type_text {\"submit\": true, \"text\": \"Head of Operations\", \"ref\": 17}",
+    "step: click {\"ref\": 1}",
+    "done: I have updated the job title for Tomas Achebe55 to Head of Operations."
+   ]
+  },
+  {
+   "model": "gemini-3.1-flash-lite",
+   "task": "status",
+   "ok": true,
+   "status": "done",
+   "summary": "The status of the lead Ravi Achebe82 has been updated to In Process.",
+   "seconds": 9.6,
+   "steps": 9,
+   "llm_ms_p50": 658,
+   "events": [
+    "progress: searching leads for Ravi Achebe82",
+    "step: go_to {\"target\": \"#Lead/view/ec8a1cfeadb94ef0f\"}",
+    "step: click {\"ref\": 3}",
+    "progress: changing status to In Process",
+    "step: click {\"ref\": 24}",
+    "step: click {\"ref\": 27}",
+    "step: click {\"ref\": 1}",
+    "done: The status of the lead Ravi Achebe82 has been updated to In Process."
+   ]
+  },
+  {
+   "model": "gemini-3.1-flash-lite",
+   "task": "add_note",
+   "ok": true,
+   "status": "done",
+   "summary": "I have updated the description for Ines Achebe57 to \"Interested in a pilot in Q1.\"",
+   "seconds": 7.5,
+   "steps": 6,
+   "llm_ms_p50": 776,
+   "events": [
+    "progress: searching leads for Ines Achebe57",
+    "step: go_to {\"target\": \"#Lead/view/2f0ace59fcba8b6c8\"}",
+    "step: click {\"ref\": 3}",
+    "step: type_text {\"submit\": true, \"ref\": 32, \"text\": \"Interested in a pilot in Q1.\"}",
+    "step: click {\"ref\": 1}",
+    "done: I have updated the description for Ines Achebe57 to \"Interested in a pilot in Q1.\""
+   ]
+  },
+  {
+   "model": "gemini-3.1-flash-lite",
+   "task": "read_only",
+   "ok": true,
+   "status": "done",
+   "summary": "Mara Brandt46 is with Bluefin Logistics.",
+   "seconds": 3.9,
+   "steps": 3,
+   "llm_ms_p50": 724,
+   "events": [
+    "progress: searching leads for Mara Brandt46",
+    "step: go_to {\"target\": \"#Lead/view/5d4a5ce7149ed4c68\"}",
+    "done: Mara Brandt46 is with Bluefin Logistics."
+   ]
+  }
+ ],
+ "ran_at": "2026-11-27 17:34"
+}

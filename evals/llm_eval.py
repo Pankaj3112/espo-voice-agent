@@ -92,35 +92,55 @@ def norm_digits(s: str | None) -> str:
     return re.sub(r"\D", "", s or "")
 
 
+def _writes(calls: list[dict]) -> list[dict]:
+    return [c for c in calls if c["name"] == "browser_task" and c["args"].get("changes_data")]
+
+
 def score(case: dict, calls: list[dict]) -> tuple[bool, str]:
+    """Since the hand-over redesign the voice agent's only CRM tool is browser_task; cases written for the
+    old create_lead / find_lead tools are scored against the browser_task instructions instead."""
     exp = case["expect"]
-    forbid = exp.get("forbid", ["create_lead"])
-    if exp.get("tool_any"):
-        hit = [c for c in calls if c["name"] in exp["tool_any"] and not (c["name"] == "browser_task" and c["args"].get("changes_data"))]
-        return (bool(hit), "ok" if hit else f"want one of {exp['tool_any']} (read-only), got {[c['name'] for c in calls]}")
-    if exp.get("tool") is None:
-        bad = [c for c in calls if c["name"] in forbid]
+    tool = exp.get("tool")
+    if tool is None:
+        bad = [c for c in calls if c["name"] in exp.get("forbid", [])]
+        if exp.get("forbid_write", True) or exp.get("forbid_new_create"):
+            bad += [c for c in _writes(calls) if "creat" in (c["args"].get("instructions") or "").lower() or exp.get("forbid_write", True)]
         return (not bad, f"unexpected {[c['name'] for c in bad]}" if bad else "ok")
-    match = [c for c in calls if c["name"] == exp["tool"]]
+    if tool == "create_lead":
+        match = [c for c in _writes(calls)]
+        if not match:
+            return False, f"no browser_task write (got {[c['name'] for c in calls]})"
+        instr = (match[0]["args"].get("instructions") or "")
+        for k, want in exp.get("args", {}).items():
+            if k == "duplicate_confirmed":
+                continue
+            if k == "phone":
+                ok = norm_digits(want)[-10:] in norm_digits(instr)
+            else:
+                ok = str(want).lower() in instr.lower()
+            if not ok:
+                return False, f"{k}: {want!r} not in instructions {instr[:160]!r}"
+        return True, "ok"
+    match = [c for c in calls if c["name"] == tool]
     if not match:
-        return False, f"no {exp['tool']} call (got {[c['name'] for c in calls]})"
+        return False, f"no {tool} call (got {[c['name'] for c in calls]})"
     args = match[0]["args"]
     for k, want in exp.get("args", {}).items():
         got = args.get(k)
-        if k == "phone":
-            ok = norm_digits(got).endswith(norm_digits(want)[-10:]) and len(norm_digits(want)) > 0
-        elif k == "query":
-            ok = want.lower() in (got or "").lower()
-        elif k == "instructions_digits":
+        if k == "instructions_digits":
             ok = want in norm_digits(args.get("instructions"))
+        elif k == "instructions_contains":
+            ok = want.lower() in (args.get("instructions") or "").lower()
         elif k == "message_contains":
             ok = want.lower() in (args.get("message") or "").lower()
+        elif k == "message_contains_any":
+            ok = any(w in (args.get("message") or "").lower() for w in want)
         elif isinstance(want, bool):
             ok = bool(got) == want
         else:
-            ok = (got or "").strip().lower() == want.lower()
+            ok = (got or "").strip().lower() == str(want).lower()
         if not ok:
-            return False, f"{k}: want {want!r} got {got!r}"
+            return False, f"{k}: want {want!r} got {args!r}"[:220]
     return True, "ok"
 
 
