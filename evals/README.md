@@ -5,6 +5,7 @@
 | `llm_eval.py` | Ava's brain on 38 ASR-style dialogues (`llm_cases.json`), production prompt, tools and settings; scores the action, the values in the hand-off, and timing (no write before a clear yes). | `results/llm_eval_final.json`: 76/76 |
 | `browser_tasks.py` | The browser agent on 16 real jobs in the EspoCRM demo. Each job gets fresh test data over REST, is verified exactly over REST, then cleaned up. | `results/browser_tasks_final.json`: 16/16 |
 | `sim_call.py` | Full voice loop: an LLM caller speaks (TTS) into the LiveKit room; outcome checked in the CRM. Optional background noise. | `results/sim_calls_final.jsonl`: 2/4 (see README) |
+| `e2e_call.py` | One scripted real call against the live agent: create a lead, edit its title, ask a count, hang up; checks 10 outcomes via REST, then cleans up. | `results/e2e_call.json`: 10/10 |
 | `voice_samples.py` | Renders the same line in several TTS voices for picking by ear. | `results/voices/index.json` |
 | `ttft_interleaved.py` | Time-to-first-token benchmark across models, interleaved to cancel out network drift. | `results/history/ttft_interleaved.json` |
 

@@ -1,0 +1,135 @@
+{
+ "checks": {
+  "exactly one lead created": true,
+  "name": true,
+  "company": true,
+  "phone": true,
+  "email": true,
+  "source = Call": true,
+  "title edited": true,
+  "create job reported done": true,
+  "edit job reported done": true,
+  "count answer correct": true
+ },
+ "latency_s": [
+  1.5049845630019263,
+  1.703755798000202,
+  1.8699591620024876,
+  2.1317746579989034,
+  2.272810196998762,
+  2.8758274219981104
+ ],
+ "log": [
+  [
+   12.3,
+   "Ava",
+   "Hi, I'm Ava, your CRM assistant. I can add leads, update records, schedule things or look anything up in EspoCRM. What can I do for you?"
+  ],
+  [
+   13.9,
+   "caller",
+   "Hi. Please add a new lead: Ravi Kapoor from Lumen Labs. Phone four one five, five five five, zero one eight eight. Email ravi dot kapoor at lumen labs dot com."
+  ],
+  [
+   47.7,
+   "Ava",
+   "I'll add Ravi Kapoor from Lumen Labs with the phone number 415 555 0188 and email ravi dot kapoor at lumen labs dot com, shall I add that?"
+  ],
+  [
+   49.4,
+   "caller",
+   "Yes, add it."
+  ],
+  [
+   52.9,
+   "[job]",
+   "start: Create a new lead: first name Ravi, last name Kapoor, company Lumen Labs, phone 4155550188, email ravi.kapoor@"
+  ],
+  [
+   58.7,
+   "[job]",
+   "done: I have successfully created the new lead for Ravi Kapoor at Lumen Labs."
+  ],
+  [
+   60.3,
+   "Ava",
+   "I'm working on adding Ravi Kapoor to the CRM right now. Is there anything else I can help you with while that finishes?"
+  ],
+  [
+   66.8,
+   "Ava",
+   "I've successfully added Ravi Kapoor from Lumen Labs to the CRM. Is there anything else I can help you with today?"
+  ],
+  [
+   98.9,
+   "caller",
+   "Great. Now change his job title to Head of Sales."
+  ],
+  [
+   112.1,
+   "Ava",
+   "I'll update Ravi Kapoor's job title at Lumen Labs to Head of Sales, shall I do that?"
+  ],
+  [
+   113.8,
+   "caller",
+   "Yes."
+  ],
+  [
+   117.2,
+   "[job]",
+   "start: Find the lead Ravi Kapoor at Lumen Labs and update his job title to Head of Sales."
+  ],
+  [
+   121.4,
+   "Ava",
+   "I'm updating his title for you now. Anything else you need help with?"
+  ],
+  [
+   123.0,
+   "[job]",
+   "done: I have updated the job title for Ravi Kapoor at Lumen Labs to Head of Sales."
+  ],
+  [
+   129.4,
+   "Ava",
+   "I've updated Ravi Kapoor's job title to Head of Sales. Is there anything else I can help you with?"
+  ],
+  [
+   131.5,
+   "caller",
+   "How many leads have the status New?"
+  ],
+  [
+   136.3,
+   "[job]",
+   "start: Count how many leads have the status 'New' and tell me the total."
+  ],
+  [
+   139.2,
+   "Ava",
+   "I'm checking the number of new leads for you now."
+  ],
+  [
+   139.6,
+   "[job]",
+   "done: There are 7 leads with the status 'New'."
+  ],
+  [
+   144.8,
+   "Ava",
+   "There are currently 7 leads marked as new. Would you like me to do anything else?"
+  ],
+  [
+   176.5,
+   "caller",
+   "That's all, thanks. Bye."
+  ],
+  [
+   184.7,
+   "Ava",
+   "You're very welcome, have a great day."
+  ]
+ ],
+ "ran_at": "2026-11-27 19:47"
+}
