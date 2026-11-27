@@ -38,8 +38,11 @@ STT_MODEL = os.environ.get("STT_MODEL", "flux-general-en" if STT_MODE == "flux" 
 FLUX_EOT_THRESHOLD = float(os.environ.get("FLUX_EOT_THRESHOLD", "0.7"))
 FLUX_EAGER_EOT_THRESHOLD = float(os.environ.get("FLUX_EAGER_EOT_THRESHOLD", "0.5"))  # starts the LLM early
 FLUX_EOT_TIMEOUT_MS = int(os.environ.get("FLUX_EOT_TIMEOUT_MS", "2000"))
-TTS_PROVIDER = os.environ.get("TTS_PROVIDER", "elevenlabs")  # "deepgram" for eval runs (saves ElevenLabs free credits)
-TTS_MODEL = os.environ.get("TTS_MODEL", "eleven_flash_v2_5")
+# "fish": Fish Audio S2.1 Pro via LiveKit Inference (picked by ear from evals/voice_samples.py; ~0.5 s to first
+# audio from the server), with Deepgram Aura-2 as automatic fallback. "elevenlabs" / "deepgram" also work.
+TTS_PROVIDER = os.environ.get("TTS_PROVIDER", "fish")
+TTS_MODEL = os.environ.get("TTS_MODEL", {"fish": "fishaudio/s2.1-pro", "elevenlabs": "eleven_flash_v2_5"}.get(TTS_PROVIDER, "aura-2-andromeda-en"))
+TTS_FALLBACK_MODEL = os.environ.get("TTS_FALLBACK_MODEL", "aura-2-andromeda-en")
 TTS_VOICE_ID = os.environ.get("TTS_VOICE_ID", "hpp4J3VqNfWAUOO0d1Us")  # "Bella", premade
 
 MAX_CALL_SECONDS = int(os.environ.get("MAX_CALL_SECONDS", "240"))

@@ -437,8 +437,16 @@ def build_llm():
 
 
 def build_tts():
+    if config.TTS_PROVIDER == "fish":
+        from livekit.agents import inference
+        from livekit.agents import tts as lktts
+
+        # If Fish errors or LiveKit's inference allowance runs out, keep talking in the backup voice.
+        return lktts.FallbackAdapter(
+            [inference.TTS(model=config.TTS_MODEL), deepgram.TTS(model=config.TTS_FALLBACK_MODEL)]
+        )
     if config.TTS_PROVIDER == "deepgram":
-        return deepgram.TTS(model="aura-2-andromeda-en")
+        return deepgram.TTS(model=config.TTS_MODEL)
     return elevenlabs.TTS(voice_id=config.TTS_VOICE_ID, model=config.TTS_MODEL)
 
 
@@ -549,7 +557,7 @@ async def entrypoint(ctx: JobContext) -> None:
     )
     slog.write(
         "session_started", room=ctx.room.name, llm=config.LLM_MODEL, stt=config.STT_MODEL, stt_mode=config.STT_MODE,
-        tts=f"{config.TTS_PROVIDER}:{config.TTS_MODEL if config.TTS_PROVIDER == 'elevenlabs' else 'aura-2'}",
+        tts=f"{config.TTS_PROVIDER}:{config.TTS_MODEL}",
     )
     session.say(GREETING)
 
