@@ -19,7 +19,13 @@ LLM_MODEL = os.environ.get("LLM_MODEL", "google/gemini-3.6-flash")
 LLM_PROVIDER = os.environ.get("LLM_PROVIDER", "google-ai-studio")  # OpenRouter upstream, pinned
 LLM_REASONING = os.environ.get("LLM_REASONING", "minimal")  # no hidden thinking before the first token
 
-STT_MODEL = os.environ.get("STT_MODEL", "nova-3")
+# "flux": Deepgram Flux does STT and end-of-turn detection in one model (no local turn-detector).
+# "nova": Nova-3 STT + Silero VAD + LiveKit's multilingual turn-detector model (the earlier setup).
+STT_MODE = os.environ.get("STT_MODE", "flux")
+STT_MODEL = os.environ.get("STT_MODEL", "flux-general-en" if STT_MODE == "flux" else "nova-3")
+FLUX_EOT_THRESHOLD = float(os.environ.get("FLUX_EOT_THRESHOLD", "0.7"))
+FLUX_EAGER_EOT_THRESHOLD = float(os.environ.get("FLUX_EAGER_EOT_THRESHOLD", "0.5"))  # starts the LLM early
+FLUX_EOT_TIMEOUT_MS = int(os.environ.get("FLUX_EOT_TIMEOUT_MS", "2000"))
 TTS_PROVIDER = os.environ.get("TTS_PROVIDER", "elevenlabs")  # "deepgram" for eval runs (saves ElevenLabs free credits)
 TTS_MODEL = os.environ.get("TTS_MODEL", "eleven_flash_v2_5")
 TTS_VOICE_ID = os.environ.get("TTS_VOICE_ID", "hpp4J3VqNfWAUOO0d1Us")  # "Bella", premade

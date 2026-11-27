@@ -1,0 +1,16 @@
+# On the VM: secrets in /etc/espo-voice-agent.env (mode 600), DOMAIN set in deploy/.env
+services:
+  app:
+    build: ..
+    env_file: /etc/espo-voice-agent.env
+    restart: unless-stopped
+    volumes: ["./logs:/app/logs"]
+  caddy:
+    image: caddy:2.10
+    restart: unless-stopped
+    ports: ["80:80", "443:443"]
+    environment: ["DOMAIN=${DOMAIN}"]
+    volumes: ["./Caddyfile:/etc/caddy/Caddyfile:ro", "caddy_data:/data"]
+    depends_on: [app]
+volumes:
+  caddy_data:

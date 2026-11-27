@@ -1,0 +1,10 @@
+.venv
+.git
+logs
+evals
+tests
+docs
+deploy
+*.log
+.env
+.env.*
