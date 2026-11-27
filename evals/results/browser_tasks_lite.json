@@ -1,0 +1,136 @@
+{
+ "summary": {
+  "gemini-3.1-flash-lite": {
+   "pass": 6,
+   "n": 6,
+   "median_s": 9.0,
+   "max_s": 25.6
+  }
+ },
+ "rows": [
+  {
+   "model": "gemini-3.1-flash-lite",
+   "task": "edit_phone",
+   "ok": true,
+   "status": "done",
+   "summary": "I have added the phone number 415 555 0199 to the lead Kofi Ferreira89 at Nimbus Analytics.",
+   "seconds": 9.0,
+   "steps": 8,
+   "llm_ms_p50": 708,
+   "events": [
+    "progress: Searching for lead Kofi Ferreira89",
+    "step: go_to {\"target\": \"#Lead\"}",
+    "step: click {\"ref\": 17}",
+    "progress: Editing Kofi Ferreira89 to add phone number",
+    "step: click {\"ref\": 3}",
+    "step: type_text {\"text\": \"415 555 0199\", \"submit\": true, \"ref\": 13}",
+    "step: click {\"ref\": 1}",
+    "done: I have added the phone number 415 555 0199 to the lead Kofi Ferreira89 at Nimbus Analytics."
+   ]
+  },
+  {
+   "model": "gemini-3.1-flash-lite",
+   "task": "edit_email",
+   "ok": true,
+   "status": "done",
+   "summary": "The email address for the lead Kofi Okonkwo28 (Nimbus Analytics) has been successfully updated to kofi.new@nimbus.com.",
+   "seconds": 9.0,
+   "steps": 9,
+   "llm_ms_p50": 609,
+   "events": [
+    "progress: Searching for Kofi Okonkwo28",
+    "step: go_to {\"target\": \"#Lead\"}",
+    "step: type_text {\"submit\": true, \"ref\": 3, \"text\": \"Kofi Okonkwo28\"}",
+    "step: click {\"ref\": 18}",
+    "step: click {\"ref\": 3}",
+    "progress: Updating email address",
+    "step: type_text {\"ref\": 8, \"text\": \"kofi.new@nimbus.com\", \"submit\": true}",
+    "step: click {\"ref\": 1}",
+    "done: The email address for the lead Kofi Okonkwo28 (Nimbus Analytics) has been successfully updated to kofi.new@nimbus.com."
+   ]
+  },
+  {
+   "model": "gemini-3.1-flash-lite",
+   "task": "set_title",
+   "ok": true,
+   "status": "done",
+   "summary": "The job title for lead Mara Lindqvist47 has been set to Head of Operations.",
+   "seconds": 8.4,
+   "steps": 8,
+   "llm_ms_p50": 615,
+   "events": [
+    "progress: Searching for Mara Lindqvist47",
+    "step: go_to {\"target\": \"#Lead\"}",
+    "step: type_text {\"ref\": 3, \"submit\": true, \"text\": \"Mara Lindqvist47\"}",
+    "step: click {\"ref\": 18}",
+    "step: click {\"ref\": 3}",
+    "step: type_text {\"submit\": true, \"ref\": 17, \"text\": \"Head of Operations\"}",
+    "step: click {\"ref\": 1}",
+    "done: The job title for lead Mara Lindqvist47 has been set to Head of Operations."
+   ]
+  },
+  {
+   "model": "gemini-3.1-flash-lite",
+   "task": "status",
+   "ok": true,
+   "status": "done",
+   "summary": "The status of the lead Ines Brandt82 has been successfully changed to In Process.",
+   "seconds": 25.6,
+   "steps": 26,
+   "llm_ms_p50": 625,
+   "events": [
+    "step: click {\"ref\": 1}",
+    "step: click {\"ref\": 3}",
+    "step: click {\"ref\": 24}",
+    "step: click {\"ref\": 24}",
+    "step: click {\"ref\": 24}",
+    "step: click {\"ref\": 24}",
+    "step: click {\"ref\": 24}",
+    "step: press_key {\"key\": \"ArrowDown\"}",
+    "step: press_key {\"key\": \"ArrowDown\"}",
+    "step: press_key {\"key\": \"Enter\"}",
+    "step: click {\"ref\": 1}",
+    "done: The status of the lead Ines Brandt82 has been successfully changed to In Process."
+   ]
+  },
+  {
+   "model": "gemini-3.1-flash-lite",
+   "task": "add_note",
+   "ok": true,
+   "status": "done",
+   "summary": "I have updated the description for the lead Tomas Ferreira40 to \"Interested in a pilot in Q1.\"",
+   "seconds": 9.6,
+   "steps": 9,
+   "llm_ms_p50": 711,
+   "events": [
+    "progress: Searching for lead Tomas Ferreira40",
+    "step: go_to {\"target\": \"#Lead\"}",
+    "step: type_text {\"text\": \"Tomas Ferreira40\", \"ref\": 3, \"submit\": true}",
+    "step: click {\"ref\": 18}",
+    "progress: Editing lead Tomas Ferreira40 description",
+    "step: click {\"ref\": 3}",
+    "step: type_text {\"submit\": false, \"ref\": 32, \"text\": \"Interested in a pilot in Q1.\"}",
+    "step: click {\"ref\": 1}",
+    "done: I have updated the description for the lead Tomas Ferreira40 to \"Interested in a pilot in Q1.\""
+   ]
+  },
+  {
+   "model": "gemini-3.1-flash-lite",
+   "task": "read_only",
+   "ok": true,
+   "status": "done",
+   "summary": "Ravi Nakamura82 is with the company Quarry Labs.",
+   "seconds": 5.7,
+   "steps": 5,
+   "llm_ms_p50": 653,
+   "events": [
+    "progress: Searching for Ravi Nakamura82",
+    "step: go_to {\"target\": \"#Lead\"}",
+    "step: type_text {\"submit\": true, \"text\": \"Ravi Nakamura82\", \"ref\": 3}",
+    "step: click {\"ref\": 18}",
+    "done: Ravi Nakamura82 is with the company Quarry Labs."
+   ]
+  }
+ ],
+ "ran_at": "2026-11-27 15:45"
+}
