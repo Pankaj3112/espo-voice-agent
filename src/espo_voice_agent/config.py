@@ -21,6 +21,9 @@ LLM_REASONING = os.environ.get("LLM_REASONING", "minimal")  # no hidden thinking
 
 # "flux": Deepgram Flux does STT and end-of-turn detection in one model (no local turn-detector).
 # "nova": Nova-3 STT + Silero VAD + LiveKit's multilingual turn-detector model (the earlier setup).
+GCP_PROJECT = os.environ.get("GCP_PROJECT", "espo-voice-agent-1127")
+GCP_LOCATION = os.environ.get("GCP_LOCATION", "global")
+
 STT_MODE = os.environ.get("STT_MODE", "flux")
 STT_MODEL = os.environ.get("STT_MODEL", "flux-general-en" if STT_MODE == "flux" else "nova-3")
 FLUX_EOT_THRESHOLD = float(os.environ.get("FLUX_EOT_THRESHOLD", "0.7"))

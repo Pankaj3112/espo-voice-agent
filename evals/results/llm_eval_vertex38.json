@@ -1,0 +1,983 @@
+{
+ "summary": {
+  "vertex/gemini-3.8-flash": {
+   "pass": 50,
+   "n": 50,
+   "ttft_p50": 2.092,
+   "ttft_p90": 11.622,
+   "reasoning_tokens_max": 143,
+   "repeated_sentence": 0,
+   "failures": []
+  }
+ },
+ "rows": {
+  "vertex/gemini-3.8-flash": [
+   {
+    "id": "confirm_basic",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 80,
+    "ttft": 3.522042817000056,
+    "total": 3.612041309000233,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "duplicate_confirmed": false,
+       "company": "Acme Robotics",
+       "last_name": "Doe",
+       "phone": "4155550142",
+       "first_name": "Jane",
+       "email": "jane.doe@acmerobotics.com"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "no_readback_yet",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 131,
+    "ttft": 1.524246409999705,
+    "total": 1.6926240439997855,
+    "calls": [],
+    "text": "I have Jane Doe from Acme Robotics with the phone number 415 555 0142. Shall I add that?",
+    "rep": 0
+   },
+   {
+    "id": "asr_email_words",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 13,
+    "ttft": 1.960214327000358,
+    "total": 1.9954478260001451,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "last_name": "Rossi",
+       "email": "marco.rossi@bluefin.io",
+       "company": "Bluefin Logistics",
+       "first_name": "Marco"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "asr_email_at_the_rate",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 2.1290598460000183,
+    "total": 2.1707759170003555,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "company": "Quarry Labs",
+       "first_name": "Ravi",
+       "last_name": "Kumar",
+       "email": "ravi.kumar@gmail.com"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "phone_double_triple",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 43,
+    "ttft": 23.992456676000074,
+    "total": 24.180341389000205,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "company": "Orbit Robotics",
+       "first_name": "Hannah",
+       "last_name": "Novak",
+       "phone": "4155550144"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "phone_country_code",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 11.57332284999984,
+    "total": 11.674528443999861,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "first_name": "Lukas",
+       "last_name": "Brunner",
+       "phone": "+41795551234",
+       "company": "Helvetic Dairy"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "self_correction_company",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 3.6490504590001365,
+    "total": 3.9336187970002356,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "first_name": "Sofia",
+       "email": "sofia@nimbus.com",
+       "company": "Nimbus Analytics",
+       "last_name": "Moreau"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "spelled_last_name",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 11.219716746999893,
+    "total": 11.340166580000187,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "last_name": "Nguyen",
+       "company": "Quarry Labs",
+       "first_name": "Tran",
+       "duplicate_confirmed": false
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "spelled_email_overrides_asr",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 2.047718287999942,
+    "total": 2.2225609980000627,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "email": "priya.iyer@nimbus.com",
+       "first_name": "Priya",
+       "company": "Nimbus Analytics",
+       "last_name": "Iyer"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "reject_readback",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 58,
+    "ttft": 3.1726899029999913,
+    "total": 3.3744304540000485,
+    "calls": [],
+    "text": "I have Daniel Whitaker at Bluefin Logistics with the email daniel at bluefin dot com. Shall I add that?",
+    "rep": 0
+   },
+   {
+    "id": "yes_but_change",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 3.4066135269999904,
+    "total": 3.585316559000148,
+    "calls": [],
+    "text": "I have Amara Okafor at Orbit Robotics, phone 415 555 2222. Shall I add that?",
+    "rep": 0
+   },
+   {
+    "id": "corrected_then_confirmed",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 1.8606579379998038,
+    "total": 2.031814901999951,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "company": "Orbit Robotics",
+       "phone": "4155552222",
+       "first_name": "Amara",
+       "last_name": "Okafor"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "missing_company_ask",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 1.8142067650001081,
+    "total": 2.104745482999988,
+    "calls": [],
+    "text": "What company is Kenji Lindqvist with, and do you have a phone number or email?",
+    "rep": 0
+   },
+   {
+    "id": "fillers_hesitation",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 23.643831269000202,
+    "total": 23.817583683000066,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "last_name": "Connor",
+       "phone": "4155559876",
+       "company": "Cyberdyne Systems",
+       "first_name": "Sarah"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "prospect_self",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 83,
+    "ttft": 11.62227017000032,
+    "total": 11.692398878999938,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "notes": "Interested in a product demo",
+       "first_name": "Tom",
+       "email": "tom.becker@zurich.ch",
+       "company": "Zurich Insurance",
+       "last_name": "Becker"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "title_volunteered",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 35.249115444999916,
+    "total": 35.33599447200004,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "first_name": "Elena",
+       "email": "elena@quarrylabs.com",
+       "title": "CTO",
+       "last_name": "Petrova",
+       "company": "Quarry Labs"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "duplicate_then_override",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 46,
+    "ttft": 2.4769420299999183,
+    "total": 2.657459702000324,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "duplicate_confirmed": true,
+       "company": "Acme Robotics",
+       "first_name": "Jane",
+       "last_name": "Doe",
+       "email": "jane.doe@acme.com"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "duplicate_then_decline",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.9793849970001247,
+    "total": 1.2382044900000437,
+    "calls": [],
+    "text": "Alright, I won't create a new lead. Is there anything else I can help you with?",
+    "rep": 0
+   },
+   {
+    "id": "find_existing",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 11.395886774000246,
+    "total": 11.513683167000181,
+    "calls": [
+     {
+      "name": "find_lead",
+      "args": {
+       "query": "Bluefin Logistics"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "off_topic",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 55,
+    "ttft": 2.8096165160000055,
+    "total": 3.0161647270001595,
+    "calls": [],
+    "text": "I'm sorry, but this demo only handles adding and finding leads. Would you like me to add a lead for you instead?",
+    "rep": 0
+   },
+   {
+    "id": "long_second_lead",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 43,
+    "ttft": 2.4130208270003095,
+    "total": 2.514975250000134,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "phone": "4155553391",
+       "first_name": "Omar",
+       "company": "Bluefin Logistics",
+       "last_name": "Haddad"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "long_many_corrections",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 1.3019096389998595,
+    "total": 1.3783864789998006,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "company": "Orbit Robotics",
+       "email": "katarina@orbitrobotics.com",
+       "phone": "4155551213",
+       "first_name": "Katarina",
+       "last_name": "Wolff"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "long_chitchat_first",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 1.2695009180001762,
+    "total": 1.370395199000086,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "email": "lea.fischer@helvetic.ch",
+       "last_name": "Fischer",
+       "first_name": "Lea",
+       "company": "Helvetic Dairy"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "long_find_then_create",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 1.307663121999667,
+    "total": 1.4915908210000453,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "phone": "+447700900123",
+       "company": "Quarry Labs",
+       "last_name": "Petrov",
+       "first_name": "Ivan"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "long_wrapup_no_tool",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 11.824623160000101,
+    "total": 11.970874578000348,
+    "calls": [],
+    "text": "You're welcome! Have a great day.",
+    "rep": 0
+   },
+   {
+    "id": "confirm_basic",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 1.1474276389999432,
+    "total": 1.2297124290003012,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "first_name": "Jane",
+       "phone": "4155550142",
+       "company": "Acme Robotics",
+       "last_name": "Doe",
+       "email": "jane.doe@acmerobotics.com"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "no_readback_yet",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 114,
+    "ttft": 2.254951052999786,
+    "total": 2.4766417020000517,
+    "calls": [],
+    "text": "I have Jane Doe from Acme Robotics with the phone number 415 555 0142. Shall I add that?",
+    "rep": 1
+   },
+   {
+    "id": "asr_email_words",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 13,
+    "ttft": 2.0104689250001684,
+    "total": 2.0615493580003204,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "company": "Bluefin Logistics",
+       "email": "marco.rossi@bluefin.io",
+       "last_name": "Rossi",
+       "first_name": "Marco"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "asr_email_at_the_rate",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 1.5221949189999577,
+    "total": 1.6733029490001172,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "first_name": "Ravi",
+       "company": "Quarry Labs",
+       "email": "ravi.kumar@gmail.com",
+       "last_name": "Kumar"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "phone_double_triple",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 1.6659904460002508,
+    "total": 1.7507564910001747,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "first_name": "Hannah",
+       "phone": "4155550144",
+       "company": "Orbit Robotics",
+       "last_name": "Novak"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "phone_country_code",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 49,
+    "ttft": 1.1324915049999618,
+    "total": 1.30814417900001,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "last_name": "Brunner",
+       "phone": "+41795551234",
+       "company": "Helvetic Dairy",
+       "duplicate_confirmed": false,
+       "first_name": "Lukas"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "self_correction_company",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 1.1587677510001413,
+    "total": 1.2491326840004149,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "first_name": "Sofia",
+       "last_name": "Moreau",
+       "company": "Nimbus Analytics",
+       "email": "sofia@nimbus.com"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "spelled_last_name",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 40,
+    "ttft": 2.055256520000057,
+    "total": 2.141639510999994,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "last_name": "Nguyen",
+       "company": "Quarry Labs",
+       "first_name": "Tran"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "spelled_email_overrides_asr",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 66,
+    "ttft": 1.5555750220000846,
+    "total": 1.7027303040003972,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "company": "Nimbus Analytics",
+       "last_name": "Iyer",
+       "email": "priya.iyer@nimbus.com",
+       "first_name": "Priya"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "reject_readback",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.9594499069999074,
+    "total": 1.1318319430001793,
+    "calls": [],
+    "text": "I have Daniel Whitaker at Bluefin Logistics, email daniel at bluefin dot com. Shall I add that?",
+    "rep": 1
+   },
+   {
+    "id": "yes_but_change",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 143,
+    "ttft": 2.385299335000127,
+    "total": 2.6698596229998657,
+    "calls": [],
+    "text": "I have Amara Okafor at Orbit Robotics, with phone number 415 555 2222. Shall I add that?",
+    "rep": 1
+   },
+   {
+    "id": "corrected_then_confirmed",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 46,
+    "ttft": 1.3787741529999948,
+    "total": 1.5011024599998564,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "first_name": "Amara",
+       "phone": "4155552222",
+       "last_name": "Okafor",
+       "company": "Orbit Robotics"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "missing_company_ask",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 1.005564824999965,
+    "total": 1.1885147489997507,
+    "calls": [],
+    "text": "What company is Kenji Lindqvist with?",
+    "rep": 1
+   },
+   {
+    "id": "fillers_hesitation",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 2.312734653000007,
+    "total": 2.3619734579997385,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "first_name": "Sarah",
+       "company": "Cyberdyne Systems",
+       "phone": "4155559876",
+       "last_name": "Connor"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "prospect_self",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 45,
+    "ttft": 1.7578854490002414,
+    "total": 1.8881114569999227,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "email": "tom.becker@zurich.ch",
+       "notes": "Interested in a product demo",
+       "company": "Zurich Insurance",
+       "last_name": "Becker",
+       "first_name": "Tom"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "title_volunteered",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 1.4846529849996841,
+    "total": 1.522888261999924,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "title": "CTO",
+       "first_name": "Elena",
+       "email": "elena@quarrylabs.com",
+       "last_name": "Petrova",
+       "company": "Quarry Labs"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "duplicate_then_override",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 45,
+    "ttft": 31.373392395000337,
+    "total": 31.485625606000212,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "company": "Acme Robotics",
+       "last_name": "Doe",
+       "first_name": "Jane",
+       "email": "jane.doe@acme.com",
+       "duplicate_confirmed": true
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "duplicate_then_decline",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 1.802453995000178,
+    "total": 1.963622568000119,
+    "calls": [],
+    "text": "Alright, I won't create it. Is there anything else I can help you with?",
+    "rep": 1
+   },
+   {
+    "id": "find_existing",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 1.6458156389999203,
+    "total": 1.8916524579999532,
+    "calls": [
+     {
+      "name": "find_lead",
+      "args": {
+       "query": "Bluefin Logistics"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "off_topic",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 6.2286985049995565,
+    "total": 6.3677013289998285,
+    "calls": [],
+    "text": "I can only help with adding or finding leads in this demo. Who would you like to add to the CRM?",
+    "rep": 1
+   },
+   {
+    "id": "long_second_lead",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 43,
+    "ttft": 3.957515274999878,
+    "total": 4.169570865999958,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "phone": "4155553391",
+       "first_name": "Omar",
+       "last_name": "Haddad",
+       "company": "Bluefin Logistics"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "long_many_corrections",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 78,
+    "ttft": 2.6016993739999634,
+    "total": 2.6449240709998776,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "email": "katarina@orbitrobotics.com",
+       "company": "Orbit Robotics",
+       "last_name": "Wolff",
+       "phone": "4155551213",
+       "first_name": "Katarina"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "long_chitchat_first",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 2.4442117830003554,
+    "total": 2.4921592370001235,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "email": "lea.fischer@helvetic.ch",
+       "first_name": "Lea",
+       "company": "Helvetic Dairy",
+       "last_name": "Fischer"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "long_find_then_create",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 3.568788620000305,
+    "total": 3.635492348000298,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "phone": "+447700900123",
+       "first_name": "Ivan",
+       "company": "Quarry Labs",
+       "last_name": "Petrov"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "long_wrapup_no_tool",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.92314836200012,
+    "total": 1.073608072999832,
+    "calls": [],
+    "text": "You're welcome! Have a great day.",
+    "rep": 1
+   }
+  ]
+ },
+ "ran_at": "2026-11-27 14:35"
+}

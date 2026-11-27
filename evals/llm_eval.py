@@ -14,6 +14,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import os
 import re
 import statistics
 import sys
@@ -35,7 +36,29 @@ CASES = json.loads((Path(__file__).parent / "llm_cases.json").read_text())
 PROVIDERS = {"openai/": "openai", "anthropic/": "anthropic", "google/": "google-ai-studio", "mistralai/": "mistral"}
 
 
-def make_llm(model: str) -> lkopenai.LLM:
+def make_llm(model: str):
+    if model.startswith("gemini/"):  # Gemini API (AI Studio) directly, billed to the GCP project
+        from livekit.plugins import google as lkgoogle
+
+        return lkgoogle.LLM(
+            model=model.removeprefix("gemini/"),
+            vertexai=False,
+            api_key=os.environ["GOOGLE_API_KEY"],
+            temperature=0.2,
+            thinking_config={"thinking_level": os.environ.get("GEMINI_THINKING", "minimal")},
+        )
+    if model.startswith("vertex/"):  # Gemini directly on Vertex AI (no OpenRouter hop)
+        from livekit.plugins import google as lkgoogle
+
+        return lkgoogle.LLM(
+            model=model.removeprefix("vertex/"),
+            vertexai=True,
+            project=config.GCP_PROJECT,
+            location=config.GCP_LOCATION,
+            temperature=0.2,
+            # Gemini 3.x on Vertex takes a thinking *level*; "low" is the least that 3.8 Flash accepts.
+            thinking_config={"thinking_level": os.environ.get("VERTEX_THINKING", "low")},
+        )
     prov = next((p for k, p in PROVIDERS.items() if model.startswith(k)), None)
     # Lowest-latency reasoning setting per family (as in Pipecat's voice-readiness runs).
     kwargs = {}

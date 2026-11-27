@@ -1,0 +1,1492 @@
+{
+ "summary": {
+  "vertex/gemini-3.8-flash": {
+   "pass": 0,
+   "n": 50,
+   "ttft_p50": null,
+   "ttft_p90": null,
+   "reasoning_tokens_max": 0,
+   "repeated_sentence": 0,
+   "failures": [
+    "asr_email_at_the_rate: error: APIStatusError('gemini llm: client error', status_code=400, request_id='4d163107f141', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "asr_email_at_the_rate: error: APIStatusError('gemini llm: client error', status_code=400, request_id='e3c8acf46d2a', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "asr_email_words: error: APIStatusError('gemini llm: client error', status_code=400, request_id='68d572e40bdd', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "asr_email_words: error: APIStatusError('gemini llm: client error', status_code=400, request_id='9c7a517a53ba', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "confirm_basic: error: APIStatusError('gemini llm: client error', status_code=400, request_id='f3cdd0a5b4b8', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "confirm_basic: error: APIStatusError('gemini llm: client error', status_code=400, request_id='fa1c73ec35a5', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "corrected_then_confirmed: error: APIStatusError('gemini llm: client error', status_code=400, request_id='7f649c3ee08b', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "corrected_then_confirmed: error: APIStatusError('gemini llm: client error', status_code=400, request_id='e57f2bc9e521', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "duplicate_then_decline: error: APIStatusError('gemini llm: client error', status_code=400, request_id='01024a1c7b00', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "duplicate_then_decline: error: APIStatusError('gemini llm: client error', status_code=400, request_id='27db8bdf2342', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "duplicate_then_override: error: APIStatusError('gemini llm: client error', status_code=400, request_id='3c4e5c15ff92', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "duplicate_then_override: error: APIStatusError('gemini llm: client error', status_code=400, request_id='e2c23c8a464e', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "fillers_hesitation: error: APIStatusError('gemini llm: client error', status_code=400, request_id='000308940998', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "fillers_hesitation: error: APIStatusError('gemini llm: client error', status_code=400, request_id='fc2333b5a571', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "find_existing: error: APIStatusError('gemini llm: client error', status_code=400, request_id='739be4e11bab', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "find_existing: error: APIStatusError('gemini llm: client error', status_code=400, request_id='7f2ed707dcfc', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "long_chitchat_first: error: APIStatusError('gemini llm: client error', status_code=400, request_id='1b5c07146ae4', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "long_chitchat_first: error: APIStatusError('gemini llm: client error', status_code=400, request_id='3d3999b4f730', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "long_find_then_create: error: APIStatusError('gemini llm: client error', status_code=400, request_id='3c34c15c9a32', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "long_find_then_create: error: APIStatusError('gemini llm: client error', status_code=400, request_id='ea9401bb26af', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "long_many_corrections: error: APIStatusError('gemini llm: client error', status_code=400, request_id='baafa291f8fd', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "long_many_corrections: error: APIStatusError('gemini llm: client error', status_code=400, request_id='fc621c1f06f6', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "long_second_lead: error: APIStatusError('gemini llm: client error', status_code=400, request_id='049dcbf726db', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "long_second_lead: error: APIStatusError('gemini llm: client error', status_code=400, request_id='8d5a0befc8c6', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "long_wrapup_no_tool: error: APIStatusError('gemini llm: client error', status_code=400, request_id='8772e66f7860', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "long_wrapup_no_tool: error: APIStatusError('gemini llm: client error', status_code=400, request_id='c8d89e374037', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "missing_company_ask: error: APIStatusError('gemini llm: client error', status_code=400, request_id='6f452c7abf29', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "missing_company_ask: error: APIStatusError('gemini llm: client error', status_code=400, request_id='7b44d9be4195', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "no_readback_yet: error: APIStatusError('gemini llm: client error', status_code=400, request_id='16cf73a7b938', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "no_readback_yet: error: APIStatusError('gemini llm: client error', status_code=400, request_id='1c46e800e5db', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "off_topic: error: APIStatusError('gemini llm: client error', status_code=400, request_id='8b4238ba497c', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "off_topic: error: APIStatusError('gemini llm: client error', status_code=400, request_id='9111c1bc0b19', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "phone_country_code: error: APIStatusError('gemini llm: client error', status_code=400, request_id='898d5fc7ac92', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "phone_country_code: error: APIStatusError('gemini llm: client error', status_code=400, request_id='eae14abbcd03', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "phone_double_triple: error: APIStatusError('gemini llm: client error', status_code=400, request_id='828d2967403a', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "phone_double_triple: error: APIStatusError('gemini llm: client error', status_code=400, request_id='ea217d9d39ba', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "prospect_self: error: APIStatusError('gemini llm: client error', status_code=400, request_id='9cf063db0acd', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "prospect_self: error: APIStatusError('gemini llm: client error', status_code=400, request_id='b98a45f9a199', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "reject_readback: error: APIStatusError('gemini llm: client error', status_code=400, request_id='2e9cbd5b4128', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "reject_readback: error: APIStatusError('gemini llm: client error', status_code=400, request_id='4f3e4246239d', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "self_correction_company: error: APIStatusError('gemini llm: client error', status_code=400, request_id='e9dd1c939b5d', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "self_correction_company: error: APIStatusError('gemini llm: client error', status_code=400, request_id='fe6a2653b383', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "spelled_email_overrides_asr: error: APIStatusError('gemini llm: client error', status_code=400, request_id='0c008018b250', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "spelled_email_overrides_asr: error: APIStatusError('gemini llm: client error', status_code=400, request_id='feab25850bae', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "spelled_last_name: error: APIStatusError('gemini llm: client error', status_code=400, request_id='539d91d38199', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "spelled_last_name: error: APIStatusError('gemini llm: client error', status_code=400, request_id='5f2905d848cf', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "title_volunteered: error: APIStatusError('gemini llm: client error', status_code=400, request_id='bf6a0566f047', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "title_volunteered: error: APIStatusError('gemini llm: client error', status_code=400, request_id='df33c7a23f5f', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "yes_but_change: error: APIStatusError('gemini llm: client error', status_code=400, request_id='7321842713f5', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "yes_but_change: error: APIStatusError('gemini llm: client error', status_code=400, request_id='e0869f4c5537', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)"
+   ]
+  },
+  "vertex/gemini-3.5-flash": {
+   "pass": 48,
+   "n": 50,
+   "ttft_p50": 2.944,
+   "ttft_p90": 4.748,
+   "reasoning_tokens_max": 0,
+   "repeated_sentence": 0,
+   "failures": [
+    "title_volunteered: company: want 'Quarry Labs' got None"
+   ]
+  }
+ },
+ "rows": {
+  "vertex/gemini-3.8-flash": [
+   {
+    "id": "confirm_basic",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='f3cdd0a5b4b8', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 0
+   },
+   {
+    "id": "no_readback_yet",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='16cf73a7b938', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 0
+   },
+   {
+    "id": "asr_email_words",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='9c7a517a53ba', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 0
+   },
+   {
+    "id": "asr_email_at_the_rate",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='e3c8acf46d2a', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 0
+   },
+   {
+    "id": "phone_double_triple",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='ea217d9d39ba', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 0
+   },
+   {
+    "id": "phone_country_code",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='898d5fc7ac92', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 0
+   },
+   {
+    "id": "self_correction_company",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='fe6a2653b383', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 0
+   },
+   {
+    "id": "spelled_last_name",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='5f2905d848cf', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 0
+   },
+   {
+    "id": "spelled_email_overrides_asr",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='feab25850bae', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 0
+   },
+   {
+    "id": "reject_readback",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='2e9cbd5b4128', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 0
+   },
+   {
+    "id": "yes_but_change",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='e0869f4c5537', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 0
+   },
+   {
+    "id": "corrected_then_confirmed",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='7f649c3ee08b', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 0
+   },
+   {
+    "id": "missing_company_ask",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='6f452c7abf29', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 0
+   },
+   {
+    "id": "fillers_hesitation",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='fc2333b5a571', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 0
+   },
+   {
+    "id": "prospect_self",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='b98a45f9a199', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 0
+   },
+   {
+    "id": "title_volunteered",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='df33c7a23f5f', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 0
+   },
+   {
+    "id": "duplicate_then_override",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='e2c23c8a464e', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 0
+   },
+   {
+    "id": "duplicate_then_decline",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='27db8bdf2342', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 0
+   },
+   {
+    "id": "find_existing",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='739be4e11bab', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 0
+   },
+   {
+    "id": "off_topic",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='9111c1bc0b19', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 0
+   },
+   {
+    "id": "long_second_lead",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='049dcbf726db', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 0
+   },
+   {
+    "id": "long_many_corrections",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='baafa291f8fd', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 0
+   },
+   {
+    "id": "long_chitchat_first",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='3d3999b4f730', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 0
+   },
+   {
+    "id": "long_find_then_create",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='ea9401bb26af', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 0
+   },
+   {
+    "id": "long_wrapup_no_tool",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='c8d89e374037', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 0
+   },
+   {
+    "id": "confirm_basic",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='fa1c73ec35a5', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 1
+   },
+   {
+    "id": "no_readback_yet",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='1c46e800e5db', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 1
+   },
+   {
+    "id": "asr_email_words",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='68d572e40bdd', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 1
+   },
+   {
+    "id": "asr_email_at_the_rate",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='4d163107f141', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 1
+   },
+   {
+    "id": "phone_double_triple",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='828d2967403a', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 1
+   },
+   {
+    "id": "phone_country_code",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='eae14abbcd03', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 1
+   },
+   {
+    "id": "self_correction_company",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='e9dd1c939b5d', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 1
+   },
+   {
+    "id": "spelled_last_name",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='539d91d38199', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 1
+   },
+   {
+    "id": "spelled_email_overrides_asr",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='0c008018b250', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 1
+   },
+   {
+    "id": "reject_readback",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='4f3e4246239d', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 1
+   },
+   {
+    "id": "yes_but_change",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='7321842713f5', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 1
+   },
+   {
+    "id": "corrected_then_confirmed",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='e57f2bc9e521', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 1
+   },
+   {
+    "id": "missing_company_ask",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='7b44d9be4195', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 1
+   },
+   {
+    "id": "fillers_hesitation",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='000308940998', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 1
+   },
+   {
+    "id": "prospect_self",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='9cf063db0acd', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 1
+   },
+   {
+    "id": "title_volunteered",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='bf6a0566f047', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 1
+   },
+   {
+    "id": "duplicate_then_override",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='3c4e5c15ff92', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 1
+   },
+   {
+    "id": "duplicate_then_decline",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='01024a1c7b00', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 1
+   },
+   {
+    "id": "find_existing",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='7f2ed707dcfc', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 1
+   },
+   {
+    "id": "off_topic",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='8b4238ba497c', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 1
+   },
+   {
+    "id": "long_second_lead",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='8d5a0befc8c6', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 1
+   },
+   {
+    "id": "long_many_corrections",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='fc621c1f06f6', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 1
+   },
+   {
+    "id": "long_chitchat_first",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='1b5c07146ae4', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 1
+   },
+   {
+    "id": "long_find_then_create",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='3c34c15c9a32', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 1
+   },
+   {
+    "id": "long_wrapup_no_tool",
+    "ok": false,
+    "why": "error: APIStatusError('gemini llm: client error', status_code=400, request_id='8772e66f7860', body='Thinking level is unsupported: THINKING_LEVEL_MINIMAL INVALID_ARGUMENT', retryable=False)",
+    "ttft": null,
+    "total": null,
+    "calls": [],
+    "rep": 1
+   }
+  ],
+  "vertex/gemini-3.5-flash": [
+   {
+    "id": "confirm_basic",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 3.486252295000213,
+    "total": 3.53489146600009,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "company": "Acme Robotics",
+       "email": "jane.doe@acmerobotics.com",
+       "last_name": "Doe",
+       "first_name": "Jane",
+       "phone": "4155550142"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "no_readback_yet",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 2.907674222999958,
+    "total": 2.943523455999866,
+    "calls": [],
+    "text": "I've got Jane Doe from Acme Robotics, with the phone number 415-555-0142. Shall I add that?",
+    "rep": 0
+   },
+   {
+    "id": "asr_email_words",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 3.667987031000166,
+    "total": 3.714975976000005,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "email": "marco.rossi@bluefin.io",
+       "first_name": "Marco",
+       "last_name": "Rossi",
+       "company": "Bluefin Logistics"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "asr_email_at_the_rate",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 2.674327016999996,
+    "total": 2.704187129000047,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "first_name": "Ravi",
+       "last_name": "Kumar",
+       "company": "Quarry Labs",
+       "email": "ravi.kumar@gmail.com"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "phone_double_triple",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 2.8956110439999065,
+    "total": 2.9296227170000293,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "phone": "4155550144",
+       "first_name": "Hannah",
+       "company": "Orbit Robotics",
+       "last_name": "Novak"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "phone_country_code",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 2.727837514999919,
+    "total": 2.75759568400008,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "last_name": "Brunner",
+       "first_name": "Lukas",
+       "phone": "+41795551234",
+       "company": "Helvetic Dairy"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "self_correction_company",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 4.193723739000006,
+    "total": 4.223733816000049,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "company": "Nimbus Analytics",
+       "email": "sofia@nimbus.com",
+       "last_name": "Moreau",
+       "first_name": "Sofia"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "spelled_last_name",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 5.187634330000037,
+    "total": 5.224337941000158,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "last_name": "Nguyen",
+       "first_name": "Tran",
+       "company": "Quarry Labs"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "spelled_email_overrides_asr",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 2.5081420500000604,
+    "total": 2.543357885999967,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "last_name": "Iyer",
+       "first_name": "Priya",
+       "email": "priya.iyer@nimbus.com",
+       "company": "Nimbus Analytics"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "reject_readback",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.5849830209999709,
+    "total": 0.7059361970000282,
+    "calls": [],
+    "text": "I have Daniel Whitaker at Bluefin Logistics, with the email daniel at bluefin dot com. Shall I add that?",
+    "rep": 0
+   },
+   {
+    "id": "yes_but_change",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 2.917813760000172,
+    "total": 2.9501236099999915,
+    "calls": [],
+    "text": "I have Amara Okafor at Orbit Robotics, with the phone number 415 555 2222. Shall I add that?",
+    "rep": 0
+   },
+   {
+    "id": "corrected_then_confirmed",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 2.231065899999976,
+    "total": 2.2600473469999542,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "company": "Orbit Robotics",
+       "last_name": "Okafor",
+       "first_name": "Amara",
+       "phone": "4155552222"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "missing_company_ask",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 3.1006732179998835,
+    "total": 3.1350287109999044,
+    "calls": [],
+    "text": "Could you please spell the last name \"Lindqvist\" for me to make sure I have it correct?",
+    "rep": 0
+   },
+   {
+    "id": "fillers_hesitation",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 3.2064790199999607,
+    "total": 3.2615779259999726,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "phone": "4155559876",
+       "first_name": "Sarah",
+       "last_name": "Connor",
+       "company": "Cyberdyne Systems"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "prospect_self",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 3.8525178079999023,
+    "total": 3.885808445000066,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "email": "tom.becker@zurich.ch",
+       "last_name": "Becker",
+       "company": "Zurich Insurance",
+       "first_name": "Tom",
+       "notes": "Interested in a demo"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "title_volunteered",
+    "ok": false,
+    "why": "company: want 'Quarry Labs' got None",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 4.296623731999944,
+    "total": 4.326992203000145,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "email": "elena@quarrylabs.com",
+       "last_name": "Petrova",
+       "title": "CTO",
+       "first_name": "Elena"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "duplicate_then_override",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.9326610220000475,
+    "total": 0.967374049,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "first_name": "Jane",
+       "last_name": "Doe",
+       "duplicate_confirmed": true,
+       "company": "Acme Robotics",
+       "email": "jane.doe@acme.com"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "duplicate_then_decline",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 5.8335336719999304,
+    "total": 5.871615450000036,
+    "calls": [],
+    "text": "Alright, I won't create a new lead. Is there anyone else you'd like to add?",
+    "rep": 0
+   },
+   {
+    "id": "find_existing",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 2.686844356000165,
+    "total": 2.724321656000029,
+    "calls": [
+     {
+      "name": "find_lead",
+      "args": {
+       "query": "Bluefin Logistics"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "off_topic",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 3.7438420309999856,
+    "total": 3.8059463049999067,
+    "calls": [],
+    "text": "I can only help with adding or finding leads in the CRM. Would you like to add a new lead today?",
+    "rep": 0
+   },
+   {
+    "id": "long_second_lead",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 3.93296749000001,
+    "total": 3.9669486249999864,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "first_name": "Omar",
+       "phone": "4155553391",
+       "company": "Bluefin Logistics",
+       "last_name": "Haddad"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "long_many_corrections",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 3.4423286359999565,
+    "total": 3.484552356999984,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "email": "katarina@orbitrobotics.com",
+       "last_name": "Wolff",
+       "first_name": "Katarina",
+       "company": "Orbit Robotics",
+       "phone": "4155551213"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "long_chitchat_first",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 2.8758202409999285,
+    "total": 2.921103832999961,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "email": "lea.fischer@helvetic.ch",
+       "last_name": "Fischer",
+       "first_name": "Lea",
+       "company": "Helvetic Dairy"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "long_find_then_create",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 5.533133512999939,
+    "total": 5.563703753999789,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "last_name": "Petrov",
+       "phone": "+447700900123",
+       "first_name": "Ivan",
+       "company": "Quarry Labs"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 0
+   },
+   {
+    "id": "long_wrapup_no_tool",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 4.766269003999923,
+    "total": 4.797634647999985,
+    "calls": [],
+    "text": "You're welcome! Have a great day!",
+    "rep": 0
+   },
+   {
+    "id": "confirm_basic",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 2.887348668999948,
+    "total": 2.921587716999966,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "first_name": "Jane",
+       "email": "jane.doe@acmerobotics.com",
+       "last_name": "Doe",
+       "phone": "4155550142",
+       "company": "Acme Robotics"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "no_readback_yet",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 3.5165934990000096,
+    "total": 3.5562559950001287,
+    "calls": [],
+    "text": "I have Jane Doe from Acme Robotics with the phone number 415-555-0142. Shall I add that?",
+    "rep": 1
+   },
+   {
+    "id": "asr_email_words",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 3.8426358379999783,
+    "total": 3.8932923719999053,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "last_name": "Rossi",
+       "first_name": "Marco",
+       "email": "marco.rossi@bluefin.io",
+       "company": "Bluefin Logistics"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "asr_email_at_the_rate",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 1.5707379379998656,
+    "total": 1.6369468410000536,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "first_name": "Ravi",
+       "last_name": "Kumar",
+       "company": "Quarry Labs",
+       "email": "ravi.kumar@gmail.com"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "phone_double_triple",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 3.0389815130001807,
+    "total": 3.0686686440001267,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "company": "Orbit Robotics",
+       "last_name": "Novak",
+       "first_name": "Hannah",
+       "phone": "4155550144"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "phone_country_code",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 2.9701507810000294,
+    "total": 3.009965622999971,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "last_name": "Brunner",
+       "first_name": "Lukas",
+       "phone": "+41795551234",
+       "company": "Helvetic Dairy"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "self_correction_company",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 4.523104904000093,
+    "total": 4.553837800999872,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "email": "sofia@nimbus.com",
+       "company": "Nimbus Analytics",
+       "last_name": "Moreau",
+       "first_name": "Sofia"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "spelled_last_name",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 3.3792811359999178,
+    "total": 3.419964170000185,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "company": "Quarry Labs",
+       "last_name": "Nguyen",
+       "first_name": "Tran"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "spelled_email_overrides_asr",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 1.4864671919999637,
+    "total": 1.5431517150000218,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "last_name": "Iyer",
+       "email": "priya.iyer@nimbus.com",
+       "company": "Nimbus Analytics",
+       "first_name": "Priya"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "reject_readback",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 4.748174069000015,
+    "total": 4.779238800999792,
+    "calls": [],
+    "text": "I have Daniel Whitaker at Bluefin Logistics, email daniel at bluefin dot com. Shall I add that?",
+    "rep": 1
+   },
+   {
+    "id": "yes_but_change",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.7592466269998113,
+    "total": 0.9387415019996297,
+    "calls": [],
+    "text": "I have Amara Okafor at Orbit Robotics, with the phone number 415 555 2222. Shall I add that?",
+    "rep": 1
+   },
+   {
+    "id": "corrected_then_confirmed",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.8027243850001469,
+    "total": 0.8452477089999775,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "company": "Orbit Robotics",
+       "phone": "4155552222",
+       "last_name": "Okafor",
+       "first_name": "Amara"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "missing_company_ask",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.563853741999992,
+    "total": 0.6755783649996374,
+    "calls": [],
+    "text": "Could you please spell the last name \"Lindqvist\" for me to make sure I have it correct?",
+    "rep": 1
+   },
+   {
+    "id": "fillers_hesitation",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 4.975499782000043,
+    "total": 5.055453494000176,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "last_name": "Connor",
+       "company": "Cyberdyne Systems",
+       "first_name": "Sarah",
+       "phone": "4155559876"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "prospect_self",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 2.0904460310002833,
+    "total": 2.129441306999979,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "notes": "Interested in a demo.",
+       "first_name": "Tom",
+       "email": "tom.becker@zurich.ch",
+       "last_name": "Becker",
+       "company": "Zurich Insurance"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "title_volunteered",
+    "ok": false,
+    "why": "company: want 'Quarry Labs' got None",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 4.404674757000066,
+    "total": 4.441088713999761,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "last_name": "Petrova",
+       "email": "elena@quarrylabs.com",
+       "title": "CTO",
+       "first_name": "Elena"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "duplicate_then_override",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 2.2818331360003867,
+    "total": 2.3153979860003346,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "email": "jane.doe@acme.com",
+       "last_name": "Doe",
+       "duplicate_confirmed": true,
+       "first_name": "Jane",
+       "company": "Acme Robotics"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "duplicate_then_decline",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 2.6267753480001375,
+    "total": 2.658442396999817,
+    "calls": [],
+    "text": "Alright, I won't create a new lead. Is there anyone else you would like to add?",
+    "rep": 1
+   },
+   {
+    "id": "find_existing",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 4.163970393,
+    "total": 4.209095760999844,
+    "calls": [
+     {
+      "name": "find_lead",
+      "args": {
+       "query": "Bluefin Logistics"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "off_topic",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.872474063000027,
+    "total": 0.9664261230000193,
+    "calls": [],
+    "text": "I'm sorry, but this demo only handles adding and finding leads in the CRM. Would you like me to add a new lead for you?",
+    "rep": 1
+   },
+   {
+    "id": "long_second_lead",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 1.3217097470001136,
+    "total": 1.3870116470002358,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "first_name": "Omar",
+       "last_name": "Haddad",
+       "phone": "4155553391",
+       "company": "Bluefin Logistics"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "long_many_corrections",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 3.480841382000108,
+    "total": 3.513846582000042,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "company": "Orbit Robotics",
+       "first_name": "Katarina",
+       "phone": "4155551213",
+       "email": "katarina@orbitrobotics.com",
+       "last_name": "Wolff"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "long_chitchat_first",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.748863997999706,
+    "total": 0.7946349379999447,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "first_name": "Lea",
+       "email": "lea.fischer@helvetic.ch",
+       "last_name": "Fischer",
+       "company": "Helvetic Dairy"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "long_find_then_create",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 2.57222509300027,
+    "total": 2.606054886000038,
+    "calls": [
+     {
+      "name": "create_lead",
+      "args": {
+       "first_name": "Ivan",
+       "last_name": "Petrov",
+       "company": "Quarry Labs",
+       "phone": "+447700900123"
+      }
+     }
+    ],
+    "text": "",
+    "rep": 1
+   },
+   {
+    "id": "long_wrapup_no_tool",
+    "ok": true,
+    "why": "ok",
+    "repeated_sentence": false,
+    "reasoning_tokens": 0,
+    "ttft": 0.6194760130001669,
+    "total": 0.7063756360003026,
+    "calls": [],
+    "text": "You're welcome! Have a great day!",
+    "rep": 1
+   }
+  ]
+ },
+ "ran_at": "2026-11-27 14:30"
+}

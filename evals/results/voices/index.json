@@ -1,0 +1,59 @@
+{
+ "text": "Got it. So that's Jane Doe from Acme Robotics, phone four one five, five five five, zero one four two, and email jane dot doe at acme dot com. Shall I add that?",
+ "rows": [
+  {
+   "name": "ElevenLabs Flash v2.5 \u00b7 Bella (current)",
+   "file": "elevenlabs-flash-v2-5---bella--current.wav",
+   "ttfb_s": 1.482,
+   "total_s": 1.728
+  },
+  {
+   "name": "ElevenLabs Turbo v2.5 \u00b7 Bella",
+   "file": "elevenlabs-turbo-v2-5---bella.wav",
+   "ttfb_s": 0.304,
+   "total_s": 0.458
+  },
+  {
+   "name": "Cartesia Sonic 3",
+   "file": "cartesia-sonic-3.wav",
+   "ttfb_s": 0.542,
+   "total_s": 1.537
+  },
+  {
+   "name": "Cartesia Sonic 3.5",
+   "file": "cartesia-sonic-3-5.wav",
+   "ttfb_s": 1.134,
+   "total_s": 2.191
+  },
+  {
+   "name": "Fish Audio S2.1 Pro",
+   "file": "fish-audio-s2-1-pro.wav",
+   "ttfb_s": 1.338,
+   "total_s": 6.621
+  },
+  {
+   "name": "Inworld TTS 2",
+   "file": "inworld-tts-2.wav",
+   "ttfb_s": 1.272,
+   "total_s": 4.102
+  },
+  {
+   "name": "Inworld TTS 2 Flash",
+   "file": "inworld-tts-2-flash.wav",
+   "ttfb_s": 1.778,
+   "total_s": 3.336
+  },
+  {
+   "name": "Rime Arcana (coda)",
+   "file": "rime-arcana--coda.wav",
+   "ttfb_s": 1.354,
+   "total_s": 3.535
+  },
+  {
+   "name": "Deepgram Aura-2 \u00b7 Thalia",
+   "file": "deepgram-aura-2---thalia.wav",
+   "ttfb_s": 1.8,
+   "total_s": 37.108
+  }
+ ]
+}

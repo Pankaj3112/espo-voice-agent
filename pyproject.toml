@@ -10,7 +10,7 @@ requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.165.0",
     "httpx>=0.28.1",
-    "livekit-agents[deepgram,elevenlabs,openai,silero,turn-detector]>=1.9.0",
+    "livekit-agents[deepgram,elevenlabs,fishaudio,google,openai,silero,turn-detector]>=1.9.0",
     "livekit-api>=1.2.3",
     "livekit-plugins-noise-cancellation>=0.3.3",
     "numpy>=2.5.5",
