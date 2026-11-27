@@ -34,6 +34,7 @@ def _crm(tmp_path, monkeypatch):
     crm.task = None
     crm._last_progress = ""
     crm._unannounced = None
+    crm._reported = None
 
     async def emit(**_):
         return None
@@ -61,7 +62,8 @@ def test_job_context_reports_state(tmp_path, monkeypatch):
     crm.task = BrowserTask(id="t1", goal="update email")
     assert "Still in progress" in crm.job_context()
     crm.task.status, crm.task.summary = "done", "Updated the email of Jane Doe."
-    assert "Finished and verified" in crm.job_context()
+    assert "finished and verified" in crm.job_context()
+    assert crm.job_context() is None  # reported once, not on every turn
 
 
 def test_interrupted_result_is_repeated_next_turn(tmp_path, monkeypatch):
@@ -70,7 +72,10 @@ def test_interrupted_result_is_repeated_next_turn(tmp_path, monkeypatch):
     crm.task = BrowserTask(id="t1", goal="update phone")
     crm.task.status, crm.task.summary = "done", "Updated Jane Doe's phone."
     asyncio.run(crm.on_task_event(crm.task, "done", crm.task.summary))
-    assert "has NOT heard" in crm.job_context()
+    assert "may have missed" in crm.job_context()
+    # regression: the reminder must fire once, not on every following turn
+    assert "may have missed" not in (crm.job_context() or "")
+    assert "may have missed" not in (crm.job_context() or "")
     crm.session = FakeSession(interrupted=False)
     asyncio.run(crm.on_task_event(crm.task, "done", crm.task.summary))
-    assert "has NOT heard" not in crm.job_context()
+    assert "may have missed" not in (crm.job_context() or "")

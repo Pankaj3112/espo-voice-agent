@@ -153,6 +153,7 @@ class CrmHandle:
         self.task: BrowserTask | None = None
         self._last_progress = ""
         self._unannounced: str | None = None
+        self._reported: str | None = None
         self._heartbeat: asyncio.Task | None = None
 
     async def start(self) -> None:
@@ -244,11 +245,20 @@ class CrmHandle:
         if t.status in ("running", "waiting_for_caller"):
             q = f" It is waiting for the caller to answer: {t.pending_question!r}." if t.pending_question else ""
             return f"[CRM job status] Still in progress: {t.goal!r}.{q} Nothing about it is confirmed yet."
-        tell = (" The caller has NOT heard this result yet: mention it first in your reply, in one short sentence."
-                if self._unannounced else "")
+        # One-shot: remind once on the next turn only, then forget it. (Keeping it until a reply finished
+        # uninterrupted made Ava repeat the same result on every turn when the caller kept talking over her.)
+        tell = (" The caller may have missed this result because they talked over it: mention it once, in one short "
+                "clause, then answer what they just said." if self._unannounced else "")
+        self._unannounced = None
+        # A finished job's outcome is attached once (the next turn after it ends); after that it is in the
+        # conversation history and repeating it every turn made Ava keep bringing it up.
+        key = f"{t.id}:{t.status}"
+        if key == self._reported and not tell:
+            return None
+        self._reported = key
         if t.status == "done":
-            return f"[CRM job status] Finished and verified: {t.summary}{tell}"
-        return f"[CRM job status] Did not complete ({t.status}): {t.summary}{tell}"
+            return f"[CRM job status] Last job finished and verified: {t.summary}{tell}"
+        return f"[CRM job status] Last job did not complete ({t.status}): {t.summary}{tell}"
 
     def task_status(self) -> str:
         t = self.task
